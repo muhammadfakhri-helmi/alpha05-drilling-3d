@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alpha-05 — Mockup urutan pemboran 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#ECEFF1; --ink-2:#AEB8C0; --ink-3:#7E8A93;
+    --glass:rgba(30,33,34,.80); --line:rgba(255,255,255,.09);
+    --mud:#D39A4A; --cement:#D3CCBC; --steel:#A9B4BF; --warn:#D8574A; --ok:#86B98F; --oil:#E0A93A;
+    --head:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+    --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *,*::before,*::after{box-sizing:inherit}
+  html,body{height:100%;margin:0;background:#2B2A27;color:var(--ink);font-family:var(--body);overflow:hidden}
+  #app{position:relative;height:100%;width:100%}
+  canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  .glass{background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+
+  /* title */
+  #title{position:absolute;left:112px;top:14px;pointer-events:none;max-width:48ch}
+  #title h1{font-family:var(--head);font-weight:700;font-size:40px;line-height:1;margin:0;letter-spacing:.01em}
+  #title p{margin:4px 0 0;color:var(--ink-2);font-size:14px;line-height:1.35}
+  #title h1,#title p{text-shadow:0 1px 2px rgba(0,0,0,.55),0 0 14px rgba(0,0,0,.35)}
+  #title .note{color:var(--ink-2);font-size:12px;margin-top:2px}
+
+  /* depth track */
+  #track{position:absolute;left:10px;top:10px;bottom:106px;width:92px;border-radius:10px;padding:8px 6px 6px;display:flex;flex-direction:column;gap:6px}
+  #track .ro{font-family:var(--head);font-variant-numeric:tabular-nums;line-height:1.05}
+  #track .ro b{display:block;font-size:22px;font-weight:600}
+  #track .ro span{font-size:12px;color:var(--ink-3);font-family:var(--body)}
+  #track canvas{flex:1;width:100%;min-height:0;border-radius:4px}
+
+  /* panel */
+  #panel{position:absolute;right:10px;top:10px;bottom:106px;width:344px;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+  #panel header{padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+  #panel header h2{font-family:var(--head);font-weight:700;font-size:30px;margin:0;line-height:1}
+  #panel header p{margin:4px 0 0;color:var(--ink-2);font-size:14px;min-height:1.3em}
+  #pbody{overflow:auto;padding:4px 16px 16px;scrollbar-width:thin}
+  .blk{padding:12px 0;border-bottom:1px solid var(--line)}
+  .blk:last-child{border-bottom:0}
+  .blk h3{font-family:var(--head);font-weight:600;font-size:18px;margin:0 0 6px;color:var(--ink)}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px}
+  .kv dt{color:var(--ink-3)} .kv dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .met{background:rgba(255,255,255,.04);border-radius:6px;padding:6px 8px}
+  .met b{display:block;font-family:var(--head);font-weight:600;font-size:21px;font-variant-numeric:tabular-nums;line-height:1.1}
+  .met span{font-size:12px;color:var(--ink-3)}
+  ol.bha{margin:0;padding:0;list-style:none;font-size:13.5px;display:flex;flex-direction:column;gap:3px}
+  ol.bha li{display:flex;align-items:center;gap:8px}
+  ol.bha i{width:10px;height:10px;border-radius:2px;flex:none}
+  ol.bha em{margin-left:auto;font-style:normal;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .win{position:relative;height:30px;margin:6px 0 2px}
+  .win .axis{position:absolute;left:0;right:0;top:9px;height:12px;border-radius:3px;background:rgba(216,87,74,.28)}
+  .win .safe{position:absolute;top:9px;height:12px;background:rgba(134,185,143,.55)}
+  .win .prog{position:absolute;top:12px;height:6px;border-radius:3px;background:var(--mud)}
+  .win .tk{position:absolute;top:24px;font-size:11px;color:var(--ink-3);transform:translateX(-50%)}
+  .sf{display:grid;grid-template-columns:64px 1fr 40px;align-items:center;gap:4px 8px;font-size:13px}
+  .sf .bar{height:6px;border-radius:3px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
+  .sf .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--steel)}
+  .sf .bar s{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--warn)}
+  .sf span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:12.5px;padding:3px 8px;border-radius:20px;background:rgba(216,87,74,.14);color:#F0B7AE;border:1px solid rgba(216,87,74,.3)}
+  .muted{color:var(--ink-3);font-size:13px;line-height:1.4;margin:6px 0 0}
+  #ptog{display:none}
+
+  /* views */
+  #views{position:absolute;right:366px;top:10px;display:flex;gap:4px;padding:4px;border-radius:9px}
+  #views button,#tl button,#tl select{font:500 14px var(--body);color:var(--ink);background:transparent;border:0;border-radius:6px;padding:7px 11px;cursor:pointer}
+  #views button[aria-pressed="true"]{background:rgba(211,154,74,.22);color:#F4D3A3}
+  button:focus-visible,select:focus-visible,#bar:focus-visible{outline:2px solid var(--mud);outline-offset:2px}
+
+  /* timeline */
+  #tl{position:absolute;left:10px;right:10px;bottom:10px;height:86px;border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto 1fr;column-gap:14px;row-gap:6px;align-items:center}
+  #play{width:44px;height:44px;border-radius:50% !important;background:var(--mud) !important;color:#241A0E !important;grid-row:1/3;display:grid;place-items:center;padding:0 !important}
+  #play svg{width:18px;height:18px}
+  #cap{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #cap b{font-family:var(--head);font-weight:600;font-size:18px;margin-right:8px;color:#F4D3A3}
+  #meta{display:flex;align-items:center;gap:6px;color:var(--ink-3);font-size:13px;grid-row:1/3;grid-column:3}
+  #tl select{background:rgba(255,255,255,.06);padding:6px 8px}
+  #bar{position:relative;height:30px;display:flex;gap:3px;cursor:pointer;grid-column:2}
+  .seg{position:relative;flex:1;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden}
+  .seg i{position:absolute;left:0;top:0;bottom:0;background:rgba(211,154,74,.55)}
+  .seg span{position:absolute;left:6px;top:50%;transform:translateY(-50%);font:600 13px var(--head);color:var(--ink-2);white-space:nowrap;pointer-events:none}
+  .seg.on{background:rgba(255,255,255,.13)} .seg.on span{color:var(--ink)}
+
+  /* labels & toast */
+  #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .lbl{position:absolute;font:500 12.5px var(--body);color:var(--ink);padding:2px 7px;border-radius:4px;background:rgba(24,26,27,.72);border-left:2px solid var(--mud);white-space:nowrap;transform:translate(8px,-50%)}
+  .lbl.rig{border-left-color:var(--steel)}
+  .lbl.l{transform:translate(calc(-100% - 8px),-50%);border-left:0;border-right:2px solid var(--steel)}
+  #toast{position:absolute;left:50%;top:78px;transform:translateX(-50%);padding:9px 14px;border-radius:9px;font-size:14.5px;opacity:0;transition:opacity .35s;pointer-events:none;max-width:min(520px,70vw);text-align:center}
+  #toast.show{opacity:1}
+  #call{position:absolute;left:112px;top:128px;width:300px;border-radius:10px;padding:12px 14px;display:none}
+  #call h4{margin:0 0 6px;font:600 18px var(--head);color:#F4D3A3}
+  #call p{margin:0;font-size:13.5px;line-height:1.45;color:var(--ink-2)}
+  #call ul{margin:6px 0 0;padding-left:18px;font-size:13.5px;color:var(--ink-2)}
+
+  @media (max-width: 900px){
+    #title{left:84px} #title h1{font-size:30px} #title p{font-size:13px} #title .note{display:none}
+    #track{width:66px;bottom:98px} #track .ro b{font-size:17px}
+    #panel{top:auto;bottom:98px;left:10px;right:10px;width:auto;max-height:46vh}
+    #panel.collapsed #pbody{display:none}
+    #ptog{display:block;position:absolute;right:10px;top:12px;font:500 13px var(--body);color:var(--ink);background:rgba(255,255,255,.08);border:0;border-radius:6px;padding:6px 10px}
+    #views{right:10px;top:auto;bottom:calc(98px + 46vh + 8px)}
+    #panel.collapsed ~ #views{bottom:170px}
+    #tl{height:80px;grid-template-columns:auto 1fr} #meta{display:none}
+    .seg span{display:none}
+    #call{left:84px;width:min(300px,60vw)}
+  }
+  @media (prefers-reduced-motion: reduce){ #toast{transition:none} }
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="c" aria-label="Visualisasi 3D rig dan sumur Alpha-05"></canvas>
+  <div id="labels"></div>
+
+  <div id="title">
+    <h1>Alpha-05</h1>
+    <p>Mockup urutan pemboran dari rig sampai komplesi, berdasarkan data rencana (plan).</p>
+    <p class="note">Tidak berskala: diameter lubang dan casing diperbesar 5 kali agar terlihat.</p>
+  </div>
+
+  <aside id="track" class="glass" aria-label="Log kedalaman">
+    <div class="ro"><b id="rMD">0</b><span>ft MD</span></div>
+    <div class="ro"><b id="rTVD">0</b><span>ft TVD</span></div>
+    <div class="ro"><b id="rInc">0.0°</b><span>inklinasi</span></div>
+    <canvas id="trk"></canvas>
+  </aside>
+
+  <aside id="panel" class="glass" aria-live="polite">
+    <header><h2 id="pTitle">Alpha-05</h2><p id="pSub"></p></header>
+    <button id="ptog" aria-expanded="true">Sembunyikan</button>
+    <div id="pbody"></div>
+  </aside>
+
+  <div id="views" class="glass" role="group" aria-label="Sudut pandang">
+    <button data-v="rig">Rig</button>
+    <button data-v="bit">Ikuti bit</button>
+    <button data-v="well">Seluruh sumur</button>
+  </div>
+
+  <div id="toast" class="glass" role="status"></div>
+  <div id="call" class="glass"></div>
+
+  <div id="tl" class="glass">
+    <button id="play" aria-label="Putar"><svg viewBox="0 0 24 24" fill="currentColor"><path id="pIco" d="M7 4l13 8-13 8z"/></svg></button>
+    <div id="cap"><b id="capN">1/12</b><span id="capT"></span></div>
+    <div id="meta">
+      <label for="spd">Kecepatan</label>
+      <select id="spd"><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="2">2x</option><option value="4">4x</option></select>
+    </div>
+    <div id="bar" tabindex="0" role="slider" aria-label="Linimasa operasi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const D2R=Math.PI/180;
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= WELL DATA (plan) ================= */
+const E=5;                  // radial exaggeration
+const KOP=700, BUR=2, INC=29.74, AZI=222.55;
+const RB=18000/(Math.PI*BUR);
+const EOB=KOP+INC/BUR*100;  // 2187 ft
+const TD=9604, CF=10;       // CF = cellar floor depth
+const rad=inch=>inch/24*E;  // diameter in inch -> exaggerated world radius (ft)
+
+function traj(md){
+  if(md<=KOP) return {vs:0,tvd:md,inc:0};
+  if(md<=EOB){const a=(md-KOP)*BUR/100*D2R;return {vs:RB*(1-Math.cos(a)),tvd:KOP+RB*Math.sin(a),inc:a};}
+  const a=INC*D2R,t0=traj(EOB),L=md-EOB;return {vs:t0.vs+L*Math.sin(a),tvd:t0.tvd+L*Math.cos(a),inc:a};
+}
+const P=(md,v=new THREE.Vector3())=>{const t=traj(md);return v.set(t.vs,-t.tvd,0)};
+const Tn=(md,v=new THREE.Vector3())=>{const a=traj(md).inc;return v.set(Math.sin(a),-Math.cos(a),0)};
+const Nn=(md,v=new THREE.Vector3())=>{const a=traj(md).inc;return v.set(Math.cos(a),Math.sin(a),0)};
+const vsAtTvd=tvd=>{const e=traj(EOB);if(tvd<=KOP)return 0;if(tvd<=e.tvd)return RB*(1-Math.cos(Math.asin((tvd-KOP)/RB)));return e.vs+(tvd-e.tvd)*Math.tan(INC*D2R)};
+
+// formations (anonymised)  tvd top / md top
+const FM=[
+ {n:'Fm-A',tvd:0,   md:0,   c:'#B7A277',lith:'Aluvium'},
+ {n:'Fm-B',tvd:630, md:630, c:'#8E9A6A',lith:'Claystone, sisipan sand'},
+ {n:'Fm-C',tvd:2158,md:2229,c:'#6F8767',lith:'Claystone, sisipan limestone'},
+ {n:'Fm-D',tvd:4728,md:5189,c:'#B3AE98',lith:'Limestone'},
+ {n:'Fm-E',tvd:5318,md:5869,c:'#8B8774',lith:'Selang-seling claystone dan limestone'},
+ {n:'Fm-F',tvd:7388,md:8253,c:'#77806F',lith:'Selang-seling claystone, limestone, siltstone'},
+ {n:'Fm-G',tvd:8261,md:9258,c:'#C6BC98',lith:'Karbonat (reservoir)'}
+];
+const fmAtMD=md=>{let k=0;for(let i=0;i<FM.length;i++)if(md>=FM[i].md)k=i;return k};
+
+const SEC=[
+ {hole:'26"',holeIn:26,top:120,bot:2000,bit:'Milled tooth SB115C',bitType:'mt',
+  mud:{type:'HPWBM inhibitif',mw:[9.8,12.0],win:[9.0,15.4],note:'Kill mud 13.0 ppg dan LCM pill 80 ppb siap di lokasi. HiVis dan HiDens sweep di TD.'},
+  hyd:{gpm:1100,spp:2715,tq:3227,hl:130,hsi:0.8,liner:'7"',tfa:1.4},
+  csg:{name:'20"',od:20,spec:'K-55, 133 ppf, BTC',shoe:2000,shoeTVD:1956,sf:{Burst:1.58,Collapse:1.32,Axial:3.15,Triaxial:2.53}},
+  cem:'Lead 12.5 ppg + tail 15.8 ppg, excess 100%, TOC di permukaan',
+  wc:{bop:'Diverter 29-1/2" x 500 psi',kt:'—',lot:'—'},
+  haz:['Reactive shale','Pack off','Tight spot'],
+  bha:[['Bit 26" milled tooth',26,1.5,'bit'],['Mud motor 9-5/8"',9.625,30,'motor'],['Sub 8"',8,2,'sub'],['Drill collar 8"',8,31,'dc'],['MWD 8"',8,30,'mwd'],['Drill collar 8" x2',8,62,'dc'],['Jar 8"',8,31,'jar'],['Drill collar 8"',8,31,'dc'],['Sub 8"',8,2,'sub'],['HWDP 5"',5,93,'hw']]},
+ {hole:'17-1/2"',holeIn:17.5,top:2000,bot:5000,bit:'PDC TK59',bitType:'pdc',
+  mud:{type:'HPWBM inhibitif',mw:[12.0,14.0],win:[11.5,15.4],note:'Fracseal 2 ppb mulai 3,500 ft. Kill mud 15.0 ppg. HiDens sweep tiap 5 stand sampai MW di atas 13 ppg.'},
+  hyd:{gpm:900,spp:3244,tq:8819,hl:197,hsi:1.6,liner:'6-1/2"',tfa:1.2},
+  csg:{name:'13-3/8"',od:13.375,spec:'K-55, 68 ppf, BTC',shoe:5000,shoeTVD:4564,sf:{Burst:1.75,Collapse:1.18,Axial:2.54,Triaxial:1.89}},
+  cem:'Single slurry 15.8 ppg, excess 100%, TOC di permukaan',
+  wc:{bop:'BOP 21-1/4" x 2,000 psi',kt:'178.87 bbl @ 10.09 ppg',lot:'15.98 ppg EMW (shoe 20")'},
+  haz:['Partial loss','Tight spot','Gumbo'],
+  bha:[['Bit 17-1/2" PDC',17.5,1.5,'bit'],['Mud motor 9-5/8"',9.625,30,'motor'],['Sub 8"',8,2,'sub'],['Stabilizer 17-1/2"',8,7,'stab',17.5],['Drill collar 8"',8,30,'dc'],['MWD 8"',8,30,'mwd'],['Drill collar 8" x2',8,60,'dc'],['Jar 8"',8,30,'jar'],['Drill collar 8"',8,30,'dc'],['Sub 8"',8,2,'sub'],['HWDP 5"',5,93,'hw']]},
+ {hole:'12-1/4"',holeIn:12.25,top:5000,bot:9259,bit:'PDC MDi519',bitType:'pdc',
+  mud:{type:'HPWBM inhibitif',mw:[14.0,15.0],win:[10.7,16.6],win2:15.1,note:'Kill mud 16.0 ppg. Fracseal 2 ppb dipertahankan. HiVis sweep tiap 5 stand.'},
+  hyd:{gpm:850,spp:4488,tq:15915,hl:291,hsi:2.0,liner:'6"',tfa:1.4},
+  csg:{name:'9-5/8"',od:9.625,spec:'L-80, 47 ppf, BTC',shoe:9259,shoeTVD:8261,sf:{Burst:1.81,Collapse:1.97,Axial:2.52,Triaxial:1.73}},
+  cem:'Single slurry 15.8 ppg, excess 50%, TOC di permukaan',
+  wc:{bop:'BOP 13-5/8" (annular + 3 ram)',kt:'51.27 bbl @ 13.9 ppg',lot:'16.2 ppg EMW (shoe 13-3/8")'},
+  haz:['Tekanan formasi','Partial loss','Tight spot'],
+  bha:[['Bit 12-1/4" PDC',12.25,1.3,'bit'],['Mud motor 8"',8,30,'motor'],['Sub 8"',8,2,'sub'],['Stabilizer 12-1/4"',8.25,6,'stab',12.25],['Drill collar 8"',8,30,'dc'],['MWD 8"',8,30,'mwd'],['Drill collar 8"',8,30,'dc'],['Circulating sub',8.25,3,'sub'],['Port collar / diverter sub',8,2,'sub'],['HWDP 5"',5,62,'hw'],['Jar 6-1/2"',6.5,30,'jar'],['HWDP 5"',5,62,'hw']]},
+ {hole:'8-1/2"',holeIn:8.5,top:9259,bot:9604,bit:'PDC SKFX519S',bitType:'pdc',
+  mud:{type:'RDIF, KCl 3%',mw:[8.7,9.0],win:[9.0,17.7],note:'Seepage di bawah 30 bph: tambah CaCO3 M 5–10 ppb. Di atas 30 bph: spot LCM pill 25–35 ppb.'},
+  hyd:{gpm:600,spp:1597,tq:18664,hl:321,hsi:0.9,liner:'6"',tfa:1.4},
+  csg:{name:'7" liner',od:7,spec:'L-80, 26 ppf, BTC',shoe:9604,shoeTVD:8561,tol:9108,sf:{Burst:7.24,Collapse:1.35,Axial:4.58,Triaxial:2.24}},
+  cem:'Single slurry 15.8 ppg, excess 100%, TOC di top of liner',
+  wc:{bop:'BOP 13-5/8" (annular + 3 ram)',kt:'168.29 bbl @ 10.18 ppg',lot:'16.55 ppg EMW (shoe 9-5/8")'},
+  haz:['Partial loss','Tight spot','Logging'],
+  eval:'Quad combo, resistivity, advanced cement evaluation',
+  bha:[['Bit 8-1/2" PDC',8.5,1.1,'bit'],['Mud motor 6-3/4"',6.75,30,'motor'],['Sub',6.72,2,'sub'],['Stabilizer 8-1/2"',6.75,6,'stab',8.5],['Drill collar 6-3/4"',6.75,30,'dc'],['MWD 6-3/4"',6.75,30,'mwd'],['Drill collar 6-3/4"',6.75,30,'dc'],['Circulating sub',6.75,3,'sub'],['Port collar',6.75,2,'sub'],['HWDP 5"',5,62,'hw'],['Jar 6-1/2"',6.5,30,'jar'],['HWDP 5"',5,62,'hw']]}
+];
+const COMP={tubing:'3-1/2" L-80 EUE',esp:'ESP 160 HP',espTop:8750,espBot:8840,perfs:[[9330,9360],[9400,9430],[9470,9500],[9540,9570]]};
+const BHA_COL={bit:'#C9B37A',motor:'#3F5E4C',sub:'#7F8891',stab:'#5B6B7A',dc:'#6B737B',mwd:'#C9A13D',jar:'#8A5B3D',hw:'#98A1A9'};
+
+/* ================= PHASES ================= */
+const PH=[
+ {k:'intro',s:'Rig',t:'Rig 1500 HP siap di lokasi',dur:7,sec:-1,view:'rig'},
+ {k:'cond',s:'30"',t:'Conductor 30" terpasang sampai 120 ft',dur:5,sec:-1,view:'rig'},
+ {k:'d26',s:'26"',t:'Bor lubang 26"',dur:18,sec:0,view:'bit'},
+ {k:'c20',s:'Csg 20"',t:'Run casing 20" dan cementing',dur:12,sec:0,view:'bit'},
+ {k:'d17',s:'17-1/2"',t:'Bor lubang 17-1/2"',dur:18,sec:1,view:'bit'},
+ {k:'c13',s:'Csg 13-3/8"',t:'Run casing 13-3/8" dan cementing',dur:12,sec:1,view:'bit'},
+ {k:'d12',s:'12-1/4"',t:'Bor lubang 12-1/4"',dur:24,sec:2,view:'bit'},
+ {k:'c9',s:'Csg 9-5/8"',t:'Run casing 9-5/8" dan cementing',dur:12,sec:2,view:'bit'},
+ {k:'d8',s:'8-1/2"',t:'Bor lubang 8-1/2" ke reservoir',dur:13,sec:3,view:'bit'},
+ {k:'log',s:'Logging',t:'Wireline logging',dur:9,sec:3,view:'bit'},
+ {k:'c7',s:'Liner 7"',t:'Run liner 7" dan cementing',dur:11,sec:3,view:'bit'},
+ {k:'comp',s:'Komplesi',t:'Komplesi: perforasi, tubing + ESP, X-mas tree',dur:17,sec:4,view:'bit'}
+];
+const PI={};PH.forEach((p,i)=>PI[p.k]=i);
+const TOTAL=PH.reduce((a,p)=>a+p.dur,0);
+const PSTART=[];{let a=0;PH.forEach(p=>{PSTART.push(a);a+=p.dur})}
+
+// casing / cement definitions
+const CSG=[
+ {k:'c30',od:30,top:CF,shoe:120,col:'#8C8F8C'},
+ {k:'c20',od:20,top:CF,shoe:2000,col:'#9FA9B2',hole:26,cem:[[2000,1500,'#C4BCA8'],[1500,CF,'#DDD6C4']]},
+ {k:'c13',od:13.375,top:CF,shoe:5000,col:'#B4BEC7',hole:17.5,cem:[[5000,CF,'#CFC7B3']]},
+ {k:'c9',od:9.625,top:CF,shoe:9259,col:'#A3AFBB',hole:12.25,cem:[[9259,CF,'#D6CEBB']]},
+ {k:'c7',od:7,top:9108,shoe:9604,col:'#C3CCD4',hole:8.5,cem:[[9604,9108,'#CBC3AE']]}
+];
+
+/* ================= STATE MACHINE ================= */
+function stateAt(t){
+  let i=0;while(i<PH.length-1&&t>=PSTART[i+1])i++;
+  const p=clamp((t-PSTART[i])/PH[i].dur);
+  const k=PH[i].k, past=key=>i>PI[key];
+  const S={i,p,k,hole:0,string:-1,bha:-1,drilling:false,csg:{},cem:{},bop:'none',wh:0,
+           tool:-1,tubing:-1,perf:0,flow:null,focus:0,cap:'',hookMD:null};
+  // hole depth baseline
+  S.hole = past('d8')?9604: past('d12')?9259: past('d17')?5000: past('d26')?2000: 120;
+  // casing baseline
+  CSG.forEach(c=>{const dn= c.k==='c30'? i>=PI.cond : past(c.k);S.csg[c.k]=dn?1:0;S.cem[c.k]=dn?1:0;});
+  if(k==='intro'){S.csg.c30=0;S.hole=0}
+  S.wh = past('c9')?3: past('c13')?2: past('c20')?1:0;
+  S.bop = i<=PI.cond?'none': i<=PI.c20?'div': i<=PI.c13?'b21':'b13';
+
+  const drill=(sec,from,to,curve)=>{
+    const tripEnd=0.13;
+    S.bha=sec;
+    if(p<tripEnd){S.string=lerp(0,from,p/tripEnd);S.hole=from;S.cap=`Trip in BHA ${SEC[sec].hole} ke ${fmt(S.string)} ft`;S.flow=null;}
+    else{const q=(p-tripEnd)/(1-tripEnd);S.hole=curve?curve(q):lerp(from,to,q);S.string=S.hole;S.drilling=true;S.flow='mud';
+      S.cap=`Drilling ${SEC[sec].hole} di ${fmt(S.hole)} ft MD`;}
+    S.focus=S.string;S.hookMD=S.string;
+  };
+  const casing=(sec,ck)=>{
+    const c=CSG.find(x=>x.k===ck), shoe=c.shoe;
+    if(p<0.14){S.bha=sec;S.string=lerp(shoe,0,p/0.14);S.cap=`Sirkulasi, wiper trip, POOH BHA ${SEC[sec].hole}`;S.focus=Math.max(S.string,300);S.hookMD=S.string;}
+    else if(p<0.58){const q=(p-0.14)/0.44;S.csg[ck]=q;S.cap=`Run casing ${SEC[sec].csg.name} ke ${fmt(lerp(CF,shoe,q))} ft`;S.focus=lerp(CF,shoe,q);S.hookMD=lerp(CF,shoe,q);}
+    else if(p<0.95){const q=(p-0.58)/0.37;S.csg[ck]=1;S.cem[ck]=q;S.flow='cement';S.string=-1;
+      S.cap=`Cementing casing ${SEC[sec].csg.name}: ${SEC[sec].cem.split(',')[0]}`;S.focus=lerp(shoe,Math.max(CF,shoe-2400),q);}
+    else{S.csg[ck]=1;S.cem[ck]=1;S.cap=`Casing ${SEC[sec].csg.name} terpasang di ${fmt(shoe)} ft MD`;S.focus=shoe;}
+  };
+  switch(k){
+    case 'intro': S.cap='Rig 1500 HP electric, pad dan cellar siap'; break;
+    case 'cond': S.csg.c30=p;S.hole=120*p;S.cap='Pasang conductor 30" X-52 sampai 120 ft';S.focus=60;break;
+    case 'd26': drill(0,120,2000); break;
+    case 'c20': casing(0,'c20'); if(p>0.95){S.wh=1} break;
+    case 'd17': drill(1,2000,5000); break;
+    case 'c13': casing(1,'c13'); if(p>0.95){S.wh=2} break;
+    case 'd12': drill(2,5000,9259,q=>q<0.8?lerp(5000,8900,q/0.8):lerp(8900,9259,(q-0.8)/0.2)); break;
+    case 'c9': casing(2,'c9'); if(p>0.95){S.wh=3} break;
+    case 'd8': drill(3,9259,9604); break;
+    case 'log':
+      if(p<0.35){S.tool=lerp(0,9590,p/0.35);S.cap='Run in wireline tool';}
+      else if(p<0.85){S.tool=lerp(9590,9259,(p-0.35)/0.5);S.cap=`Logging naik: ${fmt(S.tool)} ft (quad combo, resistivity)`;}
+      else{S.tool=lerp(9259,0,(p-0.85)/0.15);S.cap='POOH wireline tool';}
+      S.focus=Math.max(S.tool,300);S.hookMD=null;break;
+    case 'c7':{
+      const tol=9108;
+      if(p<0.42){S.string=lerp(0,tol,p/0.42);S.cap=`Run liner 7" dengan drill pipe: ${fmt(S.string)} ft`;S.focus=S.string;S.hookMD=S.string;S.csg.c7=p/0.42*0.15;}
+      else if(p<0.6){S.string=tol;S.csg.c7=lerp(0.15,1,(p-0.42)/0.18);S.cap='Liner 7" landing, set liner hanger di 9,108 ft';S.focus=9350;}
+      else if(p<0.88){S.string=tol;S.csg.c7=1;S.cem.c7=(p-0.6)/0.28;S.flow='cement';S.cap='Cementing liner 7": 15.8 ppg, TOC di top of liner';S.focus=9350;}
+      else{S.csg.c7=1;S.cem.c7=1;S.string=lerp(tol,0,(p-0.88)/0.12);S.cap='POOH running string';S.focus=Math.max(S.string,300);S.hookMD=S.string;}
+      break;}
+    case 'comp':
+      S.csg.c7=1;S.cem.c7=1;
+      if(p<0.16){S.perf=p/0.16;S.cap='Perforasi TCP di liner 7" (Fm-G)';S.focus=9450;}
+      else if(p<0.58){S.perf=1;S.tubing=lerp(0,COMP.espBot,(p-0.16)/0.42);S.cap=`Run ESP dan tubing 3-1/2": ${fmt(S.tubing)} ft`;S.focus=S.tubing;S.hookMD=S.tubing;}
+      else if(p<0.72){S.perf=1;S.tubing=COMP.espBot;S.bop=p<0.65?'b13':'tree';S.cap=p<0.65?'Nipple down BOP 13-5/8"':'Nipple up X-mas tree';S.focus=40;S.surfaceFocus=true;}
+      else{S.perf=1;S.tubing=COMP.espBot;S.bop='tree';S.flow='oil';S.cap='Uji produksi: minyak mengalir lewat ESP ke permukaan';S.focus=9000;}
+      if(p>=0.65)S.bop='tree';
+      break;
+  }
+  return S;
+}
+
+/* ================= THREE SETUP ================= */
+const canvas=$('#c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,logarithmicDepthBuffer:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.localClippingEnabled=true;
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(40,1,0.3,90000);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;controls.dampingFactor=.08;controls.maxDistance=40000;
+
+// sky
+function gradTex(stops){const c=document.createElement('canvas');c.width=4;c.height=256;const g=c.getContext('2d');const gr=g.createLinearGradient(0,0,0,256);stops.forEach(s=>gr.addColorStop(s[0],s[1]));g.fillStyle=gr;g.fillRect(0,0,4,256);return new THREE.CanvasTexture(c)}
+const SKY=gradTex([[0,'#4F6F8C'],[.55,'#A9B6BC'],[1,'#D9C9A8']]);
+const UNDER=new THREE.Color('#2B2A27');
+
+scene.add(new THREE.HemisphereLight(0xdde7ef,0x5a4a38,0.72));
+const sun=new THREE.DirectionalLight(0xfff1dc,0.8);sun.position.set(400,600,300);scene.add(sun);
+const fill=new THREE.DirectionalLight(0xb9c8d6,0.25);fill.position.set(-300,200,500);scene.add(fill);
+const bitLight=new THREE.PointLight(0xffe1b0,0.9,260,1.6);scene.add(bitLight);
+
+const CLIP=[new THREE.Plane(new THREE.Vector3(0,0,-1),0)];
+const std=(color,o={})=>new THREE.MeshStandardMaterial(Object.assign({color,roughness:.7,metalness:.1},o));
+
+/* ---------- well path tubes ---------- */
+class WellCurve extends THREE.Curve{
+  constructor(a,b,rev,off){super();this.a=a;this.b=b;this.rev=!!rev;this.off=off||0;}
+  getPoint(u,target=new THREE.Vector3()){const md=this.rev?this.b-u*(this.b-this.a):this.a+u*(this.b-this.a);P(md,target);
+    if(this.off){const n=Nn(md);target.addScaledVector(n,this.off);target.z-=this.off*0.2;}return target;}
+}
+function tube(a,b,r,mat,o={}){
+  const segs=Math.max(6,Math.ceil((b-a)/(o.step||18))),rs=o.rs||28;
+  const g=new THREE.TubeGeometry(new WellCurve(a,b,o.rev,o.off),segs,r,rs,false);
+  const m=new THREE.Mesh(g,mat);m.userData={segs,rs};m.frustumCulled=false;scene.add(m);return m;
+}
+function reveal(m,f){const n=Math.floor(clamp(f)*m.userData.segs)*m.userData.rs*6;m.geometry.setDrawRange(0,n);m.visible=n>0;}
+const mudColor=mw=>new THREE.Color('#D2BD91').lerp(new THREE.Color('#6A4A2B'),clamp((mw-8.5)/6.8));
+
+// open holes
+const holeMeshes=SEC.map(s=>{
+  const mat=std(mudColor(s.mud.mw[1]),{roughness:.9,side:THREE.DoubleSide,transparent:true,opacity:.88,clippingPlanes:CLIP,emissive:mudColor(s.mud.mw[1]),emissiveIntensity:.18});
+  return tube(s.top,s.bot,rad(s.holeIn),mat,{rs:32});
+});
+// casings + cement
+const csgMesh={},cemMesh={};
+CSG.forEach(c=>{
+  const mat=std(c.col,{metalness:.65,roughness:.33,side:THREE.DoubleSide,clippingPlanes:CLIP});
+  csgMesh[c.k]=tube(c.top,c.shoe,rad(c.od),mat,{rs:32});
+  if(c.cem){cemMesh[c.k]=c.cem.map(([a,b,col])=>({len:a-b,m:tube(b,a,rad(c.hole)*0.985,std(col,{roughness:.95,side:THREE.DoubleSide,clippingPlanes:CLIP}),{rev:true,rs:32})}));}
+});
+// drill pipe (full length, revealed)
+function stripeTex(a,b){const c=document.createElement('canvas');c.width=64;c.height=8;const g=c.getContext('2d');g.fillStyle=a;g.fillRect(0,0,64,8);g.fillStyle=b;g.fillRect(0,0,10,8);g.fillRect(32,0,6,8);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t}
+const dpTex=stripeTex('#8E989F','#5C656C');dpTex.repeat.set(900,1);
+const dpMesh=tube(CF,TD,rad(5),std('#ffffff',{map:dpTex,metalness:.55,roughness:.4}),{rs:14,step:12});
+// tubing + cable (completion)
+const tbgTex=stripeTex('#6F8CA3','#4C6477');tbgTex.repeat.set(800,1);
+const tbgMesh=tube(CF,COMP.espTop,rad(3.5),std('#ffffff',{map:tbgTex,metalness:.5,roughness:.4}),{rs:14,step:12});
+const cableMesh=tube(CF,COMP.espBot,0.16,std('#2E2E2E',{roughness:.6}),{rs:6,step:14,off:rad(3.5)+0.35});
+// wireline cable
+const wlMesh=tube(CF,TD,0.12,std('#222',{roughness:.5}),{rs:6,step:14});
+
+/* ---------- BHA builder ---------- */
+function makeBit(type,holeIn){
+  const g=new THREE.Group(),r=rad(holeIn)*0.97;
+  if(type==='mt'){
+    const body=new THREE.Mesh(new THREE.CylinderGeometry(r*0.55,r*0.62,2.2,24),std('#7C8B63',{metalness:.35}));body.position.y=1.8;g.add(body);
+    for(let j=0;j<3;j++){const cone=new THREE.Mesh(new THREE.ConeGeometry(r*0.42,r*0.7,14),std('#6E7F55',{metalness:.3,roughness:.55}));
+      const a=j*Math.PI*2/3;cone.position.set(Math.cos(a)*r*0.45,0.45,Math.sin(a)*r*0.45);cone.rotation.z=Math.PI+Math.cos(a)*0.9;cone.rotation.x=-Math.sin(a)*0.9;g.add(cone);
+      for(let q=0;q<10;q++){const tooth=new THREE.Mesh(new THREE.BoxGeometry(.28,.28,.28),std('#A7B08F'));const b=q/10*Math.PI*2;tooth.position.set(cone.position.x+Math.cos(b)*r*0.3,0.2,cone.position.z+Math.sin(b)*r*0.3);g.add(tooth);}}
+  }else{
+    const body=new THREE.Mesh(new THREE.CylinderGeometry(r*0.55,r*0.4,2.2,24),std('#8D9296',{metalness:.55,roughness:.35}));body.position.y=1.3;g.add(body);
+    const nose=new THREE.Mesh(new THREE.SphereGeometry(r*0.45,20,10,0,Math.PI*2,Math.PI/2,Math.PI/2),std('#8D9296',{metalness:.55}));nose.position.y=0.55;g.add(nose);
+    for(let j=0;j<5;j++){const bl=new THREE.Mesh(new THREE.BoxGeometry(r*0.9,1.9,r*0.16),std('#7A8085',{metalness:.5}));const a=j*Math.PI*2/5;
+      bl.position.set(Math.cos(a)*r*0.5,1.0,Math.sin(a)*r*0.5);bl.rotation.y=-a;g.add(bl);
+      for(let q=0;q<5;q++){const cu=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,.2,10),std('#D5B45E',{metalness:.8,roughness:.25}));
+        cu.position.set(Math.cos(a)*r*(0.2+q*0.19),0.15+q*0.05,Math.sin(a)*r*(0.2+q*0.19));cu.rotation.x=Math.PI/2;cu.rotation.z=a;g.add(cu);}}
+  }
+  return g;
+}
+function makeBHA(sec){
+  const s=SEC[sec],root=new THREE.Group(),spin=new THREE.Group();root.add(spin);
+  let y=0;
+  s.bha.forEach(([name,od,len,type,blade])=>{
+    if(type==='bit'){spin.add(makeBit(s.bitType,s.holeIn));y+=len*1.4;return;}
+    const r=rad(od),m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,20),std(BHA_COL[type],{metalness:type==='motor'?.25:.55,roughness:.4}));
+    m.position.y=y+len/2;spin.add(m);
+    if(type==='stab'){for(let j=0;j<3;j++){const b=new THREE.Mesh(new THREE.BoxGeometry(rad(blade)-r+0.2,len*0.7,0.55),std('#C8CED3',{metalness:.6}));const a=j*Math.PI*2/3;
+      b.position.set(Math.cos(a)*(r+(rad(blade)-r)/2),y+len/2,Math.sin(a)*(r+(rad(blade)-r)/2));b.rotation.y=-a;b.rotation.x=0.25;spin.add(b);}}
+    if(type==='mwd'){const band=new THREE.Mesh(new THREE.CylinderGeometry(r*1.04,r*1.04,1.2,20),std('#2D2F31'));band.position.y=y+len*0.7;spin.add(band);}
+    if(type==='hw'){for(let q=1;q<len/31;q++){const tj=new THREE.Mesh(new THREE.CylinderGeometry(rad(6.5),rad(6.5),1.6,16),std('#7E878E',{metalness:.6}));tj.position.y=y+q*31;spin.add(tj);}}
+    y+=len;
+  });
+  root.userData.len=y;return root;
+}
+const BHA=SEC.map((s,i)=>{const b=makeBHA(i);b.visible=false;scene.add(b);return b});
+
+// casing running tool shoe + wireline tool + ESP assembly
+const wlTool=new THREE.Mesh(new THREE.CylinderGeometry(rad(3.6),rad(3.6),70,14),std('#D9B23E',{metalness:.5,roughness:.35}));wlTool.visible=false;scene.add(wlTool);
+const esp=(()=>{const g=new THREE.Group();const parts=[[5.4,'#2E4B6B',30],[5.4,'#3A5E82',28],[5.13,'#6D7A86',4],[5.13,'#4B5561',9],[5.4,'#2B3B4C',20]];
+  let y=0;parts.forEach(([od,c,l])=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(rad(od),rad(od),l,18),std(c,{metalness:.45,roughness:.4}));m.position.y=-(y+l/2);g.add(m);y+=l;});
+  g.userData.len=y;g.visible=false;scene.add(g);return g;})();
+// perforation tunnels
+const perfGroup=new THREE.Group();scene.add(perfGroup);
+COMP.perfs.forEach(([a,b])=>{for(let md=a;md<=b;md+=6){for(const ang of [-0.4,-1.57,-2.7]){
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.05,3.2,6),std('#E0873A',{emissive:'#7a3510',emissiveIntensity:.9}));
+  const p=P(md),n=Nn(md),dir=n.clone().multiplyScalar(Math.cos(ang)).add(new THREE.Vector3(0,0,Math.sin(ang)));
+  m.position.copy(p).addScaledVector(dir,rad(7)+1.2);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir);m.userData.md=md;perfGroup.add(m);}}});
+
+/* ---------- particles ---------- */
+const NP=900,pos=new Float32Array(NP*3),col=new Float32Array(NP*3);
+const pk=[];for(let j=0;j<NP;j++)pk.push({u:Math.random(),r:Math.random(),th:Math.PI+0.15+Math.random()*(Math.PI-0.3),sp:0.6+Math.random()*0.8,down:j<300,cut:Math.random()<0.18});
+const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pos,3));pg.setAttribute('color',new THREE.BufferAttribute(col,3));
+const pts=new THREE.Points(pg,new THREE.PointsMaterial({size:3.4,vertexColors:true,transparent:true,opacity:.95,depthWrite:false}));pts.frustumCulled=false;scene.add(pts);
+
+/* ---------- formation wall ---------- */
+const WALL={x0:-1700,x1:6300,d:9500};
+const faultX=d=>4230+(d-6000)*0.09;
+function topAt(k,vs){
+  if(k===0)return 0;const base=FM[k].tvd;
+  const w=1-Math.exp(-Math.pow((vs-vsAtTvd(base))/900,2));
+  let d=base+w*(55*Math.sin(vs/760+k*1.7)+28*Math.sin(vs/290+k*2.3));
+  if(k>=4&&vs>faultX(base))d+=340+ (k-4)*40;
+  return d;
+}
+function pattern(kind,ink){const c=document.createElement('canvas');c.width=c.height=24;const g=c.getContext('2d');g.strokeStyle=ink;g.fillStyle=ink;g.lineWidth=1.3;
+  if(kind==='clay'){g.beginPath();g.moveTo(2,6);g.lineTo(10,6);g.moveTo(14,18);g.lineTo(22,18);g.stroke();}
+  if(kind==='sand'){[[4,5],[15,9],[9,17],[20,20]].forEach(([x,y])=>{g.beginPath();g.arc(x,y,1.3,0,7);g.fill()})}
+  if(kind==='lime'){g.strokeRect(0.5,0.5,24,12);g.beginPath();g.moveTo(12,12);g.lineTo(12,24);g.stroke();}
+  if(kind==='inter'){g.beginPath();g.moveTo(2,5);g.lineTo(10,5);g.moveTo(14,5);g.lineTo(22,5);g.moveTo(0,12.5);g.lineTo(24,12.5);g.moveTo(12,12.5);g.lineTo(12,24);g.stroke();}
+  return c;}
+function buildWall(){
+  const cw=2400,ch=2850,cv=document.createElement('canvas');cv.width=cw;cv.height=ch;const g=cv.getContext('2d');
+  const X=vs=>(vs-WALL.x0)/(WALL.x1-WALL.x0)*cw,Y=d=>d/WALL.d*ch;
+  const ink='rgba(20,18,14,.15)';
+  const pats={A:pattern('sand',ink),B:pattern('clay',ink),C:pattern('clay',ink),D:pattern('lime',ink),E:pattern('inter',ink),F:pattern('inter',ink),G:pattern('lime',ink)};
+  const kinds=['A','B','C','D','E','F','G'];
+  const pf=kinds.map(k=>g.createPattern(pats[k],'repeat'));
+  for(let px=0;px<cw;px+=2){const vs=WALL.x0+px/cw*(WALL.x1-WALL.x0);
+    for(let k=0;k<FM.length;k++){const d0=topAt(k,vs),d1=k<FM.length-1?topAt(k+1,vs):WALL.d;const y0=Y(d0),h=Y(d1)-y0+1;
+      g.fillStyle=FM[k].c;g.fillRect(px,y0,2,h);g.fillStyle=pf[k];g.fillRect(px,y0,2,h);}}
+  // bedding lines
+  g.strokeStyle='rgba(30,26,20,.35)';g.lineWidth=1.4;
+  for(let k=1;k<FM.length;k++){g.beginPath();for(let px=0;px<=cw;px+=6){const vs=WALL.x0+px/cw*(WALL.x1-WALL.x0);const y=Y(topAt(k,vs));px?g.lineTo(px,y):g.moveTo(px,y);}g.stroke();}
+  // fault
+  g.strokeStyle='rgba(28,22,18,.85)';g.lineWidth=7;g.setLineDash([22,10]);g.beginPath();g.moveTo(X(faultX(5600)),Y(5600));g.lineTo(X(faultX(WALL.d)),Y(WALL.d));g.stroke();g.setLineDash([]);
+  g.fillStyle='rgba(236,239,241,.85)';g.font='600 40px "Barlow Condensed", Arial Narrow, sans-serif';g.fillText('Sesar (interpretasi)',X(faultX(6300))+14,Y(6300));
+  // depth ticks
+  g.font='500 32px Barlow, sans-serif';g.fillStyle='rgba(236,239,241,.75)';g.strokeStyle='rgba(236,239,241,.18)';g.lineWidth=1;
+  for(let d=1000;d<WALL.d;d+=1000){g.beginPath();g.moveTo(0,Y(d));g.lineTo(cw,Y(d));g.stroke();g.fillText(fmt(d)+' ft TVD',12,Y(d)-6);}
+  // formation labels
+  g.font='700 60px "Barlow Condensed", Arial Narrow, sans-serif';
+  for(let k=0;k<FM.length;k++){const vs=-900,d0=topAt(k,vs),d1=k<FM.length-1?topAt(k+1,vs):WALL.d;const y=Y((d0+d1)/2)+14;
+    g.fillStyle='rgba(20,18,14,.55)';g.fillText(FM[k].n,X(vs)+2,y+2);g.fillStyle='#F1EEE6';g.fillText(FM[k].n,X(vs),y);}
+  g.fillStyle='rgba(18,16,14,.18)';g.fillRect(0,0,cw,ch);
+  const tex=new THREE.CanvasTexture(cv);tex.anisotropy=renderer.capabilities.getMaxAnisotropy();
+  const w=WALL.x1-WALL.x0,m=new THREE.Mesh(new THREE.PlaneGeometry(w,WALL.d),new THREE.MeshBasicMaterial({map:tex,color:0xd9d4cc}));
+  m.position.set(WALL.x0+w/2,-WALL.d/2,-rad(30)-1.5);scene.add(m);
+
+  // soft floor edge line & planned trajectory trace
+  const pts=[];for(let md=0;md<=TD;md+=40)pts.push(P(md).setZ(-rad(30)-1.2));
+  const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineDashedMaterial({color:0xF2C27D,dashSize:60,gapSize:40}));line.computeLineDistances();scene.add(line);
+}
+// target ring
+const tgt=new THREE.Mesh(new THREE.TorusGeometry(50,0.7,8,96),std('#F2C27D',{emissive:'#6b4a17',emissiveIntensity:.8,transparent:true,opacity:.7}));
+tgt.position.copy(P(9258.5));tgt.rotation.x=Math.PI/2;scene.add(tgt);
+
+/* ================= SURFACE: RIG ================= */
+const rig=new THREE.Group();scene.add(rig);
+const box=(w,h,d,c,x,y,z,o)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),typeof c==='string'?std(c,o):c);m.position.set(x,y,z);rig.add(m);return m};
+const cyl=(rt,rb,h,c,x,y,z,seg=18,o)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),typeof c==='string'?std(c,o):c);m.position.set(x,y,z);rig.add(m);return m};
+const UP=new THREE.Vector3(0,1,0);
+function bar(a,b,r,mat,parent=rig){const d=new THREE.Vector3().subVectors(b,a),L=d.length();const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,L,6),mat);
+  m.position.copy(a).addScaledVector(d,.5);m.quaternion.setFromUnitVectors(UP,d.normalize());parent.add(m);return m}
+
+function buildSurface(){
+  // pad with cellar opening
+  const s=new THREE.Shape();s.moveTo(-230,-190);s.lineTo(260,-190);s.lineTo(260,190);s.lineTo(-230,190);s.lineTo(-230,-190);
+  const h=new THREE.Path();h.moveTo(-8,-8);h.lineTo(8,-8);h.lineTo(8,8);h.lineTo(-8,8);h.lineTo(-8,-8);s.holes.push(h);
+  const gc=document.createElement('canvas');gc.width=gc.height=256;const gg=gc.getContext('2d');gg.fillStyle='#A0998A';gg.fillRect(0,0,256,256);
+  for(let j=0;j<3500;j++){gg.fillStyle=`rgba(${60+Math.random()*80|0},${55+Math.random()*70|0},${50+Math.random()*60|0},.35)`;gg.fillRect(Math.random()*256,Math.random()*256,2,2);}
+  const gt=new THREE.CanvasTexture(gc);gt.wrapS=gt.wrapT=THREE.RepeatWrapping;gt.repeat.set(12,10);
+  const pad=new THREE.Mesh(new THREE.ShapeGeometry(s),new THREE.MeshStandardMaterial({map:gt,color:0xa9a396,roughness:1}));pad.rotation.x=-Math.PI/2;rig.add(pad);
+  // field beyond the pad (flat ring, single sided so it vanishes from below)
+  const fs=new THREE.Shape();fs.moveTo(-2600,-2600);fs.lineTo(2600,-2600);fs.lineTo(2600,2600);fs.lineTo(-2600,2600);
+  const fh=new THREE.Path();fh.moveTo(-230,-190);fh.lineTo(260,-190);fh.lineTo(260,190);fh.lineTo(-230,190);fs.holes.push(fh);
+  const field=new THREE.Mesh(new THREE.ShapeGeometry(fs),std('#5E6844',{roughness:1}));field.rotation.x=-Math.PI/2;field.position.y=-0.3;rig.add(field);
+  // cellar walls
+  const conc=std('#B9B4A9',{roughness:.95,side:THREE.DoubleSide});
+  [[0,-8,0],[0,8,0],[-8,0,1],[8,0,1]].forEach(([x,z,r])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(16,CF),conc);m.position.set(x,-CF/2,z);if(r)m.rotation.y=Math.PI/2;rig.add(m)});
+  box(18,0.8,1.2,'#8F8A80',0,0.4,-8.6);box(18,0.8,1.2,'#8F8A80',0,0.4,8.6);
+
+  const paint=std('#D9D3C4',{metalness:.35,roughness:.55}),frame=std('#8E918E',{metalness:.4,roughness:.6}),red=std('#B8423A',{metalness:.3});
+  // substructure: two boxes at x=±14 (open along z so the stack is visible)
+  [-14,14].forEach(x=>{
+    const V=(a,b,c)=>new THREE.Vector3(a,b,c);
+    for(const z of [-22,-7,7,22]){bar(V(x-3,0,z),V(x-3,26,z),0.6,frame);bar(V(x+3,0,z),V(x+3,26,z),0.6,frame);}
+    for(const y of [1,13,25.5]){bar(V(x-3,y,-22),V(x-3,y,22),0.5,frame);bar(V(x+3,y,-22),V(x+3,y,22),0.5,frame);}
+    for(const [z0,z1] of [[-22,-7],[-7,7],[7,22]]){bar(V(x-3,1,z0),V(x-3,25.5,z1),0.35,frame);bar(V(x+3,1,z1),V(x+3,25.5,z0),0.35,frame);}
+  });
+  // rig floor with rotary opening (ring look)
+  box(34,1.6,46,'#7C807F',0,26.8,0,{roughness:.8});
+  cyl(3.2,3.2,1.8,'#2F3336',0,26.9,0,24);
+  // mast
+  const legs=[[-7,-7],[7,-7],[7,7],[-7,7]],H0=27.6,H1=168;
+  const at=(lx,lz,y)=>{const f=(y-H0)/(H1-H0);return new THREE.Vector3(lerp(lx,lx*0.36,f),y,lerp(lz,lz*0.36,f))};
+  legs.forEach(([x,z])=>bar(at(x,z,H0),at(x,z,H1),0.75,paint));
+  for(let y=H0;y<H1;y+=14){const y1=Math.min(H1,y+14);
+    for(let s2=0;s2<4;s2++){const [ax,az]=legs[s2],[bx,bz]=legs[(s2+1)%4];
+      bar(at(ax,az,y1),at(bx,bz,y1),0.3,paint);
+      if(!(s2===1&&y<H0+40))bar(at(ax,az,y),at(bx,bz,y1),0.22,paint);}}
+  box(11,5,11,red,0,H1+2.5,0);                     // crown block
+  box(2,8,12,'#D9D3C4',-6.3,H1-2,0);
+  box(12,0.7,9,frame,8,H0+88,-1);                   // racking board
+  bar(new THREE.Vector3(2,H0+88,-5.5),new THREE.Vector3(14,H0+88,-5.5),0.25,std('#E0B03A'));
+  // racked stands on setback
+  const steel=std('#8F989F',{metalness:.6,roughness:.35});
+  for(let a=0;a<4;a++)for(let b=0;b<3;b++)cyl(.22,.22,88,steel,6+a*1.6,H0+44,-4.5+b*1.6,6);
+  // travelling block + top drive (moves)
+  const TDG=new THREE.Group();rig.add(TDG);
+  const bl=new THREE.Mesh(new THREE.BoxGeometry(4.2,6,3.4),std('#E0B03A',{metalness:.3}));bl.position.y=6;TDG.add(bl);
+  const td=new THREE.Mesh(new THREE.BoxGeometry(4.6,8,4.2),std('#C4532E',{metalness:.3}));td.position.y=-1.5;TDG.add(td);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,5,10),steel);stem.position.y=-8;TDG.add(stem);
+  rig.userData.TDG=TDG;
+  const lines=new THREE.LineSegments(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:0x2a2a2a}));rig.add(lines);rig.userData.lines=lines;
+  bar(new THREE.Vector3(-4.5,H0,-4.5),new THREE.Vector3(-4.5,H1-6,-4.5),0.25,std('#666'));bar(new THREE.Vector3(4.5,H0,-4.5),new THREE.Vector3(4.5,H1-6,-4.5),0.25,std('#666')); // guide rails
+  // standpipe
+  const sp=std('#B8423A',{metalness:.3});bar(new THREE.Vector3(-6.4,H0,6.4),new THREE.Vector3(-5.3,H0+62,5.3),0.35,sp);
+  // drawworks + doghouse
+  box(9,6.5,9,'#3F6C95',-6,H0+3.25,14.5,{metalness:.3});
+  const dh=box(14,9,12,'#D6D3CB',-24,H0+4.5,9);box(14.2,1.2,12.2,'#C4532E',-24,H0+7.3,9);
+  box(0.2,3,7,'#2A3642',-17,H0+5,9,{metalness:.6,roughness:.2});
+  // v-door ramp, catwalk, pipe racks
+  const ramp=box(5,1,46,'#9A9C98',0,0,0);ramp.position.set(30,13.4,0);ramp.rotation.z=0.58;ramp.rotation.y=Math.PI/2;
+  ramp.geometry=new THREE.BoxGeometry(46,1,5);ramp.rotation.set(0,0,-0.55);ramp.position.set(36,13.4,0);
+  box(64,4,6,'#8E918E',92,2,0);
+  [-16,16].forEach(z=>{box(60,1.2,12,'#6F6A60',92,2.4,z);for(let q=0;q<7;q++){const m=cyl(.55,.55,58,std(z<0?'#6C8A5A':'#7B8288',{metalness:.5}),92,3.6+ (q%2)*1.1,z-4.5+q*1.5,10);m.rotation.z=Math.PI/2;}});
+  // mud tanks, shakers
+  for(let q=0;q<4;q++){box(34,9,10,'#B9B19E',-58+q*36,4.5,-46);}
+  for(let q=0;q<3;q++){const sh=box(7,3.5,6,'#5B6F80',-8+q*8.5,10.8,-46);box(6.6,0.3,5,'#2F3A41',-8+q*8.5,12.7,-46);}
+  const flow=std('#6B7074',{metalness:.5});bar(new THREE.Vector3(0,20,-3),new THREE.Vector3(0,13,-42),0.9,flow);
+  // mud pumps
+  for(let q=0;q<3;q++){box(17,7,7.5,'#3F6C95',-96,3.5,8-q*16,{metalness:.3});cyl(2.3,2.3,4,'#C9CDD0',-86.5,4,8-q*16,14).rotation.z=Math.PI/2;}
+  bar(new THREE.Vector3(-86,4,-24),new THREE.Vector3(-6.5,4,6.4),0.45,sp);
+  // generators & SCR
+  for(let q=0;q<3;q++)box(20,8.5,8.5,'#E6E3DA',-150,4.25,50-q*12);
+  box(26,9,9,'#D3D0C6',-150,4.5,10);
+  // barite silos
+  for(let q=0;q<4;q++){cyl(4.2,4.2,20,'#D9772E',60+q*11,16,-86,20,{metalness:.2});cyl(4.2,0.8,5,'#D9772E',60+q*11,3.5,-86,20);box(0.3,6,0.3,'#555',60+q*11,3,-83);}
+  // water tanks
+  for(let q=0;q<2;q++){const w=cyl(5,5,26,'#8FA7B6',120,5.2,40+q*12,20,{metalness:.2});w.rotation.z=Math.PI/2;}
+  // camp containers
+  for(let q=0;q<6;q++)box(20,8.5,8.5,'#ECEAE3',180,4.25,-120+q*11);
+  // accumulator + choke manifold
+  box(10,5,5,'#B8423A',32,2.5,34);
+  box(8,4,5,'#7B8288',22,2,-24,{metalness:.4});
+  // flare line & stack
+  bar(new THREE.Vector3(22,2,-24),new THREE.Vector3(-190,2,-170),0.6,flow);cyl(1,1.4,26,'#6B7074',-190,13,-170,10);
+  // light tower
+  [[-60,60],[90,-60]].forEach(([x,z])=>{cyl(.4,.6,34,'#8E918E',x,17,z,8);box(4,2.5,1,'#F3EFE2',x,34,z,{emissive:'#fff4cc',emissiveIntensity:.8});});
+  // crane
+  const cr=std('#3E8E7E',{metalness:.3});box(14,5,10,'#3E8E7E',-120,2.5,-110);
+  const base=new THREE.Vector3(-118,6,-110),tip=new THREE.Vector3(-70,120,-120);bar(base,tip,1.1,cr);bar(base.clone().add(new THREE.Vector3(0,0,3)),tip,0.6,cr);
+  bar(tip,new THREE.Vector3(-70,40,-120),0.12,std('#222'));
+}
+
+/* ---------- wellhead / BOP / tree (real scale) ---------- */
+const WH=new THREE.Group();scene.add(WH);
+const bopRed=std('#C0352C',{metalness:.35,roughness:.45}),whGreen=std('#7FA468',{metalness:.35,roughness:.45}),stl=std('#8C959C',{metalness:.6,roughness:.35});
+function flanged(r,h,mat,y,parent){const g=new THREE.Group();const b=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,24),mat);g.add(b);
+  [h/2-0.3,-h/2+0.3].forEach(dy=>{const f=new THREE.Mesh(new THREE.CylinderGeometry(r*1.35,r*1.35,0.6,24),mat);f.position.y=dy;g.add(f);
+    for(let q=0;q<12;q++){const bt=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,.9,5),stl);const a=q/12*Math.PI*2;bt.position.set(Math.cos(a)*r*1.25,dy,Math.sin(a)*r*1.25);g.add(bt);}});
+  g.position.y=y;parent.add(g);return g}
+function outlet(x,y,z,dir,mat,parent,wheel){const g=new THREE.Group();const p=new THREE.Mesh(new THREE.CylinderGeometry(.35,.35,2.4,12),mat);p.rotation.z=Math.PI/2;p.position.x=1.2;g.add(p);
+  const v=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.2,1.1),mat);v.position.x=2.3;g.add(v);
+  if(wheel){const w=new THREE.Mesh(new THREE.TorusGeometry(.6,.08,6,18),std('#B8322B'));w.position.set(2.3,1.3,0);w.rotation.x=Math.PI/2;g.add(w);}
+  g.position.set(x,y,z);g.rotation.y=dir;parent.add(g);return g}
+function ramBody(y,mat,parent){const g=new THREE.Group();const b=new THREE.Mesh(new THREE.BoxGeometry(3.4,1.6,3.2),mat);g.add(b);
+  [-1,1].forEach(sd=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(.9,.9,2.4,16),mat);c.rotation.z=Math.PI/2;c.position.x=sd*2.9;g.add(c);});g.position.y=y;parent.add(g);return g}
+const stacks={};
+function buildStacks(){
+  // wellhead sections (stay)
+  const s1=new THREE.Group(),s2=new THREE.Group(),s3=new THREE.Group();[s1,s2,s3].forEach(g=>WH.add(g));
+  flanged(1.35,2.8,whGreen,-8.4,s1);outlet(0,-8.4,0,0,whGreen,s1,true);outlet(0,-8.4,0,Math.PI,whGreen,s1,true);
+  flanged(1.1,2.8,whGreen,-5.5,s2);outlet(0,-5.5,0,0,whGreen,s2,true);outlet(0,-5.5,0,Math.PI,whGreen,s2,true);
+  flanged(0.95,2.6,whGreen,-2.8,s3);outlet(0,-2.8,0,0,whGreen,s3,true);outlet(0,-2.8,0,Math.PI,whGreen,s3,true);
+  stacks.wh=[s1,s2,s3];
+  // diverter
+  const dv=new THREE.Group();WH.add(dv);flanged(1.9,3,stl,-8,dv);
+  const cross=new THREE.Mesh(new THREE.BoxGeometry(3,2.6,3),stl);cross.position.y=-5;dv.add(cross);outlet(0,-5,0,Math.PI,stl,dv,false);
+  flanged(1.9,2,stl,-2.8,dv);const ann=new THREE.Mesh(new THREE.CylinderGeometry(3,3.3,5.6,28),bopRed);ann.position.y=1;dv.add(ann);
+  const riser=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,20,18),std('#6F777D',{metalness:.5}));riser.position.y=14;dv.add(riser);
+  stacks.div=dv;
+  // BOP stacks (base y depends on wellhead stage)
+  const mk=(scale,rams)=>{const g=new THREE.Group();let y=0;
+    const spool=flanged(1.05*scale,2.2,bopRed,y+1.1,g);y+=2.2;
+    const mc=new THREE.Mesh(new THREE.BoxGeometry(2.6*scale,2.2,2.6*scale),bopRed);mc.position.y=y+1.1;g.add(mc);outlet(0,y+1.1,0,0,bopRed,g,true);outlet(0,y+1.1,0,Math.PI,bopRed,g,true);y+=2.2;
+    for(let q=0;q<rams;q++){ramBody(y+0.9,bopRed,g);y+=1.8;}
+    const an=new THREE.Mesh(new THREE.CylinderGeometry(2.1*scale,2.6*scale,4.2,28),bopRed);an.position.y=y+2.1;g.add(an);y+=4.2;
+    const bn=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,26.5-y+2,16),std('#6F777D',{metalness:.5}));bn.position.y=y+(26.5-y+2)/2-1;g.add(bn);
+    g.userData.h=y;WH.add(g);return g};
+  stacks.b21=mk(1.25,2);stacks.b13=mk(1.0,3);
+  // X-mas tree
+  const tr=new THREE.Group();WH.add(tr);let y=0;
+  const tv=(yy,wheel)=>{const v=new THREE.Mesh(new THREE.BoxGeometry(1.5,1.4,1.5),whGreen);v.position.y=yy;tr.add(v);
+     if(wheel){const w=new THREE.Mesh(new THREE.TorusGeometry(.9,.1,6,22),std('#B8322B'));w.position.set(0,yy,1.3);tr.add(w);
+       const sp2=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,.8,5),std('#B8322B'));sp2.rotation.x=Math.PI/2;sp2.position.set(0,yy,1.0);tr.add(sp2);}};
+  flanged(0.8,1,whGreen,0.5,tr);tv(1.9,true);tv(3.5,true);
+  const tc=new THREE.Mesh(new THREE.BoxGeometry(1.6,1.6,1.6),whGreen);tc.position.y=5.2;tr.add(tc);
+  outlet(0,5.2,0,0,whGreen,tr,true);outlet(0,5.2,0,Math.PI,whGreen,tr,true);
+  tv(6.9,true);const cap=new THREE.Mesh(new THREE.CylinderGeometry(.45,.6,1.2,14),whGreen);cap.position.y=8.2;tr.add(cap);
+  const gauge=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,.25,18),std('#E6E3DA'));gauge.rotation.x=Math.PI/2;gauge.position.set(0,9.2,0);tr.add(gauge);
+  // choke + flowline
+  const ch=new THREE.Mesh(new THREE.BoxGeometry(1,1.2,1),whGreen);ch.position.set(4.8,5.2,0);tr.add(ch);
+  const fl=new THREE.Mesh(new THREE.CylinderGeometry(.35,.35,30,10),std('#6B7074',{metalness:.5}));fl.rotation.z=Math.PI/2;fl.position.set(20,5.2,0);tr.add(fl);
+  stacks.tree=tr;
+}
+
+/* ================= LABELS ================= */
+const labelsEl=$('#labels');const LBL=[];
+function addLabel(text,pos,{rig=false,show=null,left=false}={}){const el=document.createElement('div');el.className='lbl'+(rig?' rig':'')+(left?' l':'');el.textContent=text;labelsEl.appendChild(el);LBL.push({el,pos,rig,show});}
+function initLabels(){
+  addLabel('KOP 700 ft',P(KOP));addLabel('EOB 2,187 ft, inklinasi 29.74°',P(EOB));
+  addLabel('Target Fm-G 8,261 ft TVD',P(9258.5).add(new THREE.Vector3(55,0,0)));addLabel('TD 9,604 ft MD',P(TD));
+  addLabel('Shoe 20" 2,000 ft',P(2000),{show:S=>S.csg.c20>=1,left:true});addLabel('Shoe 13-3/8" 5,000 ft',P(5000),{show:S=>S.csg.c13>=1,left:true});
+  addLabel('Shoe 9-5/8" 9,259 ft',P(9259),{show:S=>S.csg.c9>=1,left:true});
+  addLabel('Mast',new THREE.Vector3(8,120,6),{rig:true});addLabel('Top drive',null,{rig:true});
+  addLabel('Drawworks',new THREE.Vector3(-6,38,14.5),{rig:true});addLabel('Mud pump',new THREE.Vector3(-96,9,8),{rig:true});
+  addLabel('Shaker',new THREE.Vector3(0,15,-46),{rig:true});addLabel('Tangki lumpur',new THREE.Vector3(-40,12,-46),{rig:true});
+  addLabel('Silo barite',new THREE.Vector3(76,30,-86),{rig:true});addLabel('Pipe rack',new THREE.Vector3(100,6,16),{rig:true});
+  addLabel('Stack di cellar',new THREE.Vector3(3,8,0),{rig:true});
+}
+const tdLabel=()=>LBL.find(l=>l.el.textContent==='Top drive');
+
+/* ================= UI ================= */
+const bar_=$('#bar');
+PH.forEach((ph,i)=>{const d=document.createElement('div');d.className='seg';d.style.flex=ph.dur;d.title=ph.t;d.innerHTML=`<i></i><span>${ph.s}</span>`;bar_.appendChild(d);});
+const segs=[...bar_.children];
+let T=0,playing=!reduceMotion,speed=1,view='rig',lastI=-1,lastSec=-2,lastHole=0;
+function setView(v,instant){view=v;document.querySelectorAll('#views button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));camTween={t:0,instant:!!instant};}
+document.querySelectorAll('#views button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+$('#play').onclick=()=>{playing=!playing;if(playing&&T>=TOTAL-0.01)T=0;syncPlay();};
+function syncPlay(){$('#pIco').setAttribute('d',playing?'M6 4h4v16H6zM14 4h4v16h-4z':'M7 4l13 8-13 8z');$('#play').setAttribute('aria-label',playing?'Jeda':'Putar');}
+$('#spd').onchange=e=>speed=+e.target.value;
+$('#ptog').onclick=()=>{const c=$('#panel').classList.toggle('collapsed');$('#ptog').textContent=c?'Tampilkan':'Sembunyikan';$('#ptog').setAttribute('aria-expanded',!c)};
+function scrubAt(x){const r=bar_.getBoundingClientRect();const f=clamp((x-r.left)/r.width);
+  // map through flex segments (proportional to duration) -> direct time
+  T=f*TOTAL;}
+let dragging=false;
+bar_.addEventListener('pointerdown',e=>{dragging=true;bar_.setPointerCapture(e.pointerId);scrubAt(e.clientX);});
+bar_.addEventListener('pointermove',e=>{if(dragging)scrubAt(e.clientX)});
+bar_.addEventListener('pointerup',()=>{dragging=false});
+bar_.addEventListener('keydown',e=>{const S=stateAt(T);if(e.key==='ArrowRight'){T=PSTART[Math.min(PH.length-1,S.i+1)];e.preventDefault()}if(e.key==='ArrowLeft'){T=PSTART[S.p<0.05?Math.max(0,S.i-1):S.i];e.preventDefault()}});
+addEventListener('keydown',e=>{if(e.code==='Space'&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='SELECT'){$('#play').click();e.preventDefault();}});
+
+let toastT=0;function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');toastT=3.2;}
+
+function winBar(m){const lo=8,hi=18,x=v=>((v-lo)/(hi-lo)*100).toFixed(1)+'%';
+  return `<div class="win" aria-label="Mud window ${m.win[0]} sampai ${m.win[1]} ppg, program ${m.mw[0]} sampai ${m.mw[1]} ppg">
+   <div class="axis"></div><div class="safe" style="left:${x(m.win[0])};width:calc(${x(m.win[1])} - ${x(m.win[0])})"></div>
+   <div class="prog" style="left:${x(m.mw[0])};width:max(4px,calc(${x(m.mw[1])} - ${x(m.mw[0])}))"></div>
+   ${[8,10,12,14,16,18].map(v=>`<span class="tk" style="left:${x(v)}">${v}</span>`).join('')}</div>`}
+function sfRows(sf){const req={Burst:1.1,Collapse:1.1,Axial:1.3,Triaxial:1.25};return `<div class="sf">${Object.entries(sf).map(([k,v])=>
+  `<span>${k}</span><div class="bar"><i style="width:${clamp(v/4)*100}%"></i><s style="left:${req[k]/4*100}%"></s></div><span>${v.toFixed(2)}</span>`).join('')}</div>
+  <p class="muted">Garis merah adalah design factor minimum (burst 1.10, collapse 1.10, axial 1.30, triaxial 1.25).</p>`}
+function renderPanel(sec){
+  const b=$('#pbody');
+  if(sec===-1){$('#pTitle').textContent='Alpha-05';
+    b.innerHTML=`<div class="blk"><h3>Ringkasan sumur</h3><dl class="kv">
+      <dt>Tipe</dt><dd>Directional J-type</dd><dt>TD</dt><dd>9,604 ft MD / 8,561 ft TVD</dd><dt>KOP</dt><dd>700 ft, build 2°/100 ft</dd>
+      <dt>Inklinasi maks</dt><dd>29.74° dari 2,187 ft</dd><dt>Azimuth</dt><dd>${AZI}°</dd><dt>Target</dt><dd>Fm-G, 8,261 ft TVD</dd><dt>Rig</dt><dd>1500 HP, electric, top drive</dd></dl></div>
+      <div class="blk"><h3>Program casing</h3><dl class="kv">
+      <dt>30" conductor</dt><dd>120 ft</dd><dt>20" di lubang 26"</dt><dd>2,000 ft MD</dd><dt>13-3/8" di 17-1/2"</dt><dd>5,000 ft MD</dd>
+      <dt>9-5/8" di 12-1/4"</dt><dd>9,259 ft MD</dd><dt>7" liner di 8-1/2"</dt><dd>9,108–9,604 ft MD</dd></dl></div>
+      <div class="blk"><h3>Cara membaca</h3><p class="muted">Sumur dipotong setengah (cutaway) supaya casing, semen, drill string, dan aliran lumpur terlihat. Warna lumpur makin gelap saat MW naik. Strip di kiri adalah log kedalaman yang ikut bergerak bersama bit.</p></div>`;return;}
+  if(sec===4){$('#pTitle').textContent='Komplesi';
+    b.innerHTML=`<div class="blk"><h3>Rangkaian produksi</h3><dl class="kv"><dt>Tubing</dt><dd>${COMP.tubing}</dd><dt>Pompa</dt><dd>${COMP.esp}</dd><dt>Setting ESP</dt><dd>±${fmt(COMP.espBot)} ft MD (ilustrasi)</dd>
+      <dt>Perforasi</dt><dd>4 interval di Fm-G (ilustrasi)</dd><dt>Target awal</dt><dd>210 BOPD</dd></dl></div>
+      <div class="blk"><h3>Wellhead dan X-mas tree</h3><dl class="kv"><dt>Casing head</dt><dd>21-1/4" x 20"</dd><dt>Casing spool</dt><dd>21-1/4" 2K x 13-5/8" 5K</dd>
+      <dt>Tubing head spool</dt><dd>13-5/8" 5K x 11" 5K</dd><dt>Tree</dt><dd>API 6A, PSL2, PR2</dd><dt>Gate valve</dt><dd>3-1/8" 5K</dd></dl></div>
+      <div class="blk"><h3>Urutan</h3><p class="muted">Perforasi dengan TCP, run ESP pada tubing 3-1/2", nipple down BOP, nipple up X-mas tree, lalu uji produksi. Partikel kuning menggambarkan minyak masuk dari perforasi dan dipompa ESP ke permukaan.</p></div>`;return;}
+  const s=SEC[sec];$('#pTitle').textContent='Section '+s.hole;
+  b.innerHTML=`
+   <div class="blk"><h3>Lubang dan bit</h3><dl class="kv"><dt>Interval</dt><dd>${fmt(s.top)}–${fmt(s.bot)} ft MD</dd><dt>Bit</dt><dd>${s.bit}</dd>${s.eval?`<dt>Evaluasi</dt><dd>${s.eval}</dd>`:''}</dl></div>
+   <div class="blk"><h3>BHA</h3><ol class="bha">${s.bha.map(([n,od,l,t])=>`<li><i style="background:${BHA_COL[t]}"></i>${n}<em>${Math.round(l)} ft</em></li>`).join('')}<li><i style="background:#8E989F"></i>Drill pipe 5", 19.5 ppf<em>ke permukaan</em></li></ol></div>
+   <div class="blk"><h3>Lumpur</h3><dl class="kv"><dt>Tipe</dt><dd>${s.mud.type}</dd><dt>MW program</dt><dd>${s.mud.mw[0].toFixed(1)}–${s.mud.mw[1].toFixed(1)} ppg</dd>
+     <dt>Mud window</dt><dd>${s.mud.win[0].toFixed(1)}${s.mud.win2?' (15.1 di bawah 6,200 ft)':''} s/d ${s.mud.win[1].toFixed(1)} ppg</dd></dl>${winBar(s.mud)}<p class="muted">${s.mud.note}</p></div>
+   <div class="blk"><h3>Hidrolika</h3><div class="grid3">
+     <div class="met"><b>${fmt(s.hyd.gpm)}</b><span>gpm</span></div><div class="met"><b>${fmt(s.hyd.spp)}</b><span>SPP, psi</span></div><div class="met"><b>${s.hyd.hsi.toFixed(1)}</b><span>HSI, hp/in²</span></div>
+     <div class="met"><b>${fmt(s.hyd.tq)}</b><span>torsi, ft-lbf</span></div><div class="met"><b>${fmt(s.hyd.hl)}</b><span>hookload, kip</span></div><div class="met"><b>${s.hyd.tfa.toFixed(1)}</b><span>TFA in², liner ${s.hyd.liner}</span></div></div></div>
+   <div class="blk"><h3>Casing ${s.csg.name}</h3><dl class="kv"><dt>Spesifikasi</dt><dd>${s.csg.spec}</dd><dt>Shoe</dt><dd>${fmt(s.csg.shoe)} ft MD / ${fmt(s.csg.shoeTVD)} ft TVD</dd>${s.csg.tol?`<dt>Top of liner</dt><dd>${fmt(s.csg.tol)} ft MD</dd>`:''}<dt>Semen</dt><dd>${s.cem}</dd></dl>
+     <p class="muted" style="margin:8px 0 6px">Safety factor minimum (StressCheck)</p>${sfRows(s.csg.sf)}</div>
+   <div class="blk"><h3>Well control</h3><dl class="kv"><dt>Peralatan</dt><dd>${s.wc.bop}</dd><dt>Kick tolerance</dt><dd>${s.wc.kt}</dd><dt>LOT</dt><dd>${s.wc.lot}</dd></dl></div>
+   <div class="blk"><h3>Hazard dan mitigasi</h3><div class="chips">${s.haz.map(h=>`<span class="chip">${h}</span>`).join('')}</div></div>`;
+}
+
+/* ---------- depth track ---------- */
+const trk=$('#trk'),tg=trk.getContext('2d');
+function drawTrack(S){
+  const dpr=Math.min(devicePixelRatio,2),w=trk.clientWidth,h=trk.clientHeight;if(!w||!h)return;
+  if(trk.width!==Math.round(w*dpr)||trk.height!==Math.round(h*dpr)){trk.width=Math.round(w*dpr);trk.height=Math.round(h*dpr);}
+  tg.setTransform(dpr,0,0,dpr,0,0);tg.clearRect(0,0,w,h);
+  const Y=md=>4+md/TD*(h-8);
+  // formations column
+  for(let k=0;k<FM.length;k++){const a=FM[k].md,b=k<FM.length-1?FM[k+1].md:TD;tg.fillStyle=FM[k].c;tg.fillRect(0,Y(a),16,Y(b)-Y(a));}
+  tg.font='600 10px Barlow Condensed, sans-serif';tg.fillStyle='rgba(20,18,14,.8)';
+  tg.save();for(let k=0;k<FM.length;k++){const a=FM[k].md,b=k<FM.length-1?FM[k+1].md:TD;if(Y(b)-Y(a)>26){tg.save();tg.translate(11,(Y(a)+Y(b))/2);tg.rotate(-Math.PI/2);tg.textAlign='center';tg.fillText(FM[k].n,0,0);tg.restore();}}tg.restore();
+  // hole drilled
+  const cur=S.k?S.hole:0;const sec=SEC.findIndex(s=>cur<=s.bot&&cur>=s.top);
+  SEC.forEach((s,i)=>{const a=s.top,b=Math.min(s.bot,cur);if(b>a){tg.fillStyle='#'+mudColor(s.mud.mw[1]).getHexString();tg.fillRect(22,Y(a),10,Y(b)-Y(a));}});
+  if(cur>0){tg.fillStyle='#6d6258';tg.fillRect(22,Y(0),10,Y(Math.min(120,cur))-Y(0));}
+  // casings
+  const cx={c30:38,c20:42,c13:46,c9:50,c7:54};
+  CSG.forEach(c=>{const f=S.csg[c.k];if(f<=0)return;const top=c.top,sh=lerp(top,c.shoe,f);tg.strokeStyle=c.col;tg.lineWidth=2;tg.beginPath();tg.moveTo(cx[c.k],Y(top));tg.lineTo(cx[c.k],Y(sh));tg.stroke();
+    if(f>=1){tg.fillStyle=c.col;tg.beginPath();tg.moveTo(cx[c.k]-1,Y(sh));tg.lineTo(cx[c.k]+5,Y(sh));tg.lineTo(cx[c.k]-1,Y(sh)-6);tg.fill();}
+    if(S.cem[c.k]>0&&c.cem){const tot=c.shoe-(c.k==='c7'?9108:CF);tg.fillStyle='rgba(211,204,188,.55)';const up=c.shoe-tot*S.cem[c.k];tg.fillRect(cx[c.k]+2,Y(up),2,Y(c.shoe)-Y(up));}});
+  // scale
+  tg.fillStyle='rgba(174,184,192,.9)';tg.font='500 10px Barlow, sans-serif';tg.textAlign='right';
+  for(let d=0;d<=9000;d+=2000){tg.fillText((d/1000)+'k',w-2,Y(d)+3);tg.fillStyle='rgba(255,255,255,.12)';tg.fillRect(60,Y(d),w-78,1);tg.fillStyle='rgba(174,184,192,.9)';}
+  tg.textAlign='left';
+  // bit/tool marker
+  const m=S.tool>=0?S.tool:S.string>=0?S.string:S.tubing>=0?S.tubing:cur;
+  if(m>0){tg.fillStyle='#F4D3A3';tg.beginPath();tg.moveTo(58,Y(m));tg.lineTo(66,Y(m)-5);tg.lineTo(66,Y(m)+5);tg.fill();tg.fillRect(18,Y(m)-0.5,40,1);}
+  // KOP/EOB ticks
+  tg.fillStyle='rgba(242,194,125,.9)';[KOP,EOB].forEach(d=>tg.fillRect(34,Y(d)-0.5,6,1));
+}
+
+/* ================= CAMERA ================= */
+let camTween={t:1,instant:true};
+const tmpV=new THREE.Vector3(),tmpV2=new THREE.Vector3();
+function viewTarget(S){
+  if(view==='rig')return {tgt:new THREE.Vector3(-18,58,-14),pos:new THREE.Vector3(250,120,330)};
+  if(view==='well'){const a=camera.aspect||1.6,z=19000,px=2*z*Math.tan(20*D2R)/innerHeight;const dx=((innerWidth-(innerWidth>900?354:0))/2+(innerWidth>900?55:40)-innerWidth/2)*px,dy=(innerHeight>0?((innerHeight-(innerWidth>900?96:innerHeight*0.55))/2-innerHeight/2):0)*px;
+    return {tgt:new THREE.Vector3(2000-dx,-4400+dy,0),pos:new THREE.Vector3(2000-dx,-4400+dy,z)};}
+  const md=Math.max(S.focus||0,1);const p=P(Math.max(1,md-70));
+  if(S.surfaceFocus)return {tgt:new THREE.Vector3(0,3,0),pos:new THREE.Vector3(6,8,36)};
+  return {tgt:p,pos:p.clone().add(new THREE.Vector3(50,18,160))};
+}
+function updateCamera(S,dt){
+  const v=viewTarget(S);
+  if(camTween.t<1){camTween.t=camTween.instant?1:Math.min(1,camTween.t+dt/1.4);const e=1-Math.pow(1-camTween.t,3);
+    if(camTween.from===undefined){camTween.from={p:camera.position.clone(),t:controls.target.clone()};}
+    camera.position.lerpVectors(camTween.from.p,v.pos,e);controls.target.lerpVectors(camTween.from.t,v.tgt,e);
+    if(camTween.t>=1)camTween.from=undefined;return;}
+  if(view==='bit'){const d=tmpV.subVectors(v.tgt,controls.target).multiplyScalar(Math.min(1,dt*4));controls.target.add(d);camera.position.add(d);}
+}
+
+/* ================= FRAME UPDATE ================= */
+const _p=new THREE.Vector3(),_n=new THREE.Vector3(),_t=new THREE.Vector3();
+function bore(md,S){ // inner radius available (smallest ID covering md)
+  let r=Infinity;CSG.forEach(c=>{if(S.csg[c.k]>=1&&md>=c.top&&md<=c.shoe)r=Math.min(r,rad(c.od)*0.9)});
+  if(r===Infinity){const s=SEC.find(s=>md>=s.top&&md<=s.bot);r=s?rad(s.holeIn):rad(26);}return r}
+function applyState(S,dt,time){
+  // holes
+  SEC.forEach((s,i)=>{const f=(S.hole-s.top)/(s.bot-s.top);reveal(holeMeshes[i],f);
+    const ck=['c20','c13','c9','c7'][i];if(S.cem[ck]>=1&&ck!=='c7')holeMeshes[i].visible=false;});
+  // casing
+  CSG.forEach(c=>{const f=S.csg[c.k];reveal(csgMesh[c.k],f);
+    if(cemMesh[c.k]){const tot=cemMesh[c.k].reduce((a,x)=>a+x.len,0);let acc=S.cem[c.k]*tot;cemMesh[c.k].forEach(x=>{reveal(x.m,acc/x.len);acc-=x.len;});}});
+  // drill string + BHA
+  BHA.forEach(b=>b.visible=false);
+  let stringTop=-1;
+  if(S.string>=0){
+    let bLen=0;
+    if(S.bha>=0&&PH[S.i].k!=='c7'){const b=BHA[S.bha];b.visible=true;bLen=b.userData.len;const md=Math.max(S.string,2);
+      P(md,b.position);Tn(md,_t);b.quaternion.setFromUnitVectors(UP,_t.clone().negate());
+      if(S.drilling)b.children[0].rotation.y+=dt*(S.bha===0?10:14);}
+    reveal(dpMesh,(S.string-bLen-CF)/(TD-CF));
+    if(S.drilling)dpTex.offset.y=(dpTex.offset.y+dt*1.8)%1;
+    stringTop=S.string;
+  }else reveal(dpMesh,0);
+  // wireline
+  wlTool.visible=S.tool>=0;reveal(wlMesh,S.tool>=0?(S.tool-35-CF)/(TD-CF):0);
+  if(S.tool>=0){P(Math.max(S.tool,35),wlTool.position);Tn(Math.max(S.tool,35),_t);wlTool.quaternion.setFromUnitVectors(UP,_t);}
+  // tubing & ESP
+  if(S.tubing>=0){const topOfESP=S.tubing-(COMP.espBot-COMP.espTop);reveal(tbgMesh,(topOfESP-CF)/(COMP.espTop-CF));reveal(cableMesh,(S.tubing-CF)/(COMP.espBot-CF));
+    esp.visible=topOfESP>0;P(Math.max(topOfESP,1),esp.position);Tn(Math.max(topOfESP,1),_t);esp.quaternion.setFromUnitVectors(UP,_t.clone().negate());}
+  else{reveal(tbgMesh,0);reveal(cableMesh,0);esp.visible=false;}
+  perfGroup.children.forEach((m,j)=>{m.visible=S.perf>0&&(m.userData.md-9330)/(9570-9330)<=S.perf*1.02;});
+  // surface stack
+  stacks.wh.forEach((g,j)=>g.visible=S.wh>j);
+  stacks.div.visible=S.bop==='div';
+  const base=S.wh===0?-10:S.wh===1?-7:S.wh===2?-4:-1.5;
+  ['b21','b13'].forEach(k=>{const g=stacks[k];g.visible=S.bop===k;g.position.y=base;});
+  stacks.tree.visible=S.bop==='tree';stacks.tree.position.y=-1.5;
+  // top drive height
+  const TDG=rig.userData.TDG;let hy;
+  if(S.hookMD!=null){const f=((S.hookMD%93)+93)%93/93;hy=27.6+14+(1-f)*96;}else hy=S.bop==='tree'?120:70;
+  TDG.position.y=lerp(TDG.position.y||hy,hy,Math.min(1,dt*10));
+  const lp=[];[[-1.5,-1],[1.5,-1],[-1.5,1],[1.5,1]].forEach(([x,z])=>{lp.push(x,166,z,x*0.8,TDG.position.y+9,z*0.8)});
+  rig.userData.lines.geometry.setAttribute('position',new THREE.Float32BufferAttribute(lp,3));
+  const tl=tdLabel();if(tl)tl.pos=new THREE.Vector3(3,TDG.position.y+2,0);
+  // particles
+  updateParticles(S,dt);
+  // bit light
+  const fm=Math.max(S.focus||0,1);P(fm,bitLight.position).add(new THREE.Vector3(10,4,30));bitLight.intensity=view==='bit'&&fm>30?0.9:0;
+}
+function updateParticles(S,dt){
+  const mode=S.flow;pts.visible=!!mode;if(!mode)return;
+  let bottom,top,inner,cDown,cUp,cCut;
+  if(mode==='mud'){bottom=S.string;top=Math.max(CF,bottom-750);const sec=SEC[S.bha];const mc=mudColor(sec.mud.mw[1]);cDown=mc.clone().lerp(new THREE.Color('#fff'),.55);cUp=mc.clone().lerp(new THREE.Color('#fff'),.2);cCut=new THREE.Color(FM[fmAtMD(bottom)].c).multiplyScalar(.55);}
+  else if(mode==='cement'){const ck=['c20','c13','c9','c7'].find(k=>S.cem[k]>0&&S.cem[k]<1)||'c20';const c=CSG.find(x=>x.k===ck);bottom=c.shoe;top=Math.max(CF,bottom-900);cDown=new THREE.Color('#E8E2D2');cUp=mudColor(14);cCut=new THREE.Color('#BFB6A2');}
+  else{bottom=9580;top=COMP.espTop-500;cDown=new THREE.Color('#E0A93A');cUp=new THREE.Color('#E0A93A');cCut=new THREE.Color('#7FA9C4');}
+  const span=bottom-top;
+  for(let j=0;j<NP;j++){const q=pk[j];
+    let md,r;
+    if(mode==='oil'){q.u=(q.u+dt*q.sp*0.22)%1;md=bottom-q.u*span;
+      const inTbg=md<COMP.espTop;r=inTbg?q.r*rad(3.5)*0.7:q.r*(bore(md,S)*0.85);if(md<COMP.espBot&&md>COMP.espTop)r=rad(5.4)+0.1+q.r*(bore(md,S)-rad(5.4)-0.3);
+      const c=q.cut?cCut:cDown;col[j*3]=c.r;col[j*3+1]=c.g;col[j*3+2]=c.b;}
+    else if(q.down){q.u=(q.u+dt*q.sp*0.55)%1;md=top+q.u*span;r=q.r*(mode==='mud'?rad(5)*0.6:bore(md,S)*0.75);col[j*3]=cDown.r;col[j*3+1]=cDown.g;col[j*3+2]=cDown.b;}
+    else{q.u=(q.u+dt*q.sp*0.38)%1;md=bottom-q.u*span;
+      const inner=mode==='mud'?(md>bottom-(BHA[S.bha]?BHA[S.bha].userData.len:0)?rad(8)+0.2:rad(5)+0.2):(()=>{const c=CSG.find(x=>S.cem[x.k]>0&&S.cem[x.k]<1)||CSG[1];return rad(c.od)+0.15})();
+      const outer=mode==='mud'?bore(md,S)-0.15:(()=>{const c=CSG.find(x=>S.cem[x.k]>0&&S.cem[x.k]<1)||CSG[1];return rad(c.hole)*0.95})();
+      r=inner+q.r*Math.max(0.1,outer-inner);const c=q.cut?cCut:cUp;col[j*3]=c.r;col[j*3+1]=c.g;col[j*3+2]=c.b;}
+    P(md,_p);Nn(md,_n);
+    pos[j*3]=_p.x+_n.x*r*Math.cos(q.th);pos[j*3+1]=_p.y+_n.y*r*Math.cos(q.th);pos[j*3+2]=r*Math.sin(q.th);
+  }
+  pg.attributes.position.needsUpdate=true;pg.attributes.color.needsUpdate=true;
+}
+
+/* ---------- events (toasts / callout) ---------- */
+const MARKS=[[630,'Masuk Fm-B: claystone reaktif, inhibitor polyamine'],[KOP,'Kick-off point 700 ft: mulai build 2°/100 ft'],[EOB,'End of build 2,187 ft: tangent 29.74°'],
+  [2229,'Masuk Fm-C'],[5189,'Masuk Fm-D (limestone)'],[5869,'Masuk Fm-E: zona tekanan pori tinggi, MW 14–15 ppg'],[8253,'Masuk Fm-F'],[9258,'Top Fm-G: karbonat reservoir']];
+function events(S){
+  if(playing&&S.hole>lastHole&&S.hole-lastHole<400){MARKS.forEach(([d,m])=>{if(lastHole<d&&S.hole>=d)toast(m)});}
+  lastHole=S.hole;
+  const call=$('#call');
+  if(S.k==='d12'&&S.hole>8850){call.style.display='block';call.innerHTML=`<h4>Mendekati Top Fm-G</h4><p>Control drilling 10 ft/jam, circulate bottoms up setiap drilling break. Skenario top: 9,034, 9,258, atau 9,356 ft MD.</p><ul><li>Drilling break</li><li>Cutting karbonat putih susu</li><li>Loss formasi</li></ul>`;}
+  else if(S.k==='d8'){call.style.display='block';call.innerHTML=`<h4>Reservoir Fm-G</h4><p>Bor 300 ft ke dalam karbonat dengan RDIF 8.7–9.0 ppg. LCM CaCO3 siap untuk seepage loss.</p>`;}
+  else call.style.display='none';
+}
+
+/* ---------- labels projection ---------- */
+function updateLabels(S){
+  const w=innerWidth,h=innerHeight,under=camera.position.y<0;
+  LBL.forEach(l=>{let vis=l.pos&&(l.rig?!under&&view==='rig':under)&&(!l.show||l.show(S));
+    if(vis){tmpV2.copy(l.pos).project(camera);vis=tmpV2.z<1&&Math.abs(tmpV2.x)<1.05&&Math.abs(tmpV2.y)<1.05;
+      if(vis){l.el.style.left=((tmpV2.x+1)/2*w)+'px';l.el.style.top=((1-tmpV2.y)/2*h)+'px';}}
+    l.el.style.display=vis?'block':'none';});
+}
+
+/* ================= LOOP ================= */
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+addEventListener('resize',resize);
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(playing&&!dragging){T+=dt*speed;if(T>=TOTAL){T=TOTAL-0.001;playing=false;syncPlay();}}
+  const S=stateAt(T);
+  if(S.i!==lastI){const ph=PH[S.i];segs.forEach((s,j)=>s.classList.toggle('on',j===S.i));$('#capN').textContent=`${S.i+1}/${PH.length}`;
+    if(lastI!==-1&&ph.view&&ph.view!==view&&!(ph.view==='bit'&&view==='well'))setView(ph.view);lastI=S.i;}
+  const sec=PH[S.i].sec;if(sec!==lastSec){renderPanel(sec);lastSec=sec;}
+  $('#pSub').textContent=PH[S.i].t;$('#capT').textContent=S.cap;
+  segs.forEach((s,j)=>{s.firstChild.style.width=(j<S.i?100:j>S.i?0:S.p*100)+'%'});
+  bar_.setAttribute('aria-valuenow',Math.round(T/TOTAL*100));
+  applyState(S,dt,now/1000);events(S);
+  const rd=S.tool>=0?S.tool:S.string>=0?S.string:S.tubing>=0?S.tubing:S.hole;const tr=traj(rd);
+  $('#rMD').textContent=fmt(rd);$('#rTVD').textContent=fmt(tr.tvd);$('#rInc').textContent=(tr.inc/D2R).toFixed(1)+'°';
+  drawTrack(S);
+  if(toastT>0){toastT-=dt;if(toastT<=0)$('#toast').classList.remove('show');}
+  updateCamera(S,dt);
+  controls.autoRotate=playing&&S.k==='intro'&&view==='rig'&&!reduceMotion;controls.autoRotateSpeed=0.6;
+  controls.update();
+  scene.background=camera.position.y<0?UNDER:SKY;
+  updateLabels(S);
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+function init(){
+  buildWall();buildSurface();buildStacks();initLabels();resize();
+  const v=viewTarget(stateAt(0));camera.position.copy(v.pos);controls.target.copy(v.tgt);setView('rig',true);syncPlay();
+  const q=new URLSearchParams(location.search);if(q.has('t')){T=+q.get('t');}if(q.has('v'))setView(q.get('v'),true);if(q.has('pause')){playing=false;syncPlay();}
+  requestAnimationFrame(t=>{last=t;frame(t)});
+}
+(document.fonts&&document.fonts.ready?Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]):Promise.resolve()).then(init);
+})();
+</script>
+</body>
+</html>
