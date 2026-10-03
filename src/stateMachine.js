@@ -469,7 +469,7 @@ function linerPhase(S) {
       S.caption = hangerSet ? 'Liner hanger set at 9,108 ft MD (slips engaged in 9-5/8" casing)' : 'Land 7" liner at TD';
       hud(hangerSet ? 'LINER HANGER SET' : 'LANDING 7" LINER', [['Liner shoe', `${fmt(shoeMD)} ft MD`], ['Top of liner', `${fmt(shoeMD - LEN)} ft MD`], ['Overlap in 9-5/8"', `${fmt(9259 - TOL)} ft`]], shoeMD / SHOE);
       if (hangerSet) S.banner = { id: 'hanger', title: 'LINER HANGER SET', sub: `Top of liner ${fmt(TOL)} ft MD · shoe ${fmt(SHOE)} ft MD` };
-      S.cam = { mode: 'CASING_RUN', md: TOL + 60 };
+      S.cam = { mode: 'CASING_RUN', md: TOL + 16 };
       S.readMD = shoeMD; S.readLabel = 'Liner shoe';
       break;
     }
