@@ -67,6 +67,7 @@ The 12 main operations on the timeline are each broken into sub-steps:
 npm install
 npm run dev       # local dev server
 npm run build     # production build -> dist/
+npm run build:pages  # build + copy dist/ to the repo root (what GitHub Pages serves)
 npm run preview   # serve the production build at /alpha05-drilling-3d/
 npm test          # trajectory + state machine tests
 ```
@@ -74,8 +75,9 @@ npm test          # trajectory + state machine tests
 ## Architecture
 
 ```
-index.html                 UI shell (HUD, timeline, panels, loader)
-src/
+app/index.html             UI shell source (HUD, timeline, panels, loader)
+index.html, assets/        GENERATED production build served by GitHub Pages (do not edit)
+app/src/
   main.js                  bootstrap + frame loop (state → scene → camera → UI)
   constants.js             units, radial exaggeration, surface taper, joint lengths
   engineeringData.js       the well plan (unchanged values)
@@ -103,7 +105,7 @@ tests/                     node:test suites
 Data flows one way: `time → stateAt(t) → MD values → trajectory engine → geometry`. The state
 machine contains no Three.js code, which makes it deterministic and testable.
 
-## Trajectory engine (`src/trajectory.js`)
+## Trajectory engine (`app/src/trajectory.js`)
 
 This is the single source of truth for every downhole position:
 
@@ -241,12 +243,16 @@ Real-device GPU and touch testing still needs doing on physical phones and table
 
 ## GitHub Pages deployment
 
-`vite.config.js` uses `base: '/alpha05-drilling-3d/'` for build and preview.
-`.github/workflows/deploy.yml` builds, tests and deploys `dist/` on every push to `main`.
+GitHub Pages serves this repository from **`main` / (root)**. The source lives in `app/`. The
+repository root holds the generated production build (`index.html`, `assets/`, `.nojekyll`), built
+with `base: '/alpha05-drilling-3d/'`.
 
-**One-time setup:** in the repository go to **Settings → Pages → Build and deployment → Source**
-and select **GitHub Actions**. The previous "Deploy from branch / root" setting would serve the
-unbuilt source.
+- `npm run build:pages` builds and copies `dist/` to the root.
+- `.github/workflows/deploy.yml` runs the tests and the build on every push and pull request. On
+  `main` it commits a refreshed root build if the source changed (`[skip ci]`).
+
+No repository settings need to change. If you later switch Pages to **Source: GitHub Actions**,
+deploy `dist/` with `actions/deploy-pages` instead.
 
 ## Documentation
 

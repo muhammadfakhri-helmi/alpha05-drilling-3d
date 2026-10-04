@@ -11,7 +11,10 @@ ES-module application on Three.js r186. The original `index.html` is still in gi
 - Split the code into focused modules (`trajectory`, `stateMachine`, `well/*`, `surface/*`,
   `camera/*`, `ui/*`, `utils/*`).
 - Added `node:test` suites for the trajectory engine and the state machine.
-- Added a GitHub Actions workflow that tests, builds and deploys `dist/` to GitHub Pages.
+- Source moved to `app/`. The repository root now holds the generated build, so the existing
+  GitHub Pages setting ("Deploy from branch: main / root") serves it unchanged.
+- Added a GitHub Actions workflow that tests and builds on every push and pull request, and on
+  `main` commits a refreshed root build.
 
 ### Trajectory
 - Added one master MD-based engine: `getPosition / getTangent / getNormal / getBinormal /

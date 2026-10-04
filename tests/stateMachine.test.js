@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { stateAt, TOTAL, PHASES, PHASE_START, stepStart } from '../src/stateMachine.js';
-import { CASINGS } from '../src/engineeringData.js';
+import { stateAt, TOTAL, PHASES, PHASE_START, stepStart } from '../app/src/stateMachine.js';
+import { CASINGS } from '../app/src/engineeringData.js';
 
 test('12 main operations are preserved', () => {
   assert.equal(PHASES.length, 12);

@@ -4,8 +4,8 @@ import { Vector3 } from 'three';
 import {
   survey, EOB, KOP, TD, tvdAt, incAt, getPosition, getTangent, getNormal, getBinormal,
   getQuaternion, mdAtTvd, sampleMDs,
-} from '../src/trajectory.js';
-import { FORMATIONS, SECTIONS } from '../src/engineeringData.js';
+} from '../app/src/trajectory.js';
+import { FORMATIONS, SECTIONS } from '../app/src/engineeringData.js';
 
 test('design values are reproduced (not altered)', () => {
   assert.equal(KOP, 700);

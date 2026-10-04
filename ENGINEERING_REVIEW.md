@@ -4,7 +4,7 @@ This file lists what was checked in the well-plan data, inconsistencies found, a
 assumption, exaggeration or simplification in the 3D visualization.
 **No plan value was changed.** Where something looks wrong it is recorded here.
 
-The data lives in `src/engineeringData.js`. `tests/trajectory.test.js` and
+The data lives in `app/src/engineeringData.js`. `tests/trajectory.test.js` and
 `tests/stateMachine.test.js` check it automatically (`npm test`).
 
 ---

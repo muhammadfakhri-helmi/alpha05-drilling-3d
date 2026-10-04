@@ -1,11 +1,15 @@
 import { defineConfig } from 'vite';
 
-// GitHub Pages serves the project at /alpha05-drilling-3d/
+// Source entry lives in app/ so the repository root can hold the BUILT site:
+// GitHub Pages serves this repo from the root of `main` (Deploy from branch).
+// `npm run build:pages` copies dist/ to the root; CI keeps it in sync.
 export default defineConfig(({ command, isPreview }) => ({
+  root: 'app',
   base: command === 'build' || isPreview ? '/alpha05-drilling-3d/' : '/',
   build: {
     target: 'es2020',
-    outDir: 'dist',
+    outDir: '../dist',
+    emptyOutDir: true,
     assetsInlineLimit: 4096,
     chunkSizeWarningLimit: 900,
     rollupOptions: {

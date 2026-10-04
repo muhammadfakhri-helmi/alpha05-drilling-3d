@@ -220,7 +220,7 @@ function casingPhase(S, ck) {
   const casingRow = (s) => [
     ['Shoe depth', `${fmt(Math.max(0, s))} ft MD`],
     ['Planned shoe', `${fmt(c.shoe)} ft MD`],
-    ['Joints in hole', `${clamp(Math.ceil((s - FLOOR_MD) / Lj), 0, totalJoints + 1)} / ${totalJoints} (visual est., ${Lj} ft)`],
+    [`Joints (${Lj} ft, est.)`, `${clamp(Math.ceil((s - FLOOR_MD) / Lj), 0, totalJoints + 1)} / ${totalJoints}`],
   ];
   const running = (shoeMD, topMD) => { S.casings[ck] = { state: 'running', shoeMD, topMD, cemented: false }; };
 
