@@ -1,0 +1,42 @@
+name: Build site
+
+# GitHub Pages serves this repository from the root of `main`.
+# On every push this workflow tests, builds and – if the generated root
+# index.html / assets/ are out of date – commits the fresh build back to main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:pages
+      - name: Commit refreshed build to main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git add -A index.html assets .nojekyll
+          if git diff --cached --quiet; then
+            echo "Root build already up to date"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898339+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Rebuild site [skip ci]"
+            git push
+          fi
