@@ -25,13 +25,23 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            presentation/package-lock.json
       - run: npm ci
       - run: npm test
       - run: npm run build:pages
+      # DWOP 3D walkthrough (React Three Fiber) -> /dwop/
+      - run: npm ci
+        working-directory: presentation
+      - run: npm test
+        working-directory: presentation
+      - run: npm run build:pages
+        working-directory: presentation
       - name: Commit refreshed build to main
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         run: |
-          git add -A index.html assets .nojekyll
+          git add -A index.html assets .nojekyll dwop
           if git diff --cached --quiet; then
             echo "Root build already up to date"
           else

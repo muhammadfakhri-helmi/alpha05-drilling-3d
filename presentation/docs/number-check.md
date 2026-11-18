@@ -1,0 +1,332 @@
+# Cek angka: HUD vs PPTX v4
+
+Dibuat otomatis oleh `npm run check:numbers` dari teks yang benar-benar tampil di layar (browser), dibandingkan dengan `source/slides_text.md`.
+
+Total angka HUD: 291 · label scene: 26 · **tidak cocok: 0**
+
+## Kartu HUD / panel per slide
+
+| Slide | Angka | Muncul | Cocok/tidak |
+|---|---|---|---|
+| 1 | 5 | 1x | cocok |
+| 1 | 05 | 1x | cocok |
+| 1 | 3 | 1x | cocok |
+| 1 | 2026 | 1x | cocok |
+| 2 | 05 | 1x | cocok |
+| 2 | 9,604 | 2x | cocok |
+| 2 | 7 | 2x | cocok |
+| 2 | 8,561 | 1x | cocok |
+| 2 | 700 | 1x | cocok |
+| 2 | 29.74 | 1x | cocok |
+| 2 | 222.55 | 1x | cocok |
+| 2 | 1,500 | 1x | cocok |
+| 2 | 450 | 1x | cocok |
+| 2 | 3-1/2 | 1x | cocok |
+| 2 | 30 | 1x | cocok |
+| 2 | 20 | 1x | cocok |
+| 2 | 13-3/8 | 1x | cocok |
+| 2 | 9-5/8 | 1x | cocok |
+| 2 | 1 | 1x | cocok |
+| 2 | 2 | 2x | cocok |
+| 2 | 3 | 1x | cocok |
+| 2 | 4 | 1x | cocok |
+| 3 | 1 | 1x | cocok |
+| 3 | 2 | 1x | cocok |
+| 3 | 3 | 2x | cocok |
+| 3 | 60 | 2x | cocok |
+| 3 | 9.3 | 1x | cocok |
+| 3 | 20 | 3x | cocok |
+| 3 | 13-3/8 | 1x | cocok |
+| 3 | 9-5/8 | 2x | cocok |
+| 3 | 42 | 1x | cocok |
+| 3 | 35 | 2x | cocok |
+| 3 | 30 | 2x | cocok |
+| 3 | 3-1/2 | 1x | cocok |
+| 3 | 50 | 1x | cocok |
+| 3 | 13-5/8 | 1x | cocok |
+| 3 | 4 | 2x | cocok |
+| 3 | 8 | 1x | cocok |
+| 4 | 9.3 | 1x | cocok |
+| 4 | 4 | 1x | cocok |
+| 5 | 18 | 5x | cocok |
+| 5 | 5 | 11x | cocok |
+| 5 | 10 | 5x | cocok |
+| 5 | 15 | 3x | cocok |
+| 5 | 20 | 2x | cocok |
+| 5 | 25 | 2x | cocok |
+| 5 | 4 | 7x | cocok |
+| 5 | 8 | 2x | cocok |
+| 5 | 12 | 3x | cocok |
+| 5 | 16 | 1x | cocok |
+| 5 | 3 | 7x | cocok |
+| 5 | 6 | 3x | cocok |
+| 5 | 9 | 2x | cocok |
+| 5 | 2 | 5x | cocok |
+| 5 | 1 | 7x | cocok |
+| 6 | 26 | 4x | cocok |
+| 6 | 2,000 | 1x | cocok |
+| 6 | 1,956 | 1x | cocok |
+| 6 | 9.8 | 2x | cocok |
+| 6 | 12.0 | 1x | cocok |
+| 6 | 20 | 4x | cocok |
+| 6 | 133 | 1x | cocok |
+| 6 | 55 | 2x | cocok |
+| 6 | 29-1/2 | 1x | cocok |
+| 6 | 500 | 1x | cocok |
+| 6 | 1 | 1x | cocok |
+| 6 | 63 | 1x | cocok |
+| 6 | 250 | 1x | cocok |
+| 6 | 280 | 1x | cocok |
+| 6 | 9 | 1x | cocok |
+| 6 | 15.4 | 1x | cocok |
+| 6 | 14.2 | 1x | cocok |
+| 6 | 2 | 1x | cocok |
+| 6 | 700 | 1x | cocok |
+| 6 | 3 | 1x | cocok |
+| 6 | 4 | 2x | cocok |
+| 6 | 8 | 1x | cocok |
+| 6 | 42 | 1x | cocok |
+| 6 | 5 | 1x | cocok |
+| 6 | 1,200 | 1x | cocok |
+| 6 | 150 | 1x | cocok |
+| 6 | 13.0 | 1x | cocok |
+| 6 | 120 | 1x | cocok |
+| 6 | 6 | 1x | cocok |
+| 7 | 20 | 2x | cocok |
+| 7 | 133 | 1x | cocok |
+| 7 | 55 | 1x | cocok |
+| 7 | 2,000 | 1x | cocok |
+| 7 | 1,956 | 1x | cocok |
+| 7 | 12.00 | 1x | cocok |
+| 7 | 3.82 | 1x | cocok |
+| 7 | 2.65 | 1x | cocok |
+| 7 | 6.79 | 1x | cocok |
+| 7 | 4.67 | 1x | cocok |
+| 7 | 100 | 2x | cocok |
+| 7 | 1 | 1x | cocok |
+| 7 | 12 | 2x | cocok |
+| 7 | 12.2 | 1x | cocok |
+| 7 | 120 | 1x | cocok |
+| 7 | 13.5 | 1x | cocok |
+| 7 | 15.8 | 1x | cocok |
+| 7 | 500 | 2x | cocok |
+| 7 | 8.1 | 1x | cocok |
+| 7 | 29-1/2 | 1x | cocok |
+| 7 | 7 | 1x | cocok |
+| 8 | 17-1/2 | 4x | cocok |
+| 8 | 5,000 | 3x | cocok |
+| 8 | 4,564 | 1x | cocok |
+| 8 | 12.0 | 1x | cocok |
+| 8 | 13.7 | 1x | cocok |
+| 8 | 13-3/8 | 3x | cocok |
+| 8 | 68 | 1x | cocok |
+| 8 | 55 | 1x | cocok |
+| 8 | 21-1/4 | 2x | cocok |
+| 8 | 2,000 | 1x | cocok |
+| 8 | 1 | 1x | cocok |
+| 8 | 2,827 | 1x | cocok |
+| 8 | 11.5 | 1x | cocok |
+| 8 | 15.4 | 1x | cocok |
+| 8 | 16.0 | 1x | cocok |
+| 8 | 2 | 1x | cocok |
+| 8 | 790 | 1x | cocok |
+| 8 | 910 | 1x | cocok |
+| 8 | 2,100 | 1x | cocok |
+| 8 | 3,680 | 1x | cocok |
+| 8 | 3 | 1x | cocok |
+| 8 | 13-5/8 | 1x | cocok |
+| 8 | 8 | 2x | cocok |
+| 8 | 4 | 3x | cocok |
+| 8 | 35 | 1x | cocok |
+| 8 | 50 | 1x | cocok |
+| 8 | 150 | 2x | cocok |
+| 8 | 15.0 | 1x | cocok |
+| 9 | 13-3/8 | 2x | cocok |
+| 9 | 68 | 1x | cocok |
+| 9 | 55 | 1x | cocok |
+| 9 | 5,000 | 1x | cocok |
+| 9 | 4,564 | 1x | cocok |
+| 9 | 13.70 | 1x | cocok |
+| 9 | 1.87 | 1x | cocok |
+| 9 | 4.63 | 1x | cocok |
+| 9 | 3.09 | 1x | cocok |
+| 9 | 2.24 | 1x | cocok |
+| 9 | 60 | 1x | cocok |
+| 9 | 2 | 1x | cocok |
+| 9 | 13.7 | 1x | cocok |
+| 9 | 200 | 2x | cocok |
+| 9 | 13.8 | 1x | cocok |
+| 9 | 100 | 1x | cocok |
+| 9 | 14 | 1x | cocok |
+| 9 | 15.8 | 1x | cocok |
+| 9 | 500 | 1x | cocok |
+| 9 | 8.2 | 1x | cocok |
+| 9 | 21-1/4 | 1x | cocok |
+| 9 | 2,000 | 1x | cocok |
+| 9 | 9 | 1x | cocok |
+| 10 | 12-1/4 | 3x | cocok |
+| 10 | 9,259 | 2x | cocok |
+| 10 | 8,261 | 1x | cocok |
+| 10 | 13.7 | 1x | cocok |
+| 10 | 15.7 | 2x | cocok |
+| 10 | 9-5/8 | 2x | cocok |
+| 10 | 47 | 1x | cocok |
+| 10 | 80 | 1x | cocok |
+| 10 | 13-5/8 | 2x | cocok |
+| 10 | 5,000 | 2x | cocok |
+| 10 | 1 | 1x | cocok |
+| 10 | 6,000 | 1x | cocok |
+| 10 | 8,000 | 1x | cocok |
+| 10 | 12 | 1x | cocok |
+| 10 | 13.5 | 1x | cocok |
+| 10 | 15.1 | 1x | cocok |
+| 10 | 16.6 | 1x | cocok |
+| 10 | 7,400 | 1x | cocok |
+| 10 | 10,000 | 1x | cocok |
+| 10 | 8,800 | 1x | cocok |
+| 10 | 9,200 | 1x | cocok |
+| 10 | 2 | 1x | cocok |
+| 10 | 29.74 | 1x | cocok |
+| 10 | 222.55 | 1x | cocok |
+| 10 | 14.1 | 1x | cocok |
+| 10 | 800 | 1x | cocok |
+| 10 | 1,000 | 1x | cocok |
+| 10 | 5 | 1x | cocok |
+| 10 | 20 | 1x | cocok |
+| 10 | 50 | 1x | cocok |
+| 10 | 60 | 1x | cocok |
+| 10 | 51.27 | 1x | cocok |
+| 10 | 13.90 | 1x | cocok |
+| 10 | 3 | 1x | cocok |
+| 10 | 10 | 2x | cocok |
+| 10 | 130 | 1x | cocok |
+| 10 | 16 | 1x | cocok |
+| 10 | 4 | 2x | cocok |
+| 10 | 8 | 1x | cocok |
+| 10 | 30 | 1x | cocok |
+| 10 | 22 | 1x | cocok |
+| 10 | 38 | 1x | cocok |
+| 11 | 9-5/8 | 2x | cocok |
+| 11 | 47 | 1x | cocok |
+| 11 | 80 | 1x | cocok |
+| 11 | 9,259 | 1x | cocok |
+| 11 | 8,261 | 1x | cocok |
+| 11 | 15.70 | 1x | cocok |
+| 11 | 0 | 1x | cocok |
+| 11 | 6.96 | 1x | cocok |
+| 11 | 2.75 | 1x | cocok |
+| 11 | 2.24 | 1x | cocok |
+| 11 | 2 | 1x | cocok |
+| 11 | 15.7 | 1x | cocok |
+| 11 | 200 | 2x | cocok |
+| 11 | 15.8 | 1x | cocok |
+| 11 | 60 | 1x | cocok |
+| 11 | 35 | 1x | cocok |
+| 11 | 8.3 | 1x | cocok |
+| 11 | 13-5/8 | 1x | cocok |
+| 11 | 5,000 | 1x | cocok |
+| 11 | 11 | 1x | cocok |
+| 12 | 9,604 | 2x | cocok |
+| 12 | 8,561 | 1x | cocok |
+| 12 | 8-1/2 | 1x | cocok |
+| 12 | 8,261 | 1x | cocok |
+| 12 | 8.8 | 1x | cocok |
+| 12 | 10.8 | 1x | cocok |
+| 12 | 9.10 | 1x | cocok |
+| 12 | 11.28 | 1x | cocok |
+| 12 | 17.7 | 2x | cocok |
+| 12 | 3.1 | 1x | cocok |
+| 12 | 2,000 | 1x | cocok |
+| 12 | 2,827 | 2x | cocok |
+| 12 | 9 | 2x | cocok |
+| 12 | 15.4 | 2x | cocok |
+| 12 | 5,000 | 2x | cocok |
+| 12 | 11.5 | 1x | cocok |
+| 12 | 6,200 | 2x | cocok |
+| 12 | 10.7 | 1x | cocok |
+| 12 | 16.6 | 2x | cocok |
+| 12 | 9,259 | 2x | cocok |
+| 12 | 15.1 | 1x | cocok |
+| 12 | 12 | 1x | cocok |
+| 13 | 7 | 4x | cocok |
+| 13 | 1 | 1x | cocok |
+| 13 | 9,604 | 2x | cocok |
+| 13 | 26 | 1x | cocok |
+| 13 | 80 | 1x | cocok |
+| 13 | 20 | 1x | cocok |
+| 13 | 10 | 1x | cocok |
+| 13 | 2 | 1x | cocok |
+| 13 | 450 | 1x | cocok |
+| 13 | 9-5/8 | 1x | cocok |
+| 13 | 3 | 1x | cocok |
+| 13 | 4-1/2 | 1x | cocok |
+| 13 | 4 | 1x | cocok |
+| 13 | 165 | 1x | cocok |
+| 13 | 160 | 1x | cocok |
+| 13 | 191 | 1x | cocok |
+| 13 | 3-1/2 | 1x | cocok |
+| 13 | 6,013 | 1x | cocok |
+| 13 | 6,025 | 1x | cocok |
+| 13 | 5,000 | 1x | cocok |
+| 13 | 5 | 1x | cocok |
+| 13 | 42 | 1x | cocok |
+| 13 | 700 | 1x | cocok |
+| 13 | 29.74 | 1x | cocok |
+| 13 | 222.55 | 1x | cocok |
+| 13 | 8,561 | 1x | cocok |
+| 13 | 13 | 1x | cocok |
+| 14 | 38 | 1x | cocok |
+| 14 | 7.55 | 1x | cocok |
+| 14 | 10.79 | 1x | cocok |
+| 14 | 130 | 1x | cocok |
+| 14 | 14 | 1x | cocok |
+| 15 | 1 | 1x | cocok |
+| 15 | 2 | 1x | cocok |
+| 15 | 3 | 1x | cocok |
+| 15 | 4 | 1x | cocok |
+| 15 | 5 | 1x | cocok |
+| 15 | 6 | 1x | cocok |
+| 15 | 24 | 1x | cocok |
+| 15 | 11.4 | 1x | cocok |
+| 15 | 15 | 1x | cocok |
+| 16 | 2 | 2x | cocok |
+| 16 | 16 | 1x | cocok |
+| 17 | 1 | 1x | cocok |
+| 17 | 2 | 1x | cocok |
+| 17 | 3 | 1x | cocok |
+| 17 | 4 | 1x | cocok |
+| 17 | 5 | 1x | cocok |
+| 17 | 11.3 | 1x | cocok |
+| 17 | 17 | 1x | cocok |
+| 18 | 10 | 1x | cocok |
+
+## Label di scene 3D (dicocokkan ke seluruh deck)
+
+| Label | Angka | Tampil di slide | Cocok/tidak |
+|---|---|---|---|
+| KOP 700 ft MD | 700 | 2, 6, 7 | cocok |
+| 20-in shoe · 2,000 ft MD | 20 | 2, 6, 7, 8, 9 | cocok |
+| 20-in shoe · 2,000 ft MD | 2,000 | 2, 6, 7, 8, 9 | cocok |
+| 13-3/8-in shoe · 5,000 ft MD | 13-3/8 | 2, 8, 9, 10, 11 | cocok |
+| 13-3/8-in shoe · 5,000 ft MD | 5,000 | 2, 8, 9, 10, 11 | cocok |
+| 9-5/8-in shoe · 9,259 ft MD | 9-5/8 | 2, 10, 11, 12, 13 | cocok |
+| 9-5/8-in shoe · 9,259 ft MD | 9,259 | 2, 10, 11, 12, 13 | cocok |
+| 7-in liner · 9,604 ft MD | 7 | 2, 12, 13 | cocok |
+| 7-in liner · 9,604 ft MD | 9,604 | 2, 12, 13 | cocok |
+| ESP · Intake 6,013 ft | 6,013 | 2, 13 | cocok |
+| 1,956 ft TVD | 1,956 | 2, 6, 7, 8, 9 | cocok |
+| 4,564 ft TVD | 4,564 | 2, 8, 9 | cocok |
+| 8,261 ft TVD | 8,261 | 2 | cocok |
+| 8,561 ft TVD | 8,561 | 2 | cocok |
+| 29-1/2-in × 500 psi diverter | 29-1/2 | 5 | cocok |
+| 29-1/2-in × 500 psi diverter | 500 | 5 | cocok |
+| MW window 9 - 15.4 ppg | 9 | 6, 7, 8, 9 | cocok |
+| MW window 9 - 15.4 ppg | 15.4 | 6, 7, 8, 9 | cocok |
+| MW window 11.5 - 15.4 ppg | 11.5 | 8, 9 | cocok |
+| MW window 11.5 - 15.4 ppg | 15.4 | 8, 9 | cocok |
+| MW window 10.7 - 16.6 ppg | 10.7 | 8, 9, 10, 11 | cocok |
+| MW window 10.7 - 16.6 ppg | 16.6 | 8, 9, 10, 11 | cocok |
+| MW window 15.1 - 16.6 ppg | 15.1 | 10, 11 | cocok |
+| MW window 15.1 - 16.6 ppg | 16.6 | 10, 11 | cocok |
+| MW window 9 - 17.7 ppg | 9 | 10, 11, 12 | cocok |
+| MW window 9 - 17.7 ppg | 17.7 | 10, 11, 12 | cocok |

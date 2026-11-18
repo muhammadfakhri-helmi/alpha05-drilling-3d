@@ -1,5 +1,8 @@
 # Alpha-05 — Interactive Well Construction Digital Twin
 
+> **DWOP 3D walkthrough (presentasi 18 slide):** lihat [`presentation/`](presentation/README.md). Situs: `/dwop/`.
+
+
 [![Open the visualization](https://img.shields.io/badge/open-digital%20twin-1F2326)](https://muhammadfakhri-helmi.github.io/alpha05-drilling-3d/)
 
 **Live:** https://muhammadfakhri-helmi.github.io/alpha05-drilling-3d/
