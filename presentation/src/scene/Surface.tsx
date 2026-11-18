@@ -12,6 +12,7 @@ import { SCALE, ANIM_SECONDS, type Anim } from '../data/well.ts';
 import type { SceneState } from '../data/content.ts';
 import { C } from '../theme.ts';
 import { WellControlStack } from './WellControl.tsx';
+import { TestSpread } from './TestSpread.tsx';
 
 type V3 = [number, number, number];
 const mat = (color: string, metal = 0.25, rough = 0.6) => new MeshStandardMaterial({ color, metalness: metal, roughness: rough });
@@ -357,22 +358,7 @@ function Site({ m, separator, focusSeparator }: { m: Mats; separator: boolean; f
       <Box p={[48, 4, -34]} s={[14, 8, 7]} m={m.red} />
       {[62, 74].map((x) => <Cyl key={x} p={[x, 20, -76]} r={5} h={40} m={m.white} />)}
 
-      {/* surface test separator, flowline and flare */}
-      <group visible={separator}>
-        <group position={[-70, 0, 60]}>
-          <Box p={[0, 1.5, 0]} s={[24, 3, 11]} m={m.slate} />
-          {[-7, 7].map((x) => <Box key={x} p={[x, 4, 0]} s={[1.5, 3, 7]} m={m.slate} />)}
-          <Cyl p={[0, 9, 0]} r={4} h={20} m={focusSeparator ? m.orange : m.white} rot={[0, 0, Math.PI / 2]} />
-          <mesh position={[10, 9, 0]} material={focusSeparator ? m.orange : m.white}><sphereGeometry args={[4, 16, 10, 0, Math.PI]} /></mesh>
-          <mesh position={[-10, 9, 0]} rotation={[0, Math.PI, 0]} material={focusSeparator ? m.orange : m.white}><sphereGeometry args={[4, 16, 10, 0, Math.PI]} /></mesh>
-          <Cyl p={[0, 14, 0]} r={0.8} h={3} m={m.navy} />
-          <Crew p={[6, 0, 8]} rotY={-0.4} m={m} />
-        </group>
-        <Cyl p={[-35, 1, 30]} r={0.5} h={Math.hypot(70, 60)} m={m.navy} rot={[0, Math.atan2(70, 60) + Math.PI / 2, Math.PI / 2]} />
-        <Cyl p={[-118, 1, 84]} r={0.5} h={Math.hypot(60, 48)} m={m.navy} rot={[0, Math.atan2(60, 48) + Math.PI / 2, Math.PI / 2]} />
-        <Cyl p={[-150, 22, 108]} r={1} h={44} m={m.slate} />
-        <mesh position={[-150, 48, 108]} material={m.flame}><coneGeometry args={[2.6, 9, 10]} /></mesh>
-      </group>
+      <TestSpread visible={separator} focus={focusSeparator} />
     </group>
   );
 }

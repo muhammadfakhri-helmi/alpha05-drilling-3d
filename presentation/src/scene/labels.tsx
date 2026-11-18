@@ -28,8 +28,15 @@ export function sceneLabels(state: SceneState, station: StationId, panel: boolea
   // surface
   if (state.focus === 'cellar' && state.equipment === 'diverter') L('diverter', [90, 70, 60], '29-1/2-in × 500 psi diverter', 'orange');
   if (state.focus === 'separator') {
-    L('sep', [-840, 260, 720], 'Surface test separator', 'orange');
-    L('flare', [-1800, 680, 1300], 'Cleanup to flare', 'muted');
+    const w = (x: number, y: number, z: number): [number, number, number] => [x * 12, y * 12, z * 12];
+    L('sep', w(-70, 16, 60), 'Test separator', 'orange');
+    L('choke', w(-28, 5, 22), 'Choke manifold', 'navy');
+    L('flare', w(-104, 4, 100), 'Cleanup to flare', 'orange', 'right');
+    L('stack', w(-150, 56, 108), 'Flare', 'muted');
+    L('gas', w(-74, 20, 82), 'Gas to flare', 'navy');
+    L('oil', w(-91, 13, 74), 'Oil meter and tank', 'navy', 'right');
+    L('water', w(-91, 13, 44), 'Water meter and tank', 'navy', 'right');
+    L('illus', w(-30, 3, 70), 'Illustrative layout', 'muted');
   }
   if (state.focus === 'site') L('staging', [1500, 420, 1500], 'Offloading & staging', 'orange');
   if (surface) return out;

@@ -64,7 +64,7 @@ export function DetailPanel() {
       {open && topic && (
         <motion.section
           key="detail"
-          className="detail"
+          className={`detail detail--${slide.kind === '2d' ? 'full' : slide.width ?? 'md'}`}
           data-detail={topic.id}
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
