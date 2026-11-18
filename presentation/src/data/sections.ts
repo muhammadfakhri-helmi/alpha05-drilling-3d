@@ -6,7 +6,7 @@
 import type { SceneState, StationId } from './content.ts';
 import bopDivImg from '../assets/img/bop-diverter.jpg';
 import bop21Img from '../assets/img/bop-21.jpg';
-import bop13Img from '../assets/img/bop-13.jpg';
+import bop13Img from '../assets/img/bop-13-rev.jpg';
 
 export type Block =
   | { kind: 'table'; title: string; head: string[]; rows: string[][]; note?: string }
@@ -434,6 +434,18 @@ const S8: Topic[] = [
         '120 bbl LCM pill (100 ppb: 60 ppb CaCO3 medium, 20 ppb fine, 20 ppb coarse); hi-vis pill',
         'Sized acid-soluble calcium carbonate bridging agents kept on location',
         'Screens API 140 and API 100',
+      ] },
+    ],
+  },
+  {
+    id: 'wellcontrol', label: 'Well control', title: '13-5/8-in BOP, 8-1/2-in section', source: 'Chapter 8, Sections 5.5 and 5.6',
+    blocks: [
+      { kind: 'figure', src: bop13Img, caption: 'Figure 8.4 · 8-1/2-in hole section BOP configuration (13-5/8-in × 5,000 psi BOP group)' },
+      { kind: 'bullets', title: 'Configuration', items: [
+        '8-1/2-in hole drilled under the 13-5/8-in × 5,000 psi BOP group',
+        '13-5/8-in 5K psi BOP stack (Annular + VR + BSR + VR/PR) with choke manifold',
+        'Shoe drilled out and tested (FIT est. 17.7 ppg EMW) before drilling to TD',
+        'After completion: 11-in tubing hanger with ESP penetrator provision and the full Christmas tree mounted at the apex',
       ] },
     ],
   },

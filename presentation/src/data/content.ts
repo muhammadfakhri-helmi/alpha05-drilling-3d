@@ -93,7 +93,7 @@ import casingImg from '../assets/img/casing-program.jpg';
 import lliImg from '../assets/img/lli-schedule.png';
 import bopDivImg from '../assets/img/bop-diverter.jpg';
 import bop21Img from '../assets/img/bop-21.jpg';
-import bop13Img from '../assets/img/bop-13.jpg';
+import bop13Img from '../assets/img/bop-13-rev.jpg';
 import ppfgImg from '../assets/img/ppfg.jpg';
 import trajImg from '../assets/img/trajectory.jpg';
 import dvcImg from '../assets/img/days-depth-cost.jpg';
