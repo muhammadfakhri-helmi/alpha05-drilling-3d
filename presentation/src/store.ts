@@ -1,5 +1,9 @@
 import { create } from 'zustand';
 import { MAIN_SEQUENCE, BACKUP_FOR, slideByN, type RoleId } from './data/content.ts';
+import { HSE_STEPS, stepsForSlide } from './data/hse.ts';
+
+/** HSE steps reachable from a slide's detail panel (slide 5 lists all 18). */
+export const detailSteps = (slide: number) => (slide === 5 ? HSE_STEPS : stepsForSlide(slide)).map((s) => s.n);
 
 export type TimerKey = RoleId | 'qa';
 
@@ -21,6 +25,9 @@ export interface NavState {
   presenter: boolean;
   help: boolean;
   figure: boolean;
+  /** report detail panel (D) and the HSE step selected in it (null = overview) */
+  detail: boolean;
+  hseStep: number | null;
   /** Enter walks through the speakers of a multi-role slide before moving on */
   stepMode: boolean;
   mode: '3d' | '2d';
@@ -38,6 +45,8 @@ interface Actions {
   togglePresenter(): void;
   toggleHelp(): void;
   toggleFigure(): void;
+  toggleDetail(): void;
+  selectHse(n: number | null): void;
   toggleStepMode(): void;
   toggleMode(): void;
   setWebglFailed(): void;
@@ -85,6 +94,8 @@ export const useStore = create<NavState & Actions>((set, get) => ({
   presenter: false,
   help: false,
   figure: false,
+  detail: false,
+  hseStep: null,
   stepMode: params.get('steps') !== '0',
   mode: params.get('mode') === '2d' ? '2d' : '3d',
   webglOk: true,
@@ -92,6 +103,12 @@ export const useStore = create<NavState & Actions>((set, get) => ({
 
   next() {
     const s = get();
+    if (s.detail) {
+      const list = detailSteps(s.slide);
+      const i = s.hseStep == null ? -1 : list.indexOf(s.hseStep);
+      if (i < list.length - 1) set({ hseStep: list[i + 1] });
+      return;
+    }
     if (s.backup || s.backupMenu || s.figure) return;
     const sl = slideByN(s.slide);
     let nextLoc: Partial<NavState>;
@@ -108,6 +125,12 @@ export const useStore = create<NavState & Actions>((set, get) => ({
   },
   prev() {
     const s = get();
+    if (s.detail) {
+      const list = detailSteps(s.slide);
+      const i = s.hseStep == null ? list.length : list.indexOf(s.hseStep);
+      set({ hseStep: i <= 0 ? null : list[i - 1] });
+      return;
+    }
     if (s.backup || s.backupMenu || s.figure) return;
     let loc: Partial<NavState>;
     if (s.stepMode && s.step > 0) loc = { step: s.step - 1 };
@@ -121,7 +144,7 @@ export const useStore = create<NavState & Actions>((set, get) => ({
   },
   goto(slide, step = 0) {
     const s = get();
-    const loc = { slide, step, backup: null, backupMenu: false, figure: false };
+    const loc = { slide, step, backup: null, backupMenu: false, figure: false, detail: false, hseStep: null };
     set({ ...loc, timer: retime(s, loc) });
   },
   toggleBackup() {
@@ -139,6 +162,7 @@ export const useStore = create<NavState & Actions>((set, get) => ({
   closeOverlay() {
     const s = get();
     if (s.figure) return set({ figure: false });
+    if (s.detail) return set(s.hseStep != null ? { hseStep: null } : { detail: false });
     if (s.help) return set({ help: false });
     if (s.backup || s.backupMenu) {
       const loc = { backup: null, backupMenu: false };
@@ -149,6 +173,8 @@ export const useStore = create<NavState & Actions>((set, get) => ({
   togglePresenter: () => set((s) => ({ presenter: !s.presenter })),
   toggleHelp: () => set((s) => ({ help: !s.help })),
   toggleFigure: () => set((s) => ({ figure: !s.figure })),
+  toggleDetail: () => set((s) => (s.detail ? { detail: false, hseStep: null } : detailSteps(s.slide).length && !s.backup ? { detail: true, hseStep: null } : {})),
+  selectHse: (n) => set({ hseStep: n }),
   toggleStepMode: () => set((s) => ({ stepMode: !s.stepMode, step: 0 })),
   toggleMode: () => set((s) => ({ mode: s.mode === '3d' && s.webglOk ? '2d' : s.webglOk ? '3d' : '2d' })),
   setWebglFailed: () => set({ webglOk: false, mode: '2d' }),

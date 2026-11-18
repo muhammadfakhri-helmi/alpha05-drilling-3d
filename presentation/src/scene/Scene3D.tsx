@@ -4,7 +4,8 @@ import { OrbitControls } from '@react-three/drei';
 import { Vector3, PerspectiveCamera } from 'three';
 import type { OrbitControls as OrbitImpl } from 'three-stdlib';
 import { useStore } from '../store.ts';
-import { slideByN, type SceneState } from '../data/content.ts';
+import { slideByN, type SceneState, type Step } from '../data/content.ts';
+import { HSE_STEPS } from '../data/hse.ts';
 import { station } from './stations.ts';
 import { Well } from './Well.tsx';
 import { Earth } from './Earth.tsx';
@@ -14,21 +15,34 @@ import { sceneLabels, LabelLayer, LabelProjector } from './labels.tsx';
 const FLIGHT_S = 1.7;
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
+/** Slide whose well state shows each HSE work step (where that work happens). */
+const HSE_SCENE_SLIDE: Record<number, number> = { 1: 1, 2: 3, 3: 3, 4: 1, 5: 5, 6: 5, 7: 6, 8: 6, 9: 8, 10: 8, 11: 8, 12: 10, 13: 10, 14: 10, 15: 10, 16: 12, 17: 13, 18: 3 };
+
 function useLocation() {
   const slide = useStore((s) => s.slide);
   const step = useStore((s) => s.step);
+  const detail = useStore((s) => s.detail);
+  const hseN = useStore((s) => s.hseStep);
   const sl = slideByN(slide);
-  const st = sl.steps[Math.min(step, sl.steps.length - 1)];
-  const scene: SceneState = { ...sl.scene, ...(st.scene ?? {}) };
-  return { sl, st, scene };
+  let st: Step = sl.steps[Math.min(step, sl.steps.length - 1)];
+  let scene: SceneState = { ...sl.scene, ...(st.scene ?? {}) };
+  const hse = detail && hseN != null ? HSE_STEPS.find((h) => h.n === hseN) ?? null : null;
+  if (hse) {
+    // fly to where the work step happens, in the well state of that phase
+    const src = slideByN(HSE_SCENE_SLIDE[hse.n]);
+    scene = { ...src.scene, ...(src.steps[0].scene ?? {}) };
+    if (hse.station === 'rig-diverter') scene = { ...scene, focus: 'cellar' };
+    st = { ...st, station: hse.station };
+  }
+  return { sl, st, scene, hse, detail };
 }
 
 /** Flies camera + orbit target to the active station; shifts the projection so the subject sits left of the HUD. */
 export const HUD_FRACTION = { md: 0.42, lg: 0.48, xl: 0.56 } as const;
 
 function CameraRig() {
-  const { st, sl } = useLocation();
-  const hudFrac = sl.kind === '2d' ? 0 : HUD_FRACTION[sl.width ?? 'md'];
+  const { st, sl, detail } = useLocation();
+  const hudFrac = detail ? 0.68 : sl.kind === '2d' ? 0 : HUD_FRACTION[sl.width ?? 'md'];
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
   const size = useThree((s) => s.size);
   const controls = useThree((s) => s.controls) as unknown as OrbitImpl | null;
@@ -127,8 +141,15 @@ function Hills() {
 
 export function Scene3D({ onFail }: { onFail: () => void }) {
   const paused = useStore((s) => slideByN(s.slide).kind === '2d' || s.backup !== null);
-  const { scene, sl, st } = useLocation();
-  const labels = useMemo(() => sceneLabels(scene, st.station, sl.kind === '2d'), [scene.built, scene.focus, scene.equipment, scene.completion, st.station, sl.kind]); // eslint-disable-line
+  const { scene, sl, st, hse } = useLocation();
+  const labels = useMemo(() => {
+    const out = sceneLabels(scene, st.station, sl.kind === '2d');
+    if (hse) {
+      const t = station(hse.station).target;
+      out.push({ id: 'hse-step', pos: [t[0], t[1] + 40, t[2] + 40], text: `Step ${hse.n} · risk ${hse.initial.l * hse.initial.s} to ${hse.residual.l * hse.residual.s}`, tone: 'orange', align: 'left', badge: true });
+    }
+    return out;
+  }, [scene.built, scene.focus, scene.equipment, scene.completion, st.station, sl.kind, hse]); // eslint-disable-line
   return (
     <>
     <Canvas

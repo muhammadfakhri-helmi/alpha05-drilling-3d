@@ -119,6 +119,7 @@ export function Help() {
     ['T', 'Mulai / jeda timer role (timer mulai otomatis saat Enter pertama)'],
     ['Shift+R', 'Reset timer'],
     ['S', 'Langkah pembicara on/off (off: Enter langsung ke slide berikutnya)'],
+    ['D', 'Detail HSE: register 18 langkah, sebelum/sesudah kontrol, kontrol EL/SB/EG/AD/PPE, QR (slide 3, 5, 6, 8, 10, 12, 13). Enter/panah pindah langkah'],
     ['I', 'Perbesar gambar slide (2, 12, 13)'],
     ['V', 'Ganti tampilan 3D / 2D'],
     ['F', 'Layar penuh'],

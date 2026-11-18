@@ -10,6 +10,7 @@ import { isPresenterWindow, remote } from './sync.ts';
  *   B   backup slide (4, 7, 9, 11)      Esc  back to the main flow
  *   P   presenter overlay               T    start / pause role timer
  *   S   speaker steps on/off            V    switch 3D / 2D view
+ *   D   report detail (HSE register, before / after controls, QR)
  *   I   enlarge slide figure            F    full screen       H or ?  help
  * Presentation clickers send PageDown / PageUp or arrows, so they work too.
  */
@@ -34,6 +35,7 @@ export function useKeyboard() {
         case 's': case 'S': handled(); return r ? remote('steps') : st.toggleStepMode();
         case 'p': case 'P': if (!r) { handled(); st.togglePresenter(); } return;
         case 'v': case 'V': if (!r) { handled(); st.toggleMode(); } return;
+        case 'd': case 'D': if (!r) { handled(); st.toggleDetail(); } return;
         case 'i': case 'I': if (!r) { handled(); st.toggleFigure(); } return;
         case 'h': case 'H': case '?': handled(); return st.toggleHelp();
         case 'f': case 'F':

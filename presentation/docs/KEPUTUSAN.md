@@ -17,6 +17,16 @@
 | 13 | Slide 5 risk matrix | Posisi lingkaran dibaca dari gambar slide: L2-S4 = 10, L2-S5 = 3, L1-S4 = 5 | - |
 | 14 | Fallback 2D | Slide 1, 3, 5 memakai foto rig dari cover PPTX; slide sumur memakai skema SVG | - |
 
+## Detail HSE (tombol D) dan QR
+
+| # | Hal | Yang dibuat |
+|---|---|---|
+| 15 | Skor sebelum/sesudah kontrol dan otoritas | Mengikuti laporan (Tabel 2.2 dan 2.3) dan PPTX slide 5: residual 5 / 10 / 3 |
+| 16 | Bahaya, dampak, dan tindakan kontrol EL/SB/EG/AD/PPE | Dari RA/JSA program (RA-ALPHA05-DRL-001 yang dirujuk Bab 2.2.2). Sumber yang ditampilkan: laporan Bab 2 |
+| 17 | Angka yang tidak ada di laporan | Kontrol AD langkah 12 menyebut uji BOP 300 psi low / sampai 4,500 psi high / annular 70 %. Angka ini hanya ada di RA/JSA. Perlu keputusan: tetap atau dihapus |
+| 18 | QR code | Mengarah ke halaman ponsel `PUBLIC_BASE?view=detail&topic=hse[&step=n]` (alamat GitHub Pages /dwop/). Baru bisa dibuka setelah branch di-merge dan Pages aktif |
+| 19 | Nama perusahaan dan logo di RA/JSA | Tidak ditampilkan |
+
 ## Belum diverifikasi
 
 - 60 fps di laptop presentasi sebenarnya. Uji di sini memakai renderer perangkat lunak (tanpa GPU); scene memakai render on-demand (hanya menggambar saat kamera bergerak), instancing, dan tanpa texture besar. Mohon dicoba di laptop dan proyektor yang akan dipakai.

@@ -12,7 +12,7 @@ import { posAt, normalAt, mdAtTvd, KOP } from '../data/trajectory.ts';
 import type { SceneState, StationId } from '../data/content.ts';
 import { RULER_X, RULER_TICKS, WALL_Z } from './Earth.tsx';
 
-export interface SceneLabel { id: string; pos: [number, number, number]; text: string; tone: 'navy' | 'orange' | 'muted'; align: 'left' | 'right' }
+export interface SceneLabel { id: string; pos: [number, number, number]; text: string; tone: 'navy' | 'orange' | 'muted'; align: 'left' | 'right'; badge?: boolean }
 
 const SECTION_IDX: Record<SectionId, number> = { s26: 0, s17: 1, s12: 2, s8: 3 };
 const SURFACE_STATIONS: StationId[] = ['rig-overview', 'location-staging', 'rig-diverter', 'surface-test', 'panel'];
@@ -73,7 +73,7 @@ export function LabelLayer({ labels }: { labels: SceneLabel[] }) {
         <div
           key={l.id}
           ref={(el) => { if (el) labelEls.set(l.id, el); else labelEls.delete(l.id); }}
-          className={`scene-label scene-label--${l.tone} scene-label--${l.align}`}
+          className={`scene-label scene-label--${l.tone} scene-label--${l.align} ${l.badge ? 'scene-label--badge' : ''}`}
           style={{ visibility: 'hidden' }}
         >
           {l.text}
