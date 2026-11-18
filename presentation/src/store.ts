@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { MAIN_SEQUENCE, BACKUP_FOR, slideByN, type RoleId } from './data/content.ts';
 import { HSE_STEPS, stepsForSlide } from './data/hse.ts';
-import { topicsFor, type TopicId } from './data/sections.ts';
+import { topicsFor, defaultTopic, type TopicId } from './data/sections.ts';
 
 /** HSE steps reachable from a slide's detail panel (slide 5 lists all 18). */
 export const detailSteps = (slide: number) => (slide === 5 ? HSE_STEPS : stepsForSlide(slide)).map((s) => s.n);
@@ -189,8 +189,8 @@ export const useStore = create<NavState & Actions>((set, get) => ({
   toggleFigure: () => set((s) => ({ figure: !s.figure })),
   toggleDetail: () => set((s) => {
     if (s.detail) return { detail: false, detailTopic: null, hseStep: null };
-    const topics = topicsFor(s.slide);
-    return topics.length && !s.backup ? { detail: true, detailTopic: topics[0].id, hseStep: null } : {};
+    const id = defaultTopic(s.slide, s.step, activeRole(s));
+    return id && !s.backup ? { detail: true, detailTopic: id, hseStep: null } : {};
   }),
   setTopic: (id) => set({ detailTopic: id, hseStep: null }),
   selectHse: (n) => set({ hseStep: n }),

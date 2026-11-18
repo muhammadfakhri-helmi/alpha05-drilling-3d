@@ -58,6 +58,14 @@ Ketidakselarasan di dalam laporan sendiri, sudah diputuskan PM:
 
 Detail 3D baru: semen lead dan tail berbeda warna (tail 500 ft di atas shoe untuk 20-in dan 13-3/8-in; untuk 9-5/8-in dari TD sampai 1,000 ft di dalam 13-3/8-in), sambungan casing per joint sesuai tally (49 / 128 / 238 / 13), dan marka zona bahaya sumur offset (clay kuning, kick merah, losses ungu) di tab Hazards.
 
+## Sinkronisasi summary dan detail (keputusan PM)
+
+| # | Hal | Yang dibuat |
+|---|---|---|
+| 24 | Gambar 3D saat detail (D) dibuka | Persis sama dengan summary: kamera tidak bergerak, kondisi sumur tidak berubah, panel detail menempati posisi dan lebar kartu summary. Animasi dan marker khusus tab (semen naik, BOP turun, zona bahaya, kamera ke langkah HSE) dihapus dari mode detail |
+| 25 | Tab pertama saat D ditekan | Mengikuti pembicara aktif: Subsurface ke Hazards, Drilling ke Casing, HSE ke HSE, Logistic ke Mud/Logistics; slide 13 mengikuti langkah (liner atau completion); slide 14 Economist ke Cost, PM ke DDR |
+| 26 | Separator test | Ilustrasi alur: wing valve, choke manifold, cleanup ke flare, lalu test separator dengan gas ke flare, oil meter dan tangki, water meter dan tangki. Ditandai "Illustrative layout"; tangki tidak ada di laporan. Animasi aliran: cleanup dulu, lalu lewat separator |
+
 ## Belum diverifikasi
 
 - 60 fps di laptop presentasi sebenarnya. Uji di sini memakai renderer perangkat lunak (tanpa GPU); scene memakai render on-demand (hanya menggambar saat kamera bergerak), instancing, dan tanpa texture besar. Mohon dicoba di laptop dan proyektor yang akan dipakai.

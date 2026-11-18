@@ -44,7 +44,7 @@ export function BlockView({ b }: { b: Block }) {
 function TopicBody({ topic }: { topic: Topic }) {
   return (
     <div className="topic">
-      <div className="topic__grid">{topic.blocks.map((b, i) => <BlockView key={i} b={b} />)}</div>
+      <div className={`topic__grid ${topic.blocks.length <= 2 ? 'topic__grid--roomy' : ''}`}>{topic.blocks.map((b, i) => <BlockView key={i} b={b} />)}</div>
     </div>
   );
 }
@@ -64,7 +64,7 @@ export function DetailPanel() {
       {open && topic && (
         <motion.section
           key="detail"
-          className="detail"
+          className={`detail detail--${slide.kind === '2d' ? 'full' : slide.width ?? 'md'}`}
           data-detail={topic.id}
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}

@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { Vector3, PerspectiveCamera } from 'three';
+import { Vector3, PerspectiveCamera, PMREMGenerator, PCFSoftShadowMap } from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import type { OrbitControls as OrbitImpl } from 'three-stdlib';
 import { useStore } from '../store.ts';
 import { slideByN, type SceneState, type Step } from '../data/content.ts';
-import { HSE_STEPS } from '../data/hse.ts';
 import type { Anim, AnimKind } from '../data/well.ts';
-import { topicsFor } from '../data/sections.ts';
 import { station } from './stations.ts';
 import { Well } from './Well.tsx';
 import { Earth } from './Earth.tsx';
@@ -17,46 +16,27 @@ import { sceneLabels, LabelLayer, LabelProjector } from './labels.tsx';
 const FLIGHT_S = 1.7;
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
-/** Slide whose well state shows each HSE work step (where that work happens). */
-const HSE_SCENE_SLIDE: Record<number, number> = { 1: 1, 2: 3, 3: 3, 4: 1, 5: 5, 6: 5, 7: 6, 8: 6, 9: 8, 10: 8, 11: 8, 12: 10, 13: 10, 14: 10, 15: 10, 16: 12, 17: 13, 18: 3 };
 
 function useLocation() {
   const slide = useStore((s) => s.slide);
   const step = useStore((s) => s.step);
-  const detail = useStore((s) => s.detail);
-  const hseN = useStore((s) => s.hseStep);
-  const topicId = useStore((s) => s.detailTopic);
   const sl = slideByN(slide);
-  let st: Step = sl.steps[Math.min(step, sl.steps.length - 1)];
-  let scene: SceneState = { ...sl.scene, ...(st.scene ?? {}) };
-  const topic = detail ? topicsFor(slide).find((t) => t.id === topicId) ?? null : null;
-  if (topic?.view) {
-    // the report topic frames its own subject (cement, BOP, completion...)
-    scene = { ...scene, ...(topic.view.scene ?? {}) };
-    if (topic.view.station) st = { ...st, station: topic.view.station };
-  }
-  const hse = detail && topicId === 'hse' && hseN != null ? HSE_STEPS.find((h) => h.n === hseN) ?? null : null;
-  if (hse) {
-    // fly to where the work step happens, in the well state of that phase
-    const src = slideByN(HSE_SCENE_SLIDE[hse.n]);
-    scene = { ...src.scene, ...(src.steps[0].scene ?? {}) };
-    if (hse.station === 'rig-diverter') scene = { ...scene, focus: 'cellar' };
-    st = { ...st, station: hse.station };
-  }
-  // stage-2 animations: cement job, BOP nipple-up, liner run, completion run
-  const kindByTopic: Record<string, AnimKind> = { cement: 'cement', wellcontrol: 'bop', liner: 'liner', completion: 'esp' };
-  let kind: AnimKind | null = topic ? kindByTopic[topic.id] ?? (topic.id === 'sequence' && slide === 13 ? 'liner' : null) : null;
-  if (!detail && slide === 13) kind = step === 0 ? 'liner' : step === 2 ? 'esp' : null;
-  const anim: Anim = { kind, key: `${slide}-${step}-${detail ? topicId : ''}-${kind}` };
-  return { sl, st, scene, hse, detail, anim };
+  const st: Step = sl.steps[Math.min(step, sl.steps.length - 1)];
+  // the 3D picture follows the summary only: opening the report detail (D)
+  // never moves the camera or changes the well, so both views show the same image
+  const scene: SceneState = { ...sl.scene, ...(st.scene ?? {}) };
+  // stage-2 animations in the main flow: liner run (13, step 1) and ESP run (13, step 4)
+  const kind: AnimKind | null = slide === 13 ? (step === 0 ? 'liner' : step === 2 ? 'esp' : null) : null;
+  const anim: Anim = { kind, key: `${slide}-${step}-${kind}` };
+  return { sl, st, scene, anim };
 }
 
 /** Flies camera + orbit target to the active station; shifts the projection so the subject sits left of the HUD. */
 export const HUD_FRACTION = { md: 0.42, lg: 0.48, xl: 0.56 } as const;
 
 function CameraRig() {
-  const { st, sl, detail } = useLocation();
-  const hudFrac = detail ? 0.68 : sl.kind === '2d' ? 0 : HUD_FRACTION[sl.width ?? 'md'];
+  const { st, sl } = useLocation();
+  const hudFrac = sl.kind === '2d' ? 0 : HUD_FRACTION[sl.width ?? 'md'];
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
   const size = useThree((s) => s.size);
   const controls = useThree((s) => s.controls) as unknown as OrbitImpl | null;
@@ -113,7 +93,8 @@ function World() {
   return (
     <>
       <fog attach="fog" args={['#E4ECF7', 30000, 60000]} />
-      <hemisphereLight args={['#ffffff', '#c9cfdc', 1.5]} />
+      <SceneEnvironment />
+      <hemisphereLight args={['#ffffff', '#c9cfdc', 0.9]} />
       <directionalLight
         position={[2600, 5200, 3400]}
         intensity={2}
@@ -136,6 +117,20 @@ function World() {
   );
 }
 
+/** Image-based lighting from a procedural studio room (no files): realistic steel and paint. */
+function SceneEnvironment() {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  useEffect(() => {
+    const pmrem = new PMREMGenerator(gl);
+    const tex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = tex;
+    scene.environmentIntensity = 0.65;
+    return () => { tex.dispose(); pmrem.dispose(); scene.environment = null; };
+  }, [gl, scene]);
+  return null;
+}
+
 /** Low-poly hills on the horizon behind the location (as in the deck photo). */
 function Hills() {
   const hills: [number, number, number, number][] = [
@@ -155,15 +150,11 @@ function Hills() {
 
 export function Scene3D({ onFail }: { onFail: () => void }) {
   const paused = useStore((s) => slideByN(s.slide).kind === '2d' || s.backup !== null);
-  const { scene, sl, st, hse } = useLocation();
+  const { scene, sl, st } = useLocation();
   const labels = useMemo(() => {
     const out = sceneLabels(scene, st.station, sl.kind === '2d');
-    if (hse) {
-      const t = station(hse.station).target;
-      out.push({ id: 'hse-step', pos: [t[0], t[1] + 40, t[2] + 40], text: `Step ${hse.n} · risk ${hse.initial.l * hse.initial.s} to ${hse.residual.l * hse.residual.s}`, tone: 'orange', align: 'left', badge: true });
-    }
     return out;
-  }, [scene.built, scene.focus, scene.equipment, scene.completion, scene.cementDetail, scene.hazards, st.station, sl.kind, hse]); // eslint-disable-line
+  }, [scene.built, scene.focus, scene.equipment, scene.completion, scene.cementDetail, scene.hazards, st.station, sl.kind]); // eslint-disable-line
   return (
     <>
     <Canvas
@@ -174,6 +165,7 @@ export function Scene3D({ onFail }: { onFail: () => void }) {
       gl={{ antialias: true, alpha: true, logarithmicDepthBuffer: true, powerPreference: 'high-performance' }}
       camera={{ fov: 38, near: 5, far: 80000, position: [3000, 1500, 4000] }}
       onCreated={({ gl }) => {
+        gl.shadowMap.type = PCFSoftShadowMap;
         gl.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); onFail(); }, { once: true });
       }}
       style={{ visibility: 'visible' }}

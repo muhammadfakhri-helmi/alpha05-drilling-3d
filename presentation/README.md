@@ -65,10 +65,11 @@ Clicker presentasi (PageDown / PageUp) juga bekerja.
 
 Semua animasi berjalan sendiri dan tidak menahan navigasi:
 
-- Tab Cement: semen naik dari shoe ke atas annulus, lead dan tail berbeda warna.
-- Tab Well control: diverter/BOP diturunkan ke wellhead (nipple up).
-- Slide 13 langkah 1 dan tab liner: liner 7-in diturunkan ke dasar sumur.
-- Slide 13 langkah 4 dan tab Completion: ESP dan tubing di-run dari permukaan sampai 6,025 ft MD.
+- Slide 13 langkah 1: liner 7-in diturunkan ke dasar sumur.
+- Slide 13 langkah 4: ESP dan tubing di-run dari permukaan sampai 6,025 ft MD.
+- Slide 13 langkah 5: aliran well test (cleanup ke flare, lalu lewat separator: gas, oil, water).
+
+Panel detail (D) tidak mengubah gambar 3D: tampilan summary dan detail selalu sama.
 - Marker window ppg (PPTX Tabel 3.1) di sisi sumur pada slide 6, 8, 10, 12.
 
 ## Skala

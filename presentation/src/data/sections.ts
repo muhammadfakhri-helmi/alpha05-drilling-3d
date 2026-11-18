@@ -971,3 +971,19 @@ export const HAZARD_MARKS: { from: number; to: number; kind: 'clay' | 'kick' | '
   { from: 8800, to: 9200, kind: 'loss', label: 'Total losses, Alpha-25 · 8,800 - 9,200 ft MD', short: 'Total losses · Alpha-25' },
   { from: 9300, to: 10000, kind: 'loss', label: 'Total losses, Alpha-4ST · 9,300 - 10,000 ft MD', short: 'Total losses · Alpha-4ST' },
 ];
+
+/** Tab that opens first on D: the one matching who is speaking (and, on 13, the step). */
+export function defaultTopic(slide: number, step: number, role: string): TopicId | null {
+  const ids = topicsFor(slide).map((t) => t.id);
+  if (!ids.length) return null;
+  const want: Record<number, Record<string, string>> = {
+    3: { log: 'logistics' }, 5: { hse: 'hse' },
+    6: { sub: 'hazards', drl: 'casing', hse: 'hse', log: 'mud' },
+    8: { sub: 'hazards', drl: 'casing', hse: 'hse', log: 'mud' },
+    10: { sub: 'hazards', drl: 'casing', hse: 'hse', log: 'mud' },
+    12: { sub: 'hazards' }, 14: { eco: 'cost', pm: 'reporting' },
+  };
+  const bySlide13 = ['liner', 'completion', 'completion', 'completion'];
+  const id = slide === 13 ? bySlide13[step] : want[slide]?.[role];
+  return id && ids.includes(id) ? id : ids[0];
+}
