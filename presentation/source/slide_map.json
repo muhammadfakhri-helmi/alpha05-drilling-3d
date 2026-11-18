@@ -1,0 +1,195 @@
+{
+ "note": "Station names are proposals; minutes per role are approved.",
+ "roles": {
+  "pm": "Project Manager",
+  "sub": "Subsurface",
+  "drl": "Drilling",
+  "hse": "HSE",
+  "log": "Logistic",
+  "eco": "Contract & Economist"
+ },
+ "minutes": {
+  "pm": 5,
+  "hse": 3.75,
+  "log": 3.75,
+  "sub": 3.25,
+  "drl": 3.25,
+  "eco": 1
+ },
+ "slides": [
+  {
+   "n": 1,
+   "title": "Cover",
+   "type": "3d",
+   "station": "rig-overview",
+   "speakers": [
+    "Project Manager"
+   ]
+  },
+  {
+   "n": 2,
+   "title": "Well summary & mission",
+   "type": "3d",
+   "station": "full-well",
+   "speakers": [
+    "Project Manager"
+   ]
+  },
+  {
+   "n": 3,
+   "title": "Logistics & materials",
+   "type": "3d",
+   "station": "location-staging",
+   "speakers": [
+    "Logistic"
+   ]
+  },
+  {
+   "n": 4,
+   "title": "LLI schedule (backup)",
+   "type": "backup",
+   "station": "panel",
+   "speakers": [
+    "Logistic"
+   ]
+  },
+  {
+   "n": 5,
+   "title": "HSE & regulatory readiness",
+   "type": "3d",
+   "station": "rig-diverter",
+   "speakers": [
+    "HSE"
+   ]
+  },
+  {
+   "n": 6,
+   "title": "Surface hole 26-in",
+   "type": "3d",
+   "station": "surface-section",
+   "speakers": [
+    "Subsurface",
+    "Drilling",
+    "HSE",
+    "Logistic"
+   ]
+  },
+  {
+   "n": 7,
+   "title": "Surface hole data (backup)",
+   "type": "backup",
+   "station": "panel",
+   "speakers": [
+    "Drilling"
+   ]
+  },
+  {
+   "n": 8,
+   "title": "Intermediate hole 17-1/2-in",
+   "type": "3d",
+   "station": "intermediate-section",
+   "speakers": [
+    "Subsurface",
+    "Drilling",
+    "HSE",
+    "Logistic"
+   ]
+  },
+  {
+   "n": 9,
+   "title": "Intermediate hole data (backup)",
+   "type": "backup",
+   "station": "panel",
+   "speakers": [
+    "Drilling"
+   ]
+  },
+  {
+   "n": 10,
+   "title": "Production hole 12-1/4-in",
+   "type": "3d",
+   "station": "production-section",
+   "speakers": [
+    "Subsurface",
+    "Drilling",
+    "HSE",
+    "Logistic"
+   ]
+  },
+  {
+   "n": 11,
+   "title": "Production hole data (backup)",
+   "type": "backup",
+   "station": "panel",
+   "speakers": [
+    "Drilling"
+   ]
+  },
+  {
+   "n": 12,
+   "title": "Reservoir section 8-1/2-in",
+   "type": "3d",
+   "station": "reservoir-td",
+   "speakers": [
+    "Subsurface"
+   ]
+  },
+  {
+   "n": 13,
+   "title": "7-in liner & completion",
+   "type": "3d",
+   "station": "liner-completion-surface-test",
+   "speakers": [
+    "Drilling",
+    "Subsurface",
+    "Project Manager"
+   ]
+  },
+  {
+   "n": 14,
+   "title": "Days, depth & cost",
+   "type": "2d",
+   "station": "panel",
+   "speakers": [
+    "Contract & Economist",
+    "Project Manager"
+   ]
+  },
+  {
+   "n": 15,
+   "title": "Management of change",
+   "type": "2d",
+   "station": "panel",
+   "speakers": [
+    "Project Manager"
+   ]
+  },
+  {
+   "n": 16,
+   "title": "Go / No-Go",
+   "type": "2d",
+   "station": "panel-light",
+   "speakers": [
+    "Project Manager"
+   ]
+  },
+  {
+   "n": 17,
+   "title": "Release gates & decision authority",
+   "type": "2d",
+   "station": "panel",
+   "speakers": [
+    "Project Manager"
+   ]
+  },
+  {
+   "n": 18,
+   "title": "Q&A",
+   "type": "2d",
+   "station": "panel-light",
+   "speakers": [
+    "Project Manager"
+   ]
+  }
+ ]
+}
