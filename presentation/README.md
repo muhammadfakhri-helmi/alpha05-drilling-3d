@@ -53,7 +53,7 @@ Clicker presentasi (PageDown / PageUp) juga bekerja.
 | `src/data/hse.ts` | Register HSE 18 langkah: skor laporan Tabel 2.2/2.3, bahaya, dampak, kontrol EL/SB/EG/AD/PPE |
 | `src/data/presenter.ts` | Poin wajib, angka hafal, serah-terima, routing Q&A (dari panduan presenter) |
 | `src/data/trajectory.ts` | Mesin trajectory J-type (port dari `app/src/trajectory.js`) |
-| `src/data/well.ts` | Geometri: hole section, casing, liner, completion, formasi anonim Fm-A..Fm-G |
+| `src/data/well.ts` | Geometri: hole section, casing, liner, completion, nama formasi sesuai laporan (Gambar 3.1) |
 | `src/scene/` | Scene R3F: rig, lokasi, BOP/diverter/tree, sumur cutaway, kamera, label |
 | `src/ui/` | HUD, panel 2D, backup, presenter, bar navigasi, skema 2D fallback |
 | `scripts/check-numbers.mjs` | Verifikasi angka di layar terhadap PPTX |

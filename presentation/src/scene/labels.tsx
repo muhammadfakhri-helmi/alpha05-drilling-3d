@@ -101,7 +101,7 @@ export function sceneLabels(state: SceneState, station: StationId, panel: boolea
   // formations (anonymised) next to the well, and the TVD ruler
   FORMATIONS.slice(1).forEach((f) => {
     const x = posAt(mdAtTvd(f.tvd))[0] - rad(30) - 140;
-    L(`fm-${f.name}`, [x, -f.tvd - 70, WALL_Z], f.name === 'Fm-G' ? 'Fm-G · reservoir' : f.name, 'muted', 'right');
+    L(`fm-${f.name}`, [x, -f.tvd - 70, WALL_Z], f.name === 'Tuban' ? 'Tuban · reservoir' : f.name, 'muted', 'right');
   });
   RULER_TICKS.forEach(([t, txt], i) => L(`tvd${t}`, [RULER_X - 90, -t + (i === 2 ? 60 : i === 3 ? -40 : 0), 0], txt, 'navy', 'right'));
   L('tvd-title', [RULER_X - 90, -160, 0], 'TVD · true scale', 'muted', 'right');

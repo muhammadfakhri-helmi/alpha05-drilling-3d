@@ -3,7 +3,7 @@
 | # | Hal | Yang dibuat sekarang | Pilihan lain |
 |---|---|---|---|
 | 1 | Enter di slide multi-pembicara (6, 8, 10, 13, 14) | Enter berpindah ke pembicara berikutnya dulu (blok aktif disorot oranye, timer role ikut pindah), baru ke slide berikutnya. Tombol S mematikannya | Enter selalu langsung ke slide berikutnya (timer role diatur manual) |
-| 2 | Nama formasi "Tuban" | Kartu HUD memakai teks PPTX apa adanya ("Tuban carbonate", "Top of Tuban", slide 2, 10, 12). Scene 3D memakai Fm-A..Fm-G | Ganti "Tuban" di HUD menjadi nama anonim (berbeda dari PPTX) |
+| 2 | Nama formasi "Tuban" | Kartu HUD memakai teks PPTX apa adanya ("Tuban carbonate", "Top of Tuban", slide 2, 10, 12). Scene 3D kini juga memakai nama laporan (lihat #27) | Ganti "Tuban" di HUD menjadi nama anonim (berbeda dari PPTX) |
 | 3 | Logo di PPTX (cover dan tiap slide) | Tidak ditampilkan, mengikuti aturan tanpa nama operator/kontraktor/vendor | Tampilkan logo seperti PPTX |
 | 4 | Kedalaman ESP di scene | Mengikuti PPTX: intake 6,013 ft, EOT 6,025 ft MD. Data repo lama (8,750-8,840 ft) tidak dipakai | - |
 | 5 | Nilai repo yang dipakai hanya untuk menggambar (tanpa angka di layar) | Liner top 9,108 ft MD (label "Liner top (TOL)" tanpa angka), shoe conductor 120 ft, interval perforasi 9,330-9,570 ft MD, build rate 2°/100 ft, top formasi | Hapus elemen ini atau beri "[perlu data]" |
@@ -65,6 +65,12 @@ Detail 3D baru: semen lead dan tail berbeda warna (tail 500 ft di atas shoe untu
 | 24 | Gambar 3D saat detail (D) dibuka | Persis sama dengan summary: kamera tidak bergerak, kondisi sumur tidak berubah, panel detail menempati posisi dan lebar kartu summary. Animasi dan marker khusus tab (semen naik, BOP turun, zona bahaya, kamera ke langkah HSE) dihapus dari mode detail |
 | 25 | Tab pertama saat D ditekan | Mengikuti pembicara aktif: Subsurface ke Hazards, Drilling ke Casing, HSE ke HSE, Logistic ke Mud/Logistics; slide 13 mengikuti langkah (liner atau completion); slide 14 Economist ke Cost, PM ke DDR |
 | 26 | Separator test | Ilustrasi alur: wing valve, choke manifold, cleanup ke flare, lalu test separator dengan gas ke flare, oil meter dan tangki, water meter dan tangki. Ditandai "Illustrative layout"; tangki tidak ada di laporan. Animasi aliran: cleanup dulu, lalu lewat separator |
+
+## Nama formasi
+
+| # | Hal | Yang dibuat |
+|---|---|---|
+| 27 | Nama formasi di 3D dan skema 2D | Atas permintaan PM, memakai nama di laporan (Gambar 3.1 Well Prognosis): Alluvium, Lidah, Kawengan · Mundu Mbr., Kawengan · Ledok Mbr., Wonocolo, Ngrayong, Tuban. Menggantikan nama anonim Fm-A..Fm-G |
 
 ## Belum diverifikasi
 

@@ -76,15 +76,15 @@ export const COMPLETION = {
   perfs: [[9330, 9360], [9400, 9430], [9470, 9500], [9540, 9570]] as [number, number][],
 };
 
-/** Anonymised formation tops (repo). tvd = top. Colours tuned for the light theme. */
+/** Formation tops and names as in the drilling program (Figure 3.1 Well Prognosis). tvd = top. */
 export const FORMATIONS = [
-  { name: 'Fm-A', tvd: 0, color: '#E3D3AE' },
-  { name: 'Fm-B', tvd: 630, color: '#D3C9A6' },
-  { name: 'Fm-C', tvd: 2158, color: '#C4C6A7' },
-  { name: 'Fm-D', tvd: 4728, color: '#DAD5C3' },
-  { name: 'Fm-E', tvd: 5318, color: '#CBC3AA' },
-  { name: 'Fm-F', tvd: 7388, color: '#BDBBA4' },
-  { name: 'Fm-G', tvd: 8261, color: '#E8D7A4' },
+  { name: 'Alluvium', tvd: 0, color: '#E3D3AE' },
+  { name: 'Lidah', tvd: 630, color: '#D3C9A6' },
+  { name: 'Kawengan · Mundu Mbr.', tvd: 2158, color: '#C4C6A7' },
+  { name: 'Kawengan · Ledok Mbr.', tvd: 4728, color: '#DAD5C3' },
+  { name: 'Wonocolo', tvd: 5318, color: '#CBC3AA' },
+  { name: 'Ngrayong', tvd: 7388, color: '#BDBBA4' },
+  { name: 'Tuban', tvd: 8261, color: '#E8D7A4' },
 ];
 export const EARTH_BOTTOM_TVD = 9900;
 
