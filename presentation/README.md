@@ -36,7 +36,7 @@ Untuk laptop presentasi tanpa internet: salin `dist-single/index.html` dan buka 
 | P | Mode presenter: role aktif, timer per role, poin wajib, angka hafal, kalimat serah-terima. Tombol "Buka di jendela kedua" untuk layar extended |
 | T / Shift+R | Mulai-jeda / reset timer (timer mulai otomatis pada Enter pertama) |
 | S | Langkah pembicara on/off (off = Enter langsung ke slide berikutnya) |
-| D | Detail HSE (slide 3, 5, 6, 8, 10, 12, 13): matriks sebelum/sesudah kontrol, register 18 langkah, kontrol EL/SB/EG/AD/PPE per langkah, QR ke halaman ponsel. Enter/panah pindah langkah, kamera terbang ke lokasi langkah; Esc kembali |
+| D | Detail laporan (slide 3, 5, 6, 8, 10, 12, 13). Tab 1-7: HSE (sebelum/sesudah kontrol, EL/SB/EG/AD/PPE), Casing, Cement, Mud, Well control, Hazards, Sequence; slide 13: liner dan completion. Angka 1-7 pindah tab, Enter/panah maju-mundur (di HSE per langkah), kamera 3D mengikuti tab. Esc kembali |
 | I | Perbesar gambar slide (2, 12, 13) |
 | V | Ganti tampilan 3D / 2D |
 | F | Layar penuh |
@@ -49,6 +49,7 @@ Clicker presentasi (PageDown / PageUp) juga bekerja.
 | Berkas | Isi |
 |---|---|
 | `src/data/content.ts` | Teks 18 slide, disalin dari PPTX v4 (`source/slides_text.md`). Satu-satunya sumber teks HUD |
+| `src/data/sections.ts` | Detail laporan per slide: casing, semen, lumpur, well control, bahaya offset, urutan operasi, liner, completion (dengan rujukan tabel) |
 | `src/data/hse.ts` | Register HSE 18 langkah: skor laporan Tabel 2.2/2.3, bahaya, dampak, kontrol EL/SB/EG/AD/PPE |
 | `src/data/presenter.ts` | Poin wajib, angka hafal, serah-terima, routing Q&A (dari panduan presenter) |
 | `src/data/trajectory.ts` | Mesin trajectory J-type (port dari `app/src/trajectory.js`) |
@@ -61,7 +62,7 @@ Clicker presentasi (PageDown / PageUp) juga bekerja.
 
 ## QR dan halaman ponsel
 
-QR di panel detail mengarah ke `src/config.ts` `PUBLIC_BASE` (GitHub Pages `/dwop/`) dengan `?view=detail&topic=hse&step=n`. Halaman itu ringan (tanpa 3D) dan dirancang untuk ponsel. QR baru berfungsi setelah situs ter-deploy.
+QR di panel detail mengarah ke `src/config.ts` `PUBLIC_BASE` (GitHub Pages `/dwop/`) dengan `?view=detail&topic=hse&step=n` (register HSE) atau `?view=detail&slide=n&topic=id` (detail section). Halaman itu ringan (tanpa 3D) dan dirancang untuk ponsel. QR baru berfungsi setelah situs ter-deploy.
 
 ## Skala
 

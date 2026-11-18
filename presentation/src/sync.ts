@@ -13,7 +13,7 @@ const CHANNEL = 'alpha05-dwop';
 export const isPresenterWindow = new URLSearchParams(location.search).get('view') === 'presenter';
 
 const pick = (s: NavState): Partial<NavState> => ({
-  slide: s.slide, step: s.step, backup: s.backup, backupMenu: s.backupMenu, stepMode: s.stepMode, timer: s.timer, detail: s.detail, hseStep: s.hseStep,
+  slide: s.slide, step: s.step, backup: s.backup, backupMenu: s.backupMenu, stepMode: s.stepMode, timer: s.timer, detail: s.detail, detailTopic: s.detailTopic, hseStep: s.hseStep,
 });
 
 let ch: BroadcastChannel | null = null;

@@ -25,7 +25,7 @@ export const QA_MINUTES = 10;
 export type StationId =
   | 'rig-overview' | 'full-well' | 'location-staging' | 'rig-diverter'
   | 'surface-section' | 'intermediate-section' | 'production-section' | 'reservoir-td'
-  | 'liner' | 'liner-lap' | 'esp' | 'surface-test' | 'panel';
+  | 'liner' | 'liner-lap' | 'esp' | 'surface-test' | 'panel' | 'hazard-deep';
 
 export type Equipment = 'none' | 'diverter' | 'bop21' | 'bop13' | 'tree';
 export type Focus = SectionId | 'liner' | 'lap' | 'perfs' | 'esp' | 'separator' | 'cellar' | 'site' | 'rig' | null;
@@ -38,6 +38,9 @@ export interface SceneState {
   rig: 'drilling' | 'workover';
   focus: Focus;
   completion?: boolean;
+  /** report detail overlays */
+  cementDetail?: boolean;
+  hazards?: boolean;
 }
 
 export interface Step {

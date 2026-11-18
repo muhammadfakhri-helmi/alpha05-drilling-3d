@@ -189,7 +189,7 @@ export const HSE_STEPS: HseStep[] = [
       EL: "Do not drill into the next pressure interval until BOP and shoe-integrity acceptance criteria are met.",
       SB: "Use remote testing and isolate the test area from non-essential personnel.",
       EG: "Verify test plug, pressure-rated lines, restraints, calibrated gauges, barriers and accumulator condition.",
-      AD: "Use approved test pressure and sequence; BOD reference is 300 psi low pressure and normally up to 4,500 psi high pressure for the 5M stack, subject to approved program and weakest component; annular test basis is 70% rated working pressure; perform accumulator drawdown test; record/witness charts.",
+      AD: "Use approved test pressure and sequence, subject to the approved program and the weakest exposed component; perform accumulator drawdown test; record/witness charts.",
       PPE: "Standard rig PPE, face/eye protection and hearing protection.",
     },
   },

@@ -8,7 +8,7 @@ import { Hud, BackupMenu, FigureView, Help } from './ui/Hud.tsx';
 import { Bar } from './ui/Bar.tsx';
 import { Presenter } from './ui/Presenter.tsx';
 import { Schematic } from './ui/Schematic.tsx';
-import { HseDetail } from './ui/HseDetail.tsx';
+import { DetailPanel } from './ui/DetailPanel.tsx';
 import { MobileDetail } from './ui/MobileDetail.tsx';
 
 const isDetailPage = new URLSearchParams(location.search).get('view') === 'detail';
@@ -59,7 +59,7 @@ export function App() {
         </>
       )}
       <Hud />
-      <HseDetail />
+      <DetailPanel />
       <Bar mode={mode} />
       <Presenter />
       <BackupMenu />

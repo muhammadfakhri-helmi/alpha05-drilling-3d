@@ -7,3 +7,7 @@ export const PUBLIC_BASE = 'https://muhammadfakhri-helmi.github.io/alpha05-drill
 
 export const detailUrl = (topic: string, step?: number) =>
   `${PUBLIC_BASE}?view=detail&topic=${topic}${step ? `&step=${step}` : ''}`;
+
+/** Phone page with the report detail of one slide (all topics). */
+export const slideDetailUrl = (slide: number, topic?: string) =>
+  `${PUBLIC_BASE}?view=detail&slide=${slide}${topic ? `&topic=${topic}` : ''}`;

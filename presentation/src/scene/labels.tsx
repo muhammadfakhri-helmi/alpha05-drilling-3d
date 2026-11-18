@@ -7,7 +7,8 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import { Vector3 } from 'three';
-import { CASINGS, COMPLETION, FORMATIONS, rad, type SectionId } from '../data/well.ts';
+import { CASINGS, COMPLETION, FORMATIONS, HOLES, rad, type SectionId } from '../data/well.ts';
+import { HAZARD_MARKS } from '../data/sections.ts';
 import { posAt, normalAt, mdAtTvd, KOP } from '../data/trajectory.ts';
 import type { SceneState, StationId } from '../data/content.ts';
 import { RULER_X, RULER_TICKS, WALL_Z } from './Earth.tsx';
@@ -52,6 +53,33 @@ export function sceneLabels(state: SceneState, station: StationId, panel: boolea
   if (state.completion) { const [x, y] = posAt(COMPLETION.intakeMd); L('esp', [x + 130, y, 0], 'ESP · Intake 6,013 ft', 'orange'); }
   if (linerShown && (state.focus === 'liner' || state.focus === 'perfs')) { const [x, y] = posAt(9108); L('tol', [x - 150, y, 0], 'Liner top (TOL)', 'navy', 'right'); }
   if (linerShown && (state.focus === 'perfs' || state.completion)) { const [x, y] = posAt(9450); L('perf', [x - 150, y, 0], 'Perforation', 'orange', 'right'); }
+
+  // cement job detail: lead and tail of the string being cemented (report Table 4.16)
+  if (state.cementDetail) {
+    const c = CASINGS.find((x) => x.section === state.focus);
+    const txt: Record<string, [string, string]> = {
+      c20: ['Lead 12 / 13.5 ppg', 'Tail 15.8 ppg'],
+      c13: ['Lead 14 ppg', 'Tail 15.8 ppg'],
+      c9: ['Lead 16 ppg', 'Tail 16.2 ppg'],
+    };
+    if (c && c.tailTop && txt[c.key]) {
+      const hole = HOLES.find((h) => h.id === c.section)!;
+      const at = (md: number, d: number): [number, number, number] => { const [x, y] = posAt(md); const [nx, ny] = normalAt(md); return [x - nx * d, y - ny * d, 0]; };
+      const d = rad(c.hole ?? c.od) + 40;
+      L('lead', at(Math.max(hole.top + 150, c.tailTop - 350), d), txt[c.key][0], 'navy', 'right');
+      L('tail', at(Math.max(hole.top + 300, (c.tailTop + c.shoe) / 2), d), txt[c.key][1], 'orange', 'right');
+    }
+  }
+  // offset-well hazard intervals near the section in view (report Tables 3.3 / 3.4)
+  if (state.hazards && focusIdx >= 0) {
+    const sec = HOLES[focusIdx];
+    HAZARD_MARKS.filter((h) => h.to > sec.top - 400 && h.from < sec.bottom).forEach((h, k) => {
+      const md = Math.min(Math.max((h.from + h.to) / 2, sec.top), Math.min(sec.bottom, 9604));
+      const [x, y] = posAt(md); const [nx, ny] = normalAt(md);
+      const d = rad(sec.holeIn) + 110;
+      L(`hz${k}`, [x + nx * d, y + ny * d + 160 - k * 110, 0], h.short, h.kind === 'clay' ? 'navy' : 'orange');
+    });
+  }
 
   // formations (anonymised) next to the well, and the TVD ruler
   FORMATIONS.slice(1).forEach((f) => {

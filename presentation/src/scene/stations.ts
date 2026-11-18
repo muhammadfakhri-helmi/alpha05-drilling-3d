@@ -28,6 +28,7 @@ export function station(id: StationId): Station {
     case 'liner-lap': { const t = at(9330, 0, 0); return { target: t, position: from(t, [-380, 160, 1250]) }; }
     case 'esp': { const t = at(6000, 0, 0); return { target: t, position: from(t, [330, 150, 900]) }; }
     case 'surface-test': { const t: [number, number, number] = [-700, 220, 500]; return { target: t, position: from(t, [1700, 900, 2600]) }; }
+    case 'hazard-deep': { const t = at(8300, 380, -150); return { target: t, position: from(t, [700, 250, 3300]) }; }
     case 'panel': { const t: [number, number, number] = [1700, -3200, 0]; return { target: t, position: from(t, [-5200, 7800, 15000]) }; }
   }
 }

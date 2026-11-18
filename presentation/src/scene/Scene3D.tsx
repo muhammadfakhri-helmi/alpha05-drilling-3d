@@ -6,6 +6,7 @@ import type { OrbitControls as OrbitImpl } from 'three-stdlib';
 import { useStore } from '../store.ts';
 import { slideByN, type SceneState, type Step } from '../data/content.ts';
 import { HSE_STEPS } from '../data/hse.ts';
+import { topicsFor } from '../data/sections.ts';
 import { station } from './stations.ts';
 import { Well } from './Well.tsx';
 import { Earth } from './Earth.tsx';
@@ -23,10 +24,17 @@ function useLocation() {
   const step = useStore((s) => s.step);
   const detail = useStore((s) => s.detail);
   const hseN = useStore((s) => s.hseStep);
+  const topicId = useStore((s) => s.detailTopic);
   const sl = slideByN(slide);
   let st: Step = sl.steps[Math.min(step, sl.steps.length - 1)];
   let scene: SceneState = { ...sl.scene, ...(st.scene ?? {}) };
-  const hse = detail && hseN != null ? HSE_STEPS.find((h) => h.n === hseN) ?? null : null;
+  const topic = detail ? topicsFor(slide).find((t) => t.id === topicId) ?? null : null;
+  if (topic?.view) {
+    // the report topic frames its own subject (cement, BOP, completion...)
+    scene = { ...scene, ...(topic.view.scene ?? {}) };
+    if (topic.view.station) st = { ...st, station: topic.view.station };
+  }
+  const hse = detail && topicId === 'hse' && hseN != null ? HSE_STEPS.find((h) => h.n === hseN) ?? null : null;
   if (hse) {
     // fly to where the work step happens, in the well state of that phase
     const src = slideByN(HSE_SCENE_SLIDE[hse.n]);
@@ -149,7 +157,7 @@ export function Scene3D({ onFail }: { onFail: () => void }) {
       out.push({ id: 'hse-step', pos: [t[0], t[1] + 40, t[2] + 40], text: `Step ${hse.n} · risk ${hse.initial.l * hse.initial.s} to ${hse.residual.l * hse.residual.s}`, tone: 'orange', align: 'left', badge: true });
     }
     return out;
-  }, [scene.built, scene.focus, scene.equipment, scene.completion, st.station, sl.kind, hse]); // eslint-disable-line
+  }, [scene.built, scene.focus, scene.equipment, scene.completion, scene.cementDetail, scene.hazards, st.station, sl.kind, hse]); // eslint-disable-line
   return (
     <>
     <Canvas

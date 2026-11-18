@@ -5,6 +5,8 @@ import { CASINGS, HOLES, COMPLETION, CELLAR_Y, rad, type SectionId } from '../da
 import { TD } from '../data/trajectory.ts';
 import { halfShell, ribbon, shoeTriangles, axisPoints, tube } from './geometry.ts';
 import { C } from '../theme.ts';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { HAZARD_MARKS } from '../data/sections.ts';
 import type { SceneState } from '../data/content.ts';
 
 const TOP_MD = -CELLAR_Y; // casing heads land on the cellar floor (schematic surface model)
@@ -18,7 +20,12 @@ function useMaterials() {
     casing: new MeshStandardMaterial({ color: C.steel, roughness: 0.42, metalness: 0.45, side: DoubleSide }),
     liner: new MeshStandardMaterial({ color: C.steelLight, roughness: 0.42, metalness: 0.45, side: DoubleSide }),
     wall: new MeshBasicMaterial({ color: C.slate, side: DoubleSide }),
-    cement: new MeshBasicMaterial({ color: C.cement, side: DoubleSide }),
+    cement: new MeshBasicMaterial({ color: '#DCD4C1', side: DoubleSide }),
+    tail: new MeshBasicMaterial({ color: '#B3A78A', side: DoubleSide }),
+    coupling: new MeshBasicMaterial({ color: '#2C3448', side: DoubleSide }),
+    clay: new MeshBasicMaterial({ color: '#E9B530', side: DoubleSide }),
+    kick: new MeshBasicMaterial({ color: '#C3332A', side: DoubleSide }),
+    loss: new MeshBasicMaterial({ color: '#6A4FC4', side: DoubleSide }),
     shoe: new MeshBasicMaterial({ color: C.navy, side: DoubleSide }),
     tubing: new MeshStandardMaterial({ color: C.blue, roughness: 0.4, metalness: 0.3, side: DoubleSide }),
     tubingWall: new MeshBasicMaterial({ color: C.blue, side: DoubleSide }),
@@ -52,19 +59,41 @@ export function Well({ state }: { state: SceneState }) {
       const r = rad(c.od);
       // cement annulus: outer boundary = previous string ID above its shoe, hole below
       const prev = CASINGS[i - 1];
-      const cement = [] as ReturnType<typeof ribbon>[];
+      const lead = [] as ReturnType<typeof ribbon>[];
+      const tail = [] as ReturnType<typeof ribbon>[];
       if (c.hole && prev) {
         const prevId = rad(prev.od) - wall(prev.od);
         const split = prev.shoe;
-        if (top < split) cement.push(ribbon(top, Math.min(split, c.shoe), r, prevId, 0.3));
-        if (c.shoe > split) cement.push(ribbon(Math.max(top, split), c.shoe, r, rad(c.hole), 0.3));
+        const tt = c.tailTop ?? top;
+        // split each annulus piece at the outer-boundary change and at the top of tail
+        const pieces: [number, number, number][] = [];
+        if (top < split) pieces.push([top, Math.min(split, c.shoe), prevId]);
+        if (c.shoe > split) pieces.push([Math.max(top, split), c.shoe, rad(c.hole)]);
+        for (const [a, b, ro] of pieces) {
+          if (a < tt) lead.push(ribbon(a, Math.min(b, tt), r, ro, 0.3));
+          if (b > tt) tail.push(ribbon(Math.max(a, tt), b, r, ro, 0.3));
+        }
+      }
+      // couplings: one per joint of the tally, spaced evenly along the string
+      let couplings: ReturnType<typeof ribbon> | null = null;
+      if (c.joints) {
+        const len = (c.shoe - top) / c.joints;
+        const parts: ReturnType<typeof ribbon>[] = [];
+        for (let j = 1; j < c.joints; j++) {
+          const md = top + j * len;
+          parts.push(ribbon(md - 2.5, md + 2.5, r - wall(c.od) * 1.1, r + wall(c.od) * 0.9, 1));
+        }
+        couplings = mergeGeometries(parts);
+        parts.forEach((g) => g.dispose());
       }
       return {
         key: c.key,
         shell: halfShell(top, c.shoe, r),
         wall: ribbon(top, c.shoe, r - wall(c.od), r, 0.8),
         shoe: shoeTriangles(c.shoe, r, Math.max(rad(c.od) * 0.45, 6), 1),
-        cement,
+        lead,
+        tail,
+        couplings,
         hanger: c.liner ? ribbon(c.top, c.top + 40, r, rad(9.625) - wall(9.625), 1.2) : null,
       };
     });
@@ -96,7 +125,14 @@ export function Well({ state }: { state: SceneState }) {
         mud: ribbon(h.top, h.bottom, 0, rad(h.holeIn), -0.8),
       };
     });
-    return { holes, casings, completion, perfs, strings };
+    // hazard intervals from the offset wells (report Tables 3.3 / 3.4), on the high side of the hole
+    const hazards = HAZARD_MARKS.map((h, i) => {
+      const a = Math.min(h.from, TD), b = Math.min(h.to, TD);
+      const hole = HOLES.find((x) => a >= x.top && a < x.bottom) ?? HOLES[3];
+      const r0 = rad(hole.holeIn) + 14 + (h.kind === 'clay' ? 0 : h.kind === 'kick' ? 18 : 36);
+      return { i, kind: h.kind, g: ribbon(a, Math.max(b, a + 12), r0, r0 + 14, 2, [1]) };
+    });
+    return { holes, casings, completion, perfs, strings, hazards };
   }, []);
 
   const lastDrilled = drilledIdx >= 0 ? HOLES[drilledIdx].bottom : 120;
@@ -130,7 +166,9 @@ export function Well({ state }: { state: SceneState }) {
               <mesh geometry={c.shell} material={def.liner ? m.liner : m.casing} />
               <mesh geometry={c.wall} material={m.wall} />
               <mesh geometry={c.shoe} material={m.shoe} />
-              {c.cement.map((g, k) => <mesh key={k} geometry={g} material={m.cement} />)}
+              {c.lead.map((g, k) => <mesh key={`l${k}`} geometry={g} material={m.cement} />)}
+              {c.tail.map((g, k) => <mesh key={`t${k}`} geometry={g} material={m.tail} />)}
+              {c.couplings && <mesh geometry={c.couplings} material={m.coupling} />}
               {c.hanger && <mesh geometry={c.hanger} material={m.shoe} />}
             </group>
             <group visible={planned}>
@@ -159,6 +197,10 @@ export function Well({ state }: { state: SceneState }) {
           <mesh geometry={st.bit} material={m.bit} />
         </group>
       ))}
+
+      <group visible={!!state.hazards}>
+        {geo.hazards.map((h) => <mesh key={h.i} geometry={h.g} material={m[h.kind]} />)}
+      </group>
 
       <group visible={showPerfs}>
         {geo.perfs.map((g, i) => <mesh key={i} geometry={g} material={m.perf} />)}

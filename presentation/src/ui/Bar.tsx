@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useStore, activeRole, elapsedNow, detailSteps } from '../store.ts';
+import { useStore, activeRole, elapsedNow } from '../store.ts';
+import { topicsFor } from '../data/sections.ts';
 import { SLIDES, ROLES, PRESENTATION_MINUTES, slideByN } from '../data/content.ts';
 
 export const fmt = (ms: number) => {
@@ -47,7 +48,7 @@ export function Bar({ mode }: { mode: '3d' | '2d' }) {
       {s.stepMode && slide.steps.length > 1 && !s.backup && (
         <span className="bar__steps">{slide.steps.map((_, i) => <i key={i} className={i === s.step ? 'is-on' : ''} />)}</span>
       )}
-      {!s.backup && !s.detail && detailSteps(s.slide).length > 0 && <span className="detail-hint">D · HSE detail</span>}
+      {!s.backup && !s.detail && topicsFor(s.slide).length > 0 && <span className="detail-hint">D · Report detail</span>}
       <span className="bar__who">{role.name}</span>
       {s.timer.started && <span className={`timer-chip ${remaining < 0 ? 'is-over' : ''}`}>{fmt(remaining)}</span>}
       <span className="bar__count">{s.backup ? `Backup ${s.backup}` : `${s.slide} / 18`}</span>

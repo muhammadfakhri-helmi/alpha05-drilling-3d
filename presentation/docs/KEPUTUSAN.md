@@ -23,9 +23,24 @@
 |---|---|---|
 | 15 | Skor sebelum/sesudah kontrol dan otoritas | Mengikuti laporan (Tabel 2.2 dan 2.3) dan PPTX slide 5: residual 5 / 10 / 3 |
 | 16 | Bahaya, dampak, dan tindakan kontrol EL/SB/EG/AD/PPE | Dari RA/JSA program (RA-ALPHA05-DRL-001 yang dirujuk Bab 2.2.2). Sumber yang ditampilkan: laporan Bab 2 |
-| 17 | Angka yang tidak ada di laporan | Kontrol AD langkah 12 menyebut uji BOP 300 psi low / sampai 4,500 psi high / annular 70 %. Angka ini hanya ada di RA/JSA. Perlu keputusan: tetap atau dihapus |
+| 17 | Angka yang tidak ada di laporan | Angka uji BOP di kontrol AD langkah 12 (hanya ada di RA/JSA) sudah dihapus atas keputusan PM |
 | 18 | QR code | Mengarah ke halaman ponsel `PUBLIC_BASE?view=detail&topic=hse[&step=n]` (alamat GitHub Pages /dwop/). Baru bisa dibuka setelah branch di-merge dan Pages aktif |
 | 19 | Nama perusahaan dan logo di RA/JSA | Tidak ditampilkan |
+
+## Detail laporan per section (tombol D, tab 1-7)
+
+Tab per slide: 6, 8, 10 = HSE, Casing, Cement, Mud, Well control, Hazards, Sequence; 12 = HSE, Drill-in fluid, Hazards, Sequence; 13 = HSE, 7-in liner, Liner sequence, Completion; 3 dan 5 = HSE. Setiap tab menulis tabel/bagian laporan sumbernya dan punya QR ke halaman ponsel slide itu. Cek angka: `docs/number-check-detail.md` (986 angka, 0 tidak cocok).
+
+Ketidakselarasan di dalam laporan sendiri (yang ditampilkan: nilai tabel):
+
+| # | Hal | Ditampilkan | Teks lain di laporan |
+|---|---|---|---|
+| 20 | Excess semen 9-5/8-in | 25% of caliper (12.6 in), Tabel 4.16 | Bagian 5.5: 30% open-hole excess |
+| 21 | Densitas slurry 9-5/8-in | Lead 16 ppg, tail 16.2 ppg (Tabel 4.16/4.17) | Bagian 5.5: lead 15.8–16.2 ppg, tail 16.0–16.4 ppg |
+| 22 | KCl lumpur 12-1/4-in | Tabel 4.25: 5 %wt, dan Tabel 4.27: 7% naik ke 9% (keduanya tampil di tab Mud) | - |
+| 23 | Casing head | 20-3/4-in x 20 (Bab 8) | Data repo lama: 21-1/4 x 20 (tidak dipakai) |
+
+Detail 3D baru: semen lead dan tail berbeda warna (tail 500 ft di atas shoe untuk 20-in dan 13-3/8-in; untuk 9-5/8-in dari TD sampai 1,000 ft di dalam 13-3/8-in), sambungan casing per joint sesuai tally (49 / 128 / 238 / 13), dan marka zona bahaya sumur offset (clay kuning, kick merah, losses ungu) di tab Hazards.
 
 ## Belum diverifikasi
 

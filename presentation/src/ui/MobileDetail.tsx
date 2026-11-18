@@ -1,12 +1,51 @@
 import { useEffect, useState } from 'react';
 import { HSE_STEPS, BANDS, bandOf, CONTROL_NAMES, LIKELIHOOD, SEVERITY, type ControlKey } from '../data/hse.ts';
+import { topicsFor } from '../data/sections.ts';
+import { slideByN } from '../data/content.ts';
+import { BlockView } from './DetailPanel.tsx';
 
 const KEYS: ControlKey[] = ['EL', 'SB', 'EG', 'AD', 'PPE'];
 const score = (x: { l: number; s: number }) => x.l * x.s;
 
-/** Phone page opened from the QR codes: ?view=detail&topic=hse[&step=n]. */
+/** Phone page with the report detail of one slide: ?view=detail&slide=n[&topic=id]. */
+function MobileSlideDetail({ slide, topic }: { slide: number; topic: string | null }) {
+  const sl = slideByN(slide);
+  const topics = topicsFor(slide).filter((t) => t.id !== 'hse');
+  useEffect(() => {
+    document.title = `ALPHA-05 ${sl.title} detail`;
+    if (topic) document.getElementById(`topic-${topic}`)?.scrollIntoView({ block: 'start' });
+  }, [topic, sl.title]);
+  return (
+    <main className="m-detail">
+      <header className="m-head">
+        <div className="kicker">ALPHA-05 · {sl.kicker}</div>
+        <h1>{sl.title}</h1>
+        <nav className="m-toc">
+          {topics.map((t) => <a key={t.id} href={`#topic-${t.id}`}>{t.label}</a>)}
+          <a href="?view=detail&topic=hse">HSE register</a>
+        </nav>
+      </header>
+      {topics.map((t) => (
+        <section key={t.id} id={`topic-${t.id}`} className="m-topic">
+          <h2>{t.title}</h2>
+          <div className="note">Drilling program · {t.source}</div>
+          {t.blocks.map((b, i) => <div key={i} className="m-block"><BlockView b={b} /></div>)}
+        </section>
+      ))}
+      <footer className="m-foot">ALPHA-05 Drilling Program</footer>
+    </main>
+  );
+}
+
+/** Phone page opened from the QR codes: ?view=detail&topic=hse[&step=n] or &slide=n. */
 export function MobileDetail() {
   const params = new URLSearchParams(location.search);
+  const slideParam = Number(params.get('slide'));
+  if (slideParam && topicsFor(slideParam).some((t) => t.id !== 'hse')) return <MobileSlideDetail slide={slideParam} topic={params.get('topic')} />;
+  return <HseRegisterPage params={params} />;
+}
+
+function HseRegisterPage({ params }: { params: URLSearchParams }) {
   const first = Number(params.get('step')) || null;
   const [open, setOpen] = useState<number | null>(first);
   useEffect(() => {

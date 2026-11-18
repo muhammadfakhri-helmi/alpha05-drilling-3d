@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { useStore, detailSteps } from '../store.ts';
 import { HSE_STEPS, BANDS, bandOf, CONTROL_NAMES, LIKELIHOOD, SEVERITY, type HseStep, type ControlKey } from '../data/hse.ts';
@@ -133,9 +132,8 @@ function StepCard({ st }: { st: HseStep }) {
   );
 }
 
-/** Report detail panel (D): HSE register with before/after controls for the current slide. */
-export function HseDetail() {
-  const open = useStore((s) => s.detail);
+/** HSE topic of the detail panel: register with before/after controls for the current slide. */
+export function HseBody() {
   const slide = useStore((s) => s.slide);
   const sel = useStore((s) => s.hseStep);
   const pick = useStore((s) => s.selectHse);
@@ -144,57 +142,35 @@ export function HseDetail() {
   const st = sel != null ? HSE_STEPS.find((s) => s.n === sel) ?? null : null;
   const all = slide === 5;
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.section
-          key="hse"
-          className="detail"
-          data-detail="hse"
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 20 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="panel__head">
-            <div>
-              <div className="kicker">HSE detail · risk register</div>
-              <h1 className="title">Before &amp; after <span className="accent">controls</span></h1>
+    <div className="detail__body">
+      <StepList steps={steps} selected={sel} onPick={pick} />
+      {st ? (
+        <StepCard st={st} />
+      ) : (
+        <div className="overview">
+          <div className="overview__mats">
+            <div><StepMatrix steps={steps} pick="initial" selected={null} title="Before controls" onPick={pick} /><BandCounts steps={steps} pick="initial" /></div>
+            <span className="arrow-r arrow-r--big" aria-hidden="true" />
+            <div><StepMatrix steps={steps} pick="residual" selected={null} title="After controls (residual)" onPick={pick} /><BandCounts steps={steps} pick="residual" /></div>
+          </div>
+          <div className="overview__foot">
+            <div className="overview__notes">
+              <div className="label">How the controls work</div>
+              <ul className="bullets bullets--sm">
+                <li>Each step is scored likelihood × severity before and after controls.</li>
+                <li>Controls follow the hierarchy: Elimination, Substitution, Engineering, Administrative, PPE.</li>
+                <li>Controls mainly lower the likelihood; the severity of the hazard stays.</li>
+                <li>Residual risk sets who approves the work.</li>
+              </ul>
+              {!all && <div className="note">Steps for this slide. All 18 steps: slide 5 · D</div>}
             </div>
-            <div className="detail__keys"><span className="kbd">Enter</span> next step <span className="kbd">Esc</span> {st ? 'overview' : 'close'}</div>
+            <div className="qr-box">
+              <Qr text={detailUrl('hse')} size="8.5rem" />
+              <span>Scan for the full register</span>
+            </div>
           </div>
-          <div className="detail__body">
-            <StepList steps={steps} selected={sel} onPick={pick} />
-            {st ? (
-              <StepCard st={st} />
-            ) : (
-              <div className="overview">
-                <div className="overview__mats">
-                  <div><StepMatrix steps={steps} pick="initial" selected={null} title="Before controls" onPick={pick} /><BandCounts steps={steps} pick="initial" /></div>
-                  <span className="arrow-r arrow-r--big" aria-hidden="true" />
-                  <div><StepMatrix steps={steps} pick="residual" selected={null} title="After controls (residual)" onPick={pick} /><BandCounts steps={steps} pick="residual" /></div>
-                </div>
-                <div className="overview__foot">
-                  <div className="overview__notes">
-                    <div className="label">How the controls work</div>
-                    <ul className="bullets bullets--sm">
-                      <li>Each step is scored likelihood × severity before and after controls.</li>
-                      <li>Controls follow the hierarchy: Elimination, Substitution, Engineering, Administrative, PPE.</li>
-                      <li>Controls mainly lower the likelihood; the severity of the hazard stays.</li>
-                      <li>Residual risk sets who approves the work.</li>
-                    </ul>
-                    {!all && <div className="note">Steps for this slide. All 18 steps: slide 5 · D</div>}
-                  </div>
-                  <div className="qr-box">
-                    <Qr text={detailUrl('hse')} size="8.5rem" />
-                    <span>Scan for the full register</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="hud__footer"><span>ALPHA-05 DEVELOPMENT WELL</span><span className="role">Speaker · HSE</span><span>Drilling program, Chapter 2</span></div>
-        </motion.section>
+        </div>
       )}
-    </AnimatePresence>
+    </div>
   );
 }

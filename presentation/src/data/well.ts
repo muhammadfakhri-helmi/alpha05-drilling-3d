@@ -50,15 +50,19 @@ export interface CasingDef {
   hole?: number;
   liner?: boolean;
   section?: SectionId;
+  /** joints in the tally (report Table 4.5), drawn as couplings */
+  joints?: number;
+  /** top of the tail slurry, ft MD (report Table 4.16); above it the lead slurry */
+  tailTop?: number;
 }
 
 /** Casing program (PPTX slide 2). Conductor shoe and liner top are repo values (geometry only). */
 export const CASINGS: CasingDef[] = [
   { key: 'c30', label: '30-in', od: 30, top: 0, shoe: 120 },
-  { key: 'c20', label: '20-in', od: 20, top: 0, shoe: 2000, hole: 26, section: 's26' },
-  { key: 'c13', label: '13-3/8-in', od: 13.375, top: 0, shoe: 5000, hole: 17.5, section: 's17' },
-  { key: 'c9', label: '9-5/8-in', od: 9.625, top: 0, shoe: 9259, hole: 12.25, section: 's12' },
-  { key: 'c7', label: '7-in liner', od: 7, top: 9108, shoe: 9604, hole: 8.5, liner: true, section: 's8' },
+  { key: 'c20', label: '20-in', od: 20, top: 0, shoe: 2000, hole: 26, section: 's26', joints: 49, tailTop: 1500 },
+  { key: 'c13', label: '13-3/8-in', od: 13.375, top: 0, shoe: 5000, hole: 17.5, section: 's17', joints: 128, tailTop: 4500 },
+  { key: 'c9', label: '9-5/8-in', od: 9.625, top: 0, shoe: 9259, hole: 12.25, section: 's12', joints: 238, tailTop: 4000 },
+  { key: 'c7', label: '7-in liner', od: 7, top: 9108, shoe: 9604, hole: 8.5, liner: true, section: 's8', joints: 13, tailTop: 9108 },
 ];
 
 /** Completion (PPTX slide 13): 3-1/2-in tubing, ESP intake 6,013 ft, EOT 6,025 ft MD. */

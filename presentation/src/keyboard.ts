@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useStore } from './store.ts';
 import { BACKUPS } from './data/content.ts';
+import { topicsFor } from './data/sections.ts';
 import { isPresenterWindow, remote } from './sync.ts';
 
 /**
@@ -22,6 +23,11 @@ export function useKeyboard() {
       const k = e.key;
       const r = isPresenterWindow;
       const handled = () => e.preventDefault();
+      if (st.detail && !r && /^[1-9]$/.test(k)) {
+        const t = topicsFor(st.slide)[Number(k) - 1];
+        if (t) { handled(); st.setTopic(t.id); }
+        return;
+      }
       if (st.backupMenu && /^[1-4]$/.test(k)) { handled(); return r ? remote('backup', BACKUPS[Number(k) - 1]) : st.openBackup(BACKUPS[Number(k) - 1]); }
       switch (k) {
         case 'Enter': case 'ArrowRight': case ' ': case 'PageDown': case 'ArrowDown':
