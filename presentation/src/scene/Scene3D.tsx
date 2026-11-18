@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { Vector3, PerspectiveCamera } from 'three';
+import { Vector3, PerspectiveCamera, PMREMGenerator, PCFSoftShadowMap } from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import type { OrbitControls as OrbitImpl } from 'three-stdlib';
 import { useStore } from '../store.ts';
 import { slideByN, type SceneState, type Step } from '../data/content.ts';
@@ -113,7 +114,8 @@ function World() {
   return (
     <>
       <fog attach="fog" args={['#E4ECF7', 30000, 60000]} />
-      <hemisphereLight args={['#ffffff', '#c9cfdc', 1.5]} />
+      <SceneEnvironment />
+      <hemisphereLight args={['#ffffff', '#c9cfdc', 0.9]} />
       <directionalLight
         position={[2600, 5200, 3400]}
         intensity={2}
@@ -134,6 +136,20 @@ function World() {
       <Surface state={scene} anim={anim} />
     </>
   );
+}
+
+/** Image-based lighting from a procedural studio room (no files): realistic steel and paint. */
+function SceneEnvironment() {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  useEffect(() => {
+    const pmrem = new PMREMGenerator(gl);
+    const tex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = tex;
+    scene.environmentIntensity = 0.65;
+    return () => { tex.dispose(); pmrem.dispose(); scene.environment = null; };
+  }, [gl, scene]);
+  return null;
 }
 
 /** Low-poly hills on the horizon behind the location (as in the deck photo). */
@@ -174,6 +190,7 @@ export function Scene3D({ onFail }: { onFail: () => void }) {
       gl={{ antialias: true, alpha: true, logarithmicDepthBuffer: true, powerPreference: 'high-performance' }}
       camera={{ fov: 38, near: 5, far: 80000, position: [3000, 1500, 4000] }}
       onCreated={({ gl }) => {
+        gl.shadowMap.type = PCFSoftShadowMap;
         gl.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); onFail(); }, { once: true });
       }}
       style={{ visibility: 'visible' }}

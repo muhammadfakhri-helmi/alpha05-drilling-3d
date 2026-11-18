@@ -44,7 +44,7 @@ export function BlockView({ b }: { b: Block }) {
 function TopicBody({ topic }: { topic: Topic }) {
   return (
     <div className="topic">
-      <div className="topic__grid">{topic.blocks.map((b, i) => <BlockView key={i} b={b} />)}</div>
+      <div className={`topic__grid ${topic.blocks.length <= 2 ? 'topic__grid--roomy' : ''}`}>{topic.blocks.map((b, i) => <BlockView key={i} b={b} />)}</div>
     </div>
   );
 }

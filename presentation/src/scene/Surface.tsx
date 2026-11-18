@@ -5,12 +5,13 @@
  * pipe racks, heavy-haul trucks with a crane offloading, test separator and
  * flare, crew on the floor. Primitives and instancing only (no textures).
  */
-import { useEffect, useLayoutEffect, useMemo, useRef, type ReactElement, type RefObject } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { InstancedMesh, Matrix4, Quaternion, Vector3, MeshStandardMaterial, Object3D, Euler, type Group } from 'three';
 import { SCALE, ANIM_SECONDS, type Anim } from '../data/well.ts';
-import type { Equipment, SceneState } from '../data/content.ts';
+import type { SceneState } from '../data/content.ts';
 import { C } from '../theme.ts';
+import { WellControlStack } from './WellControl.tsx';
 
 type V3 = [number, number, number];
 const mat = (color: string, metal = 0.25, rough = 0.6) => new MeshStandardMaterial({ color, metalness: metal, roughness: rough });
@@ -36,8 +37,6 @@ function useMats() {
     coverall: mat('#F26A21', 0, 0.8),
     helmet: mat('#FFFFFF', 0, 0.5),
     skin: mat('#B9875E', 0, 0.8),
-    ghostCream: Object.assign(mat('#E6E1D2', 0.05, 0.8), { transparent: true, opacity: 0.18, depthWrite: false }),
-    ghostSlate: Object.assign(mat(C.slate, 0.2, 0.6), { transparent: true, opacity: 0.22, depthWrite: false }),
     flame: new MeshStandardMaterial({ color: '#FFC24A', emissive: '#F26A21', emissiveIntensity: 1.2 }),
   }), []);
 }
@@ -92,8 +91,8 @@ function Crew({ p, rotY = 0, m }: { p: V3; rotY?: number; m: Mats }) {
 const FLOOR = 27.6, CROWN = 160, MONKEY = 92;
 
 function DrillingRig({ m: m0, drilling, xray }: { m: Mats; drilling: boolean; xray: boolean }) {
-  // x-ray: substructure and floor see-through so the cellar stack is visible
-  const m = xray ? { ...m0, cream: m0.ghostCream, slate: m0.ghostSlate } : m0;
+  // cutaway: in the cellar view the substructure towers are removed so the stack is in clear view
+  const m = m0;
   const { lower, upper } = useMemo(() => {
     const lower: [Vector3, Vector3][] = [], upper: [Vector3, Vector3][] = [];
     const corner = (sx: number, sz: number, y: number) => {
@@ -139,7 +138,7 @@ function DrillingRig({ m: m0, drilling, xray }: { m: Mats; drilling: boolean; xr
     <group>
       {/* substructure: two box-girder towers either side of the cellar */}
       {[-12, 12].map((x) => (
-        <group key={x}>
+        <group key={x} visible={!xray}>
           <Box p={[x, FLOOR / 2, 0]} s={[7, FLOOR - 2, 44]} m={m.cream} />
           <Box p={[x, 1.2, 0]} s={[9, 2.4, 48]} m={m.slate} />
           {[-15, -5, 5, 15].map((z) => <Box key={z} p={[x + (x > 0 ? -3.6 : 3.6), FLOOR / 2, z]} s={[0.4, FLOOR - 4, 0.6]} m={m.slate} />)}
@@ -213,78 +212,6 @@ function WorkoverRig({ m }: { m: Mats }) {
       <Box p={[0, 8, 0]} s={[16, 0.8, 16]} m={m.slate} />
       <Crew p={[3.5, 8.4, 3]} rotY={-0.5} m={m} />
       <Crew p={[-4, 8.4, 2]} rotY={0.8} m={m} />
-    </group>
-  );
-}
-
-/** Wellhead sections in the cellar, then diverter / BOP / tree above (schematic, real ft). */
-function Stack({ equipment, built, m, eqRef }: { equipment: Equipment; built: SceneState['built']; m: Mats; eqRef: RefObject<Group | null> }) {
-  const lvl = built === 'none' ? 0 : built === 's26' ? 1 : built === 's17' ? 2 : 3;
-  const Flange = ({ y, r, h, mm }: { y: number; r: number; h: number; mm: MeshStandardMaterial }) => (
-    <group position={[0, y, 0]}>
-      <Cyl p={[0, 0, 0]} r={r} h={h} m={mm} />
-      <Cyl p={[0, h / 2 - 0.25, 0]} r={r * 1.25} h={0.5} m={mm} />
-      <Cyl p={[0, -h / 2 + 0.25, 0]} r={r * 1.25} h={0.5} m={mm} />
-    </group>
-  );
-  const Ram = ({ y }: { y: number }) => (
-    <group position={[0, y, 0]}>
-      <Box p={[0, 0, 0]} s={[5.4, 2.2, 4.2]} m={m.red} />
-      <Cyl p={[3.9, 0, 0]} r={1.2} h={2.6} m={m.red} rot={[0, 0, Math.PI / 2]} />
-      <Cyl p={[-3.9, 0, 0]} r={1.2} h={2.6} m={m.red} rot={[0, 0, Math.PI / 2]} />
-      <Cyl p={[5.6, 0, 0]} r={0.5} h={0.8} m={m.dark} rot={[0, 0, Math.PI / 2]} />
-      <Cyl p={[-5.6, 0, 0]} r={0.5} h={0.8} m={m.dark} rot={[0, 0, Math.PI / 2]} />
-    </group>
-  );
-  const heads: ReactElement[] = [];
-  let top = -6;
-  if (lvl >= 1 || equipment !== 'none') { heads.push(<Flange key="h1" y={top + 1.4} r={2.6} h={2.8} mm={m.green} />); top += 2.8; }
-  if (lvl >= 2) { heads.push(<Flange key="h2" y={top + 1.3} r={2.3} h={2.6} mm={m.green} />); top += 2.6; }
-  if (lvl >= 3) { heads.push(<Flange key="h3" y={top + 1.2} r={2.0} h={2.4} mm={m.green} />); top += 2.4; }
-  const b = top;
-  const bellNipple = (y: number) => (
-    <group>
-      <Cyl p={[0, y + 2, 0]} r={1.4} h={4} m={m.steel} />
-      {/* flowline to the shakers */}
-      <Cyl p={[0, y + 1.5, -20]} r={0.45} h={40} m={m.steel} rot={[Math.PI / 2, 0, 0]} seg={8} />
-    </group>
-  );
-  return (
-    <group>
-      {heads}
-      <group ref={eqRef}>
-      {equipment === 'diverter' && (
-        <group>
-          <Flange y={b + 1.5} r={2.6} h={3} mm={m.red} />
-          <Cyl p={[0, b + 6, 0]} r={3.4} h={6} m={m.red} />
-          <Cyl p={[-16, b + 4, 0]} r={0.7} h={26} m={m.slate} rot={[0, 0, Math.PI / 2]} />
-          <Cyl p={[-29, b + 4, 0]} r={1} h={2} m={m.red} rot={[0, 0, Math.PI / 2]} />
-          {bellNipple(b + 9)}
-        </group>
-      )}
-      {(equipment === 'bop21' || equipment === 'bop13') && (
-        <group>
-          <Flange y={b + 1.2} r={2.4} h={2.4} mm={m.red} />
-          <Ram y={b + 3.8} />
-          <Ram y={b + 6.4} />
-          {equipment === 'bop13' && <Ram y={b + 9.0} />}
-          <Cyl p={[0, b + (equipment === 'bop13' ? 13 : 10.4), 0]} r={equipment === 'bop13' ? 3 : 3.5} r2={equipment === 'bop13' ? 3.3 : 3.8} h={5} m={m.red} />
-          {bellNipple(b + (equipment === 'bop13' ? 15.5 : 12.9))}
-          <Cyl p={[7, b + 2.6, 0]} r={0.4} h={9} m={m.slate} rot={[0, 0, Math.PI / 2]} />
-          <Cyl p={[-7, b + 2.6, 0]} r={0.4} h={9} m={m.slate} rot={[0, 0, Math.PI / 2]} />
-        </group>
-      )}
-      {equipment === 'tree' && (
-        <group>
-          <Cyl p={[0, b + 1.6, 0]} r={1.1} h={3.2} m={m.green} />
-          <Box p={[0, b + 3.9, 0]} s={[2.2, 1.6, 2.2]} m={m.green} />
-          <Cyl p={[0, b + 6, 0]} r={1.0} h={2.8} m={m.green} />
-          <Cyl p={[2.6, b + 3.9, 0]} r={0.55} h={3.4} m={m.green} rot={[0, 0, Math.PI / 2]} />
-          <mesh position={[0, b + 7.8, 0]} rotation={[Math.PI / 2, 0, 0]} material={m.red}><torusGeometry args={[1.1, 0.15, 6, 18]} /></mesh>
-          <mesh position={[4.3, b + 3.9, 0]} rotation={[0, Math.PI / 2, 0]} material={m.red}><torusGeometry args={[0.8, 0.12, 6, 16]} /></mesh>
-        </group>
-      )}
-      </group>
     </group>
   );
 }
@@ -427,7 +354,7 @@ function Site({ m, separator, focusSeparator }: { m: Mats; separator: boolean; f
         </group>
       ))}
       {/* BOP accumulator (koomey) and barite silos */}
-      <Box p={[36, 4, 36]} s={[14, 8, 7]} m={m.red} />
+      <Box p={[48, 4, -34]} s={[14, 8, 7]} m={m.red} />
       {[62, 74].map((x) => <Cyl key={x} p={[x, 20, -76]} r={5} h={40} m={m.white} />)}
 
       {/* surface test separator, flowline and flare */}
@@ -476,7 +403,7 @@ export function Surface({ state, anim }: { state: SceneState; anim?: Anim }) {
     <group>
       <group scale={S} ref={root}>
         {state.rig === 'drilling' ? <DrillingRig m={m} drilling={drilling} xray={state.focus === 'cellar'} /> : <WorkoverRig m={m} />}
-        <Stack equipment={state.equipment} built={state.built} m={m} eqRef={eqRef} />
+        <WellControlStack equipment={state.equipment} built={state.built} eqRef={eqRef} />
         <Site m={m} separator={sep} focusSeparator={state.focus === 'separator'} />
         <Trees m={m} />
       </group>

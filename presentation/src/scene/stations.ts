@@ -19,7 +19,7 @@ export function station(id: StationId): Station {
     case 'rig-overview': { const t: [number, number, number] = [150, 950, 0]; return { target: t, position: from(t, [2300, 350, 3700]) }; }
     case 'full-well': { const t: [number, number, number] = [1650, -3900, 0]; return { target: t, position: from(t, [2600, 1400, 18500]) }; }
     case 'location-staging': { const t: [number, number, number] = [900, 150, 700]; return { target: t, position: from(t, [1500, 1500, 3000]) }; }
-    case 'rig-diverter': { const t: [number, number, number] = [0, 110, 0]; return { target: t, position: from(t, [330, 170, 900]) }; }
+    case 'rig-diverter': { const t: [number, number, number] = [-10, 85, 0]; return { target: t, position: from(t, [240, 70, 440]) }; }
     case 'surface-section': { const t = at(1050, 40, 0); return { target: t, position: from(t, [800, 380, 2900]) }; }
     case 'intermediate-section': { const t = at(3500, 0, 0); return { target: t, position: from(t, [900, 300, 4300]) }; }
     case 'production-section': { const t = at(7130, 0, 0); return { target: t, position: from(t, [1100, 400, 5600]) }; }
