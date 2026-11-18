@@ -364,3 +364,4 @@ body {
 .detail--lg .detail__body, .detail--md .detail__body { grid-template-columns: 1fr; }
 .detail--lg .step-list, .detail--md .step-list { max-height: 9rem; }
 .detail--xl .detail__body { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.6fr); }
+.detail--lg .topic__grid--roomy .dblock--figure img, .detail--md .topic__grid--roomy .dblock--figure img { max-height: 44vh; }
