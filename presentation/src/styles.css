@@ -322,29 +322,6 @@ body {
 .control__text { font-size: 0.86rem; font-weight: 500; line-height: 1.35; }
 .detail-hint { color: var(--orange); white-space: nowrap; }
 
-/* ---------- phone detail page (QR) ---------- */
-body:has(.m-detail) { overflow: auto; }
-html:has(.m-detail), html:has(.m-detail) body, html:has(.m-detail) #root { height: auto; overflow: auto; font-size: 16px; }
-.m-detail { max-width: 46rem; margin: 0 auto; padding: 1.2rem max(16px, env(safe-area-inset-right, 0px)) 2rem max(16px, env(safe-area-inset-left, 0px)); background: var(--bg); min-height: 100vh; }
-.m-head h1 { font-weight: 800; color: var(--navy); font-size: 1.5rem; line-height: 1.15; margin: 0.4rem 0; text-wrap: balance; }
-.m-head p { margin: 0 0 1rem; color: var(--slate); font-weight: 500; line-height: 1.4; }
-.m-bands { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--white); border-radius: var(--r); overflow: hidden; margin-bottom: 1rem; }
-.m-bands th { background: var(--navy); color: var(--white); text-align: left; padding: 0.45rem; }
-.m-bands td { padding: 0.45rem; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
-.m-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
-.m-steps > li { background: var(--white); border: 1px solid var(--line); border-radius: var(--r); scroll-margin-top: 1rem; }
-.m-steps > li.is-open { border: 2px solid var(--orange); }
-.m-step { width: 100%; display: grid; grid-template-columns: 1.8rem minmax(0, 1fr) auto; gap: 0.6rem; align-items: center; text-align: left; background: none; border: 0; padding: 0.7rem; font: 600 0.92rem/1.3 'Montserrat', sans-serif; color: var(--ink); cursor: pointer; }
-.m-step__scores { display: flex; align-items: center; gap: 0.3rem; }
-.m-body { padding: 0 0.8rem 0.9rem; display: grid; gap: 0.45rem; }
-.m-ba { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; font-weight: 800; color: var(--navy); }
-.m-ba > div { background: var(--bg); border-radius: 0.4rem; padding: 0.5rem 0.6rem; }
-.m-ba small { font-weight: 600; color: var(--slate); }
-.m-auth { margin: 0; font-size: 0.9rem; }
-.m-body .control { grid-template-columns: 2.6rem minmax(0, 1fr); }
-.m-body .control__text { grid-column: 1 / -1; font-size: 0.9rem; }
-.m-foot { margin-top: 1.5rem; font-size: 0.8rem; color: var(--slate); text-align: center; }
-.scene-label--badge { background: var(--orange) !important; color: var(--white) !important; font-size: 1.1rem; padding: 0.4rem 0.8rem; border: 0 !important; box-shadow: 0 0.3rem 1rem rgba(242, 106, 33, 0.35); }
 
 /* ---------- report detail: tabs and blocks ---------- */
 .tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.8rem; }
@@ -354,7 +331,7 @@ html:has(.m-detail), html:has(.m-detail) body, html:has(.m-detail) #root { heigh
 .tab.is-on .tab__k { background: var(--orange); color: var(--white); }
 .detail__content { flex: 1; min-height: 0; display: flex; flex-direction: column; margin-top: 0.8rem; }
 .detail__content > .detail__body { margin-top: 0; }
-.topic { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; }
+.topic { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); }
 .topic__grid { min-height: 0; overflow: auto; columns: 2; column-gap: 1.2rem; padding-right: 0.3rem; }
 .topic__qr { align-self: start; }
 .dblock { break-inside: avoid; margin-bottom: 1rem; display: grid; gap: 0.35rem; }
@@ -368,9 +345,3 @@ html:has(.m-detail), html:has(.m-detail) body, html:has(.m-detail) #root { heigh
 .opsteps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
 .opsteps li { display: grid; grid-template-columns: 1.5rem 1fr; gap: 0.5rem; align-items: start; font-size: 0.86rem; font-weight: 500; line-height: 1.3; }
 .opsteps__n { display: grid; place-items: center; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--soft); color: var(--navy); font-weight: 800; font-size: 0.72rem; }
-.m-toc { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.6rem 0 1rem; }
-.m-toc a { font-weight: 700; font-size: 0.85rem; color: var(--navy); background: var(--white); border: 1px solid var(--line); border-radius: 999px; padding: 0.3rem 0.8rem; text-decoration: none; }
-.m-topic { background: var(--white); border: 1px solid var(--line); border-radius: var(--r); padding: 1rem; margin-bottom: 1rem; scroll-margin-top: 1rem; }
-.m-topic h2 { margin: 0 0 0.2rem; font-weight: 800; color: var(--navy); font-size: 1.2rem; }
-.m-block { margin-top: 0.8rem; overflow-x: auto; }
-.m-block .tbl--detail { font-size: 0.8rem; min-width: 18rem; }

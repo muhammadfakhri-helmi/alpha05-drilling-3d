@@ -17,28 +17,44 @@
 | 13 | Slide 5 risk matrix | Posisi lingkaran dibaca dari gambar slide: L2-S4 = 10, L2-S5 = 3, L1-S4 = 5 | - |
 | 14 | Fallback 2D | Slide 1, 3, 5 memakai foto rig dari cover PPTX; slide sumur memakai skema SVG | - |
 
-## Detail HSE (tombol D) dan QR
+## Detail HSE (tombol D)
 
 | # | Hal | Yang dibuat |
 |---|---|---|
 | 15 | Skor sebelum/sesudah kontrol dan otoritas | Mengikuti laporan (Tabel 2.2 dan 2.3) dan PPTX slide 5: residual 5 / 10 / 3 |
 | 16 | Bahaya, dampak, dan tindakan kontrol EL/SB/EG/AD/PPE | Dari RA/JSA program (RA-ALPHA05-DRL-001 yang dirujuk Bab 2.2.2). Sumber yang ditampilkan: laporan Bab 2 |
 | 17 | Angka yang tidak ada di laporan | Angka uji BOP di kontrol AD langkah 12 (hanya ada di RA/JSA) sudah dihapus atas keputusan PM |
-| 18 | QR code | Mengarah ke halaman ponsel `PUBLIC_BASE?view=detail&topic=hse[&step=n]` (alamat GitHub Pages /dwop/). Baru bisa dibuka setelah branch di-merge dan Pages aktif |
+| 18 | QR code | Dihapus atas keputusan PM |
 | 19 | Nama perusahaan dan logo di RA/JSA | Tidak ditampilkan |
 
 ## Detail laporan per section (tombol D, tab 1-7)
 
-Tab per slide: 6, 8, 10 = HSE, Casing, Cement, Mud, Well control, Hazards, Sequence; 12 = HSE, Drill-in fluid, Hazards, Sequence; 13 = HSE, 7-in liner, Liner sequence, Completion; 3 dan 5 = HSE. Setiap tab menulis tabel/bagian laporan sumbernya dan punya QR ke halaman ponsel slide itu. Cek angka: `docs/number-check-detail.md` (986 angka, 0 tidak cocok).
+Tab per slide:
 
-Ketidakselarasan di dalam laporan sendiri (yang ditampilkan: nilai tabel):
+| Slide | Tab |
+|---|---|
+| 2 | Planning basis, Objectives |
+| 3 | HSE, Logistics, Mobilization, Long lead items, Rig |
+| 5 | HSE, Permit to work, Shallow gas, Regulatory |
+| 6, 8 | HSE, Casing, Cement, Mud, Well control, Hazards, Sequence |
+| 10 | sama seperti 6/8, plus Contingency (Bab 6) |
+| 12 | HSE, Drill-in fluid, Hazards, Sequence, Contingency |
+| 13 | HSE, 7-in liner, Liner sequence, Completion |
+| 14 | Monitoring, DDR & communication, Cost control |
+| 15 | Triggers & rules, Process, Key decisions |
+| 16 | Pre-spud readiness |
+| 17 | Decision authority |
 
-| # | Hal | Ditampilkan | Teks lain di laporan |
-|---|---|---|---|
-| 20 | Excess semen 9-5/8-in | 25% of caliper (12.6 in), Tabel 4.16 | Bagian 5.5: 30% open-hole excess |
-| 21 | Densitas slurry 9-5/8-in | Lead 16 ppg, tail 16.2 ppg (Tabel 4.16/4.17) | Bagian 5.5: lead 15.8–16.2 ppg, tail 16.0–16.4 ppg |
-| 22 | KCl lumpur 12-1/4-in | Tabel 4.25: 5 %wt, dan Tabel 4.27: 7% naik ke 9% (keduanya tampil di tab Mud) | - |
-| 23 | Casing head | 20-3/4-in x 20 (Bab 8) | Data repo lama: 21-1/4 x 20 (tidak dipakai) |
+Setiap tab menulis tabel/bagian laporan sumbernya. Nama operator di alur invoice ditulis "operator vendor site". Cek angka: `docs/number-check-detail.md` (1,286 angka, 0 tidak cocok).
+
+Ketidakselarasan di dalam laporan sendiri, sudah diputuskan PM:
+
+| # | Hal | Yang dipakai |
+|---|---|---|
+| 20 | Excess semen 9-5/8-in | Bagian 5.5: 30% open-hole excess |
+| 21 | Densitas slurry 9-5/8-in | Bagian 5.5: lead 15.8–16.2 ppg, tail 16.0–16.4 ppg (volume tetap dari Tabel 4.17) |
+| 22 | KCl lumpur 12-1/4-in | Tabel 4.25: 5 %wt |
+| 23 | Casing head | 20-3/4-in x 20 (Bab 8) |
 
 Detail 3D baru: semen lead dan tail berbeda warna (tail 500 ft di atas shoe untuk 20-in dan 13-3/8-in; untuk 9-5/8-in dari TD sampai 1,000 ft di dalam 13-3/8-in), sambungan casing per joint sesuai tally (49 / 128 / 238 / 13), dan marka zona bahaya sumur offset (clay kuning, kick merah, losses ungu) di tab Hazards.
 
@@ -47,6 +63,6 @@ Detail 3D baru: semen lead dan tail berbeda warna (tail 500 ft di atas shoe untu
 - 60 fps di laptop presentasi sebenarnya. Uji di sini memakai renderer perangkat lunak (tanpa GPU); scene memakai render on-demand (hanya menggambar saat kamera bergerak), instancing, dan tanpa texture besar. Mohon dicoba di laptop dan proyektor yang akan dipakai.
 - Gladi penuh 20 menit oleh enam role.
 
-## Tahap 2 (menunggu persetujuan)
+## Tahap 2 (selesai)
 
-Animasi diverter/BOP, cementing, liner, ESP, dan marker window ppg per section.
+Animasi cementing, nipple-up diverter/BOP, liner run, ESP/tubing run, dan marker window ppg per section. Lihat README bagian Animasi.

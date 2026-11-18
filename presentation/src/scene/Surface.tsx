@@ -5,9 +5,10 @@
  * pipe racks, heavy-haul trucks with a crane offloading, test separator and
  * flare, crew on the floor. Primitives and instancing only (no textures).
  */
-import { useLayoutEffect, useMemo, useRef, type ReactElement } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, type ReactElement, type RefObject } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import { InstancedMesh, Matrix4, Quaternion, Vector3, MeshStandardMaterial, Object3D, Euler, type Group } from 'three';
-import { SCALE } from '../data/well.ts';
+import { SCALE, ANIM_SECONDS, type Anim } from '../data/well.ts';
 import type { Equipment, SceneState } from '../data/content.ts';
 import { C } from '../theme.ts';
 
@@ -217,7 +218,7 @@ function WorkoverRig({ m }: { m: Mats }) {
 }
 
 /** Wellhead sections in the cellar, then diverter / BOP / tree above (schematic, real ft). */
-function Stack({ equipment, built, m }: { equipment: Equipment; built: SceneState['built']; m: Mats }) {
+function Stack({ equipment, built, m, eqRef }: { equipment: Equipment; built: SceneState['built']; m: Mats; eqRef: RefObject<Group | null> }) {
   const lvl = built === 'none' ? 0 : built === 's26' ? 1 : built === 's17' ? 2 : 3;
   const Flange = ({ y, r, h, mm }: { y: number; r: number; h: number; mm: MeshStandardMaterial }) => (
     <group position={[0, y, 0]}>
@@ -251,6 +252,7 @@ function Stack({ equipment, built, m }: { equipment: Equipment; built: SceneStat
   return (
     <group>
       {heads}
+      <group ref={eqRef}>
       {equipment === 'diverter' && (
         <group>
           <Flange y={b + 1.5} r={2.6} h={3} mm={m.red} />
@@ -282,6 +284,7 @@ function Stack({ equipment, built, m }: { equipment: Equipment; built: SceneStat
           <mesh position={[4.3, b + 3.9, 0]} rotation={[0, Math.PI / 2, 0]} material={m.red}><torusGeometry args={[0.8, 0.12, 6, 16]} /></mesh>
         </group>
       )}
+      </group>
     </group>
   );
 }
@@ -447,12 +450,25 @@ function Site({ m, separator, focusSeparator }: { m: Mats; separator: boolean; f
   );
 }
 
-export function Surface({ state }: { state: SceneState }) {
+export function Surface({ state, anim }: { state: SceneState; anim?: Anim }) {
   const m = useMats();
   const S = SCALE.surface;
   const sep = state.focus === 'separator' || !!state.completion;
   const drilling = ['s26', 's17', 's12', 's8'].includes(state.focus ?? '');
   const root = useRef<Group>(null);
+  // nipple-up: the diverter / BOP is lowered onto the wellhead
+  const eqRef = useRef<Group>(null);
+  const invalidate = useThree((s) => s.invalidate);
+  const start = useRef(0);
+  useEffect(() => { start.current = performance.now(); invalidate(); }, [anim?.key, invalidate]);
+  useFrame(() => {
+    if (!eqRef.current) return;
+    const on = anim?.kind === 'bop';
+    const t = on ? Math.min(1, (performance.now() - start.current) / (ANIM_SECONDS.bop * 1000)) : 1;
+    const e = t * t * (3 - 2 * t);
+    eqRef.current.position.y = (1 - e) * 26;
+    if (t < 1) invalidate();
+  });
   useLayoutEffect(() => {
     root.current?.traverse((o) => { o.castShadow = true; });
   });
@@ -460,7 +476,7 @@ export function Surface({ state }: { state: SceneState }) {
     <group>
       <group scale={S} ref={root}>
         {state.rig === 'drilling' ? <DrillingRig m={m} drilling={drilling} xray={state.focus === 'cellar'} /> : <WorkoverRig m={m} />}
-        <Stack equipment={state.equipment} built={state.built} m={m} />
+        <Stack equipment={state.equipment} built={state.built} m={m} eqRef={eqRef} />
         <Site m={m} separator={sep} focusSeparator={state.focus === 'separator'} />
         <Trees m={m} />
       </group>

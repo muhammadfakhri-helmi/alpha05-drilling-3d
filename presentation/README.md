@@ -36,7 +36,7 @@ Untuk laptop presentasi tanpa internet: salin `dist-single/index.html` dan buka 
 | P | Mode presenter: role aktif, timer per role, poin wajib, angka hafal, kalimat serah-terima. Tombol "Buka di jendela kedua" untuk layar extended |
 | T / Shift+R | Mulai-jeda / reset timer (timer mulai otomatis pada Enter pertama) |
 | S | Langkah pembicara on/off (off = Enter langsung ke slide berikutnya) |
-| D | Detail laporan (slide 3, 5, 6, 8, 10, 12, 13). Tab 1-7: HSE (sebelum/sesudah kontrol, EL/SB/EG/AD/PPE), Casing, Cement, Mud, Well control, Hazards, Sequence; slide 13: liner dan completion. Angka 1-7 pindah tab, Enter/panah maju-mundur (di HSE per langkah), kamera 3D mengikuti tab. Esc kembali |
+| D | Detail laporan di slide 2, 3, 5, 6, 8, 10, 12, 13, 14, 15, 16, 17. Tombol angka 1-9 memilih tab, Enter/panah maju-mundur (di tab HSE per langkah), kamera 3D mengikuti tab. Esc kembali |
 | I | Perbesar gambar slide (2, 12, 13) |
 | V | Ganti tampilan 3D / 2D |
 | F | Layar penuh |
@@ -57,12 +57,19 @@ Clicker presentasi (PageDown / PageUp) juga bekerja.
 | `src/scene/` | Scene R3F: rig, lokasi, BOP/diverter/tree, sumur cutaway, kamera, label |
 | `src/ui/` | HUD, panel 2D, backup, presenter, bar navigasi, skema 2D fallback |
 | `scripts/check-numbers.mjs` | Verifikasi angka di layar terhadap PPTX |
+| `docs/number-check-detail.md` | Angka panel detail terhadap laporan |
 | `docs/KEPUTUSAN.md` | Keputusan yang butuh persetujuan PM |
 | `docs/number-check.md` | Tabel slide, angka, cocok/tidak |
 
-## QR dan halaman ponsel
+## Animasi (Tahap 2)
 
-QR di panel detail mengarah ke `src/config.ts` `PUBLIC_BASE` (GitHub Pages `/dwop/`) dengan `?view=detail&topic=hse&step=n` (register HSE) atau `?view=detail&slide=n&topic=id` (detail section). Halaman itu ringan (tanpa 3D) dan dirancang untuk ponsel. QR baru berfungsi setelah situs ter-deploy.
+Semua animasi berjalan sendiri dan tidak menahan navigasi:
+
+- Tab Cement: semen naik dari shoe ke atas annulus, lead dan tail berbeda warna.
+- Tab Well control: diverter/BOP diturunkan ke wellhead (nipple up).
+- Slide 13 langkah 1 dan tab liner: liner 7-in diturunkan ke dasar sumur.
+- Slide 13 langkah 4 dan tab Completion: ESP dan tubing di-run dari permukaan sampai 6,025 ft MD.
+- Marker window ppg (PPTX Tabel 3.1) di sisi sumur pada slide 6, 8, 10, 12.
 
 ## Skala
 

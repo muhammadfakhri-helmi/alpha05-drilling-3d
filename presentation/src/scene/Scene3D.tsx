@@ -6,6 +6,7 @@ import type { OrbitControls as OrbitImpl } from 'three-stdlib';
 import { useStore } from '../store.ts';
 import { slideByN, type SceneState, type Step } from '../data/content.ts';
 import { HSE_STEPS } from '../data/hse.ts';
+import type { Anim, AnimKind } from '../data/well.ts';
 import { topicsFor } from '../data/sections.ts';
 import { station } from './stations.ts';
 import { Well } from './Well.tsx';
@@ -42,7 +43,12 @@ function useLocation() {
     if (hse.station === 'rig-diverter') scene = { ...scene, focus: 'cellar' };
     st = { ...st, station: hse.station };
   }
-  return { sl, st, scene, hse, detail };
+  // stage-2 animations: cement job, BOP nipple-up, liner run, completion run
+  const kindByTopic: Record<string, AnimKind> = { cement: 'cement', wellcontrol: 'bop', liner: 'liner', completion: 'esp' };
+  let kind: AnimKind | null = topic ? kindByTopic[topic.id] ?? (topic.id === 'sequence' && slide === 13 ? 'liner' : null) : null;
+  if (!detail && slide === 13) kind = step === 0 ? 'liner' : step === 2 ? 'esp' : null;
+  const anim: Anim = { kind, key: `${slide}-${step}-${detail ? topicId : ''}-${kind}` };
+  return { sl, st, scene, hse, detail, anim };
 }
 
 /** Flies camera + orbit target to the active station; shifts the projection so the subject sits left of the HUD. */
@@ -103,7 +109,7 @@ function CameraRig() {
 }
 
 function World() {
-  const { scene } = useLocation();
+  const { scene, anim } = useLocation();
   return (
     <>
       <fog attach="fog" args={['#E4ECF7', 30000, 60000]} />
@@ -124,8 +130,8 @@ function World() {
       <directionalLight position={[-4000, 2000, -2000]} intensity={0.5} />
       <Hills />
       <Earth />
-      <Well state={scene} />
-      <Surface state={scene} />
+      <Well state={scene} anim={anim} />
+      <Surface state={scene} anim={anim} />
     </>
   );
 }

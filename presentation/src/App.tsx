@@ -9,9 +9,7 @@ import { Bar } from './ui/Bar.tsx';
 import { Presenter } from './ui/Presenter.tsx';
 import { Schematic } from './ui/Schematic.tsx';
 import { DetailPanel } from './ui/DetailPanel.tsx';
-import { MobileDetail } from './ui/MobileDetail.tsx';
 
-const isDetailPage = new URLSearchParams(location.search).get('view') === 'detail';
 
 const Scene3D = lazy(() => import('./scene/Scene3D.tsx').then((m) => ({ default: m.Scene3D })));
 
@@ -43,7 +41,6 @@ export function App() {
   const fail = useStore((s) => s.setWebglFailed);
   useEffect(() => { if (!hasWebGL()) fail(); }, [fail]);
 
-  if (isDetailPage) return <MobileDetail />;
   if (isPresenterWindow) return <div className="app"><Presenter window /></div>;
 
   return (

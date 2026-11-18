@@ -25,7 +25,7 @@ export const QA_MINUTES = 10;
 export type StationId =
   | 'rig-overview' | 'full-well' | 'location-staging' | 'rig-diverter'
   | 'surface-section' | 'intermediate-section' | 'production-section' | 'reservoir-td'
-  | 'liner' | 'liner-lap' | 'esp' | 'surface-test' | 'panel' | 'hazard-deep';
+  | 'liner' | 'liner-lap' | 'esp' | 'surface-test' | 'panel' | 'hazard-deep' | 'shoe-s26' | 'shoe-s17' | 'shoe-s12';
 
 export type Equipment = 'none' | 'diverter' | 'bop21' | 'bop13' | 'tree';
 export type Focus = SectionId | 'liner' | 'lap' | 'perfs' | 'esp' | 'separator' | 'cellar' | 'site' | 'rig' | null;

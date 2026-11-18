@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 import { useStore, detailSteps } from '../store.ts';
 import { HSE_STEPS, BANDS, bandOf, CONTROL_NAMES, LIKELIHOOD, SEVERITY, type HseStep, type ControlKey } from '../data/hse.ts';
-import { Qr } from './Qr.tsx';
-import { detailUrl } from '../config.ts';
 
 const score = (x: { l: number; s: number }) => x.l * x.s;
 const KEYS: ControlKey[] = ['EL', 'SB', 'EG', 'AD', 'PPE'];
@@ -92,10 +90,6 @@ function StepCard({ st }: { st: HseStep }) {
           <div className="kicker">Work step {st.n} · {st.phase}</div>
           <h2 className="step-card__title">{st.name}</h2>
         </div>
-        <div className="qr-box">
-          <Qr text={detailUrl('hse', st.n)} size="7.5rem" />
-          <span>Scan for this step</span>
-        </div>
       </div>
       <div className="before-after">
         <div className="ba">
@@ -163,10 +157,6 @@ export function HseBody() {
                 <li>Residual risk sets who approves the work.</li>
               </ul>
               {!all && <div className="note">Steps for this slide. All 18 steps: slide 5 · D</div>}
-            </div>
-            <div className="qr-box">
-              <Qr text={detailUrl('hse')} size="8.5rem" />
-              <span>Scan for the full register</span>
             </div>
           </div>
         </div>

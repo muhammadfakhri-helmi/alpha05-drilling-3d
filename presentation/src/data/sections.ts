@@ -14,7 +14,7 @@ export type Block =
   | { kind: 'steps'; title: string; items: string[] }
   | { kind: 'figure'; src: string; caption: string };
 
-export type TopicId = 'hse' | 'casing' | 'cement' | 'mud' | 'wellcontrol' | 'hazards' | 'sequence' | 'liner' | 'completion';
+export type TopicId = string;
 
 export interface Topic {
   id: TopicId;
@@ -62,7 +62,7 @@ const S26: Topic[] = [
   },
   {
     id: 'cement', label: 'Cement', title: '20-in cement job', source: 'Section 4.5.1, Tables 4.16 to 4.19, 4.22',
-    view: { scene: { built: 's26', focus: 's26', cementDetail: true } },
+    view: { station: 'shoe-s26', scene: { built: 's26', focus: 's26', cementDetail: true } },
     blocks: [
       { kind: 'table', title: 'Design basis', head: ['Item', '20-in casing'], rows: [
         ['Cement top', 'Surface'], ['Excess over open hole', '100% of caliper'], ['Plug system and shoe track', 'Bottom and top plug; 1 joint shoe track'],
@@ -194,7 +194,7 @@ const S17: Topic[] = [
   },
   {
     id: 'cement', label: 'Cement', title: '13-3/8-in cement job', source: 'Section 4.5.1, Tables 4.16 to 4.18, 4.20, 4.22',
-    view: { scene: { built: 's17', focus: 's17', cementDetail: true } },
+    view: { station: 'shoe-s17', scene: { built: 's17', focus: 's17', cementDetail: true } },
     blocks: [
       { kind: 'table', title: 'Design basis', head: ['Item', '13-3/8-in casing'], rows: [
         ['Cement top', 'Surface'], ['Excess over open hole', '60% of open hole'], ['Plug system and shoe track', 'Bottom and top plug; 2 joint shoe track'],
@@ -312,13 +312,13 @@ const S12: Topic[] = [
     ],
   },
   {
-    id: 'cement', label: 'Cement', title: '9-5/8-in cement job', source: 'Section 4.5.1, Tables 4.16 to 4.18, 4.21, 4.22',
-    view: { scene: { built: 's12', focus: 's12', cementDetail: true } },
+    id: 'cement', label: 'Cement', title: '9-5/8-in cement job', source: 'Section 5.5; Tables 4.17, 4.18, 4.21, 4.22',
+    view: { station: 'shoe-s12', scene: { built: 's12', focus: 's12', cementDetail: true } },
     blocks: [
       { kind: 'table', title: 'Design basis', head: ['Item', '9-5/8-in casing'], rows: [
-        ['Cement top', 'Surface'], ['Excess over open hole', '25% of caliper (12.6 in)'], ['Plug system and shoe track', 'Bottom and top plug; 2 joint shoe track'],
+        ['Cement top', 'Surface'], ['Excess over open hole', '30% open-hole excess'], ['Plug system and shoe track', 'Bottom and top plug; 2 joint shoe track'],
         ['BHST / BHCT', '273 / 215 deg F'], ['Thin mud ahead of spacer', '15.7 ppg, 200 bbl'], ['Spacer', '15.8 ppg, 60 bbl (with a spacer additive, about 13 lb/bbl)'],
-        ['Lead slurry', '16 ppg, Class G with 35% silica flour (S8)'], ['Tail slurry', '16.2 ppg, from TD to 1,000 ft inside the 13-3/8-in casing'],
+        ['Lead slurry', '15.8–16.2 ppg, Class G blended with 35% silica flour (S8)'], ['Tail slurry', '16.0–16.4 ppg, Class G blended with 35% silica flour (S8)'],
         ['Design note', 'Gas block system; fiber cement (0.5 lb/bbl) with 200 bbl low rheology mud, because of the narrow window between mud weight and fracture gradient'],
       ] },
       { kind: 'table', title: 'Slurries and volumes', head: SLURRY_HEAD, rows: [
@@ -353,7 +353,7 @@ const S12: Topic[] = [
       { kind: 'table', title: 'Hydraulics', head: HYD_HEAD, rows: [['14.0 - 15.7 ppg', '800 - 1,000 gpm', '2,770 - 4,280 psi', '14.1 - 15.7 ppg']] },
       { kind: 'bullets', title: 'Mud system', items: [
         'Mud weight raised from 13.7 to 14.0 ppg, to 15.2 ppg at 5,500 ft and to 15.5 ppg, reaching 15.7 ppg at TD',
-        'KCl 7% raised to 9%; shale inhibitor 2.5% to about 3% if the cuttings become sticky',
+        'Shale inhibitor 2.5% to about 3% if the cuttings become sticky',
         'CaCO3 and a filtration-control additive added hourly for fluid loss and cake quality',
         'Pump rate kept below the 4,500-psi pump-release setting; WOB 5–20 klbs, 50–60 rpm',
       ] },
@@ -537,7 +537,425 @@ const LINER: Topic[] = [
   },
 ];
 
-const BY_SLIDE: Record<number, Topic[]> = { 3: [HSE], 5: [HSE], 6: S26, 8: S17, 10: S12, 12: S8, 13: LINER };
+
+/* ------------------------------------------------------------------ shared contingency (Chapter 6) */
+const CONTINGENCY: Topic = {
+  id: 'contingency', label: 'Contingency', title: 'Well control, losses and stuck pipe', source: 'Chapter 6',
+  blocks: [
+    { kind: 'steps', title: 'Shut-in on a kick (6.1)', items: [
+      'Raise the Kelly / top drive until the tool joint is above the rotary table',
+      'Stop the mud pump, open the choke and choke line manifold, shut in the well and close the choke',
+      'When pressure is stable, record hole depth, mud weight, SIDP, SICP, pit gain, drill pipe capacity and pump capacity',
+    ] },
+    { kind: 'steps', title: 'Well killing (6.1)', items: [
+      'Circulate out the contaminated mud at a slow pump rate, normally about 1/3–1/2 of the drilling rate',
+      'Adjust the choke to keep SICP constant while circulating',
+      'Keep SPP and pump rate constant until the formation fluid is out',
+      'Stop the pump, close the choke, record SIDP and SICP; repeat if they are not equal',
+      'Calculate kill mud weight and surface-to-bit strokes; circulate KMW at constant casing pressure until it returns to surface',
+      'The well is dead when SPP and casing pressure both read zero',
+    ] },
+    { kind: 'bullets', title: 'Trip sheet (6.1.1)', items: [
+      'Trip tank monitored for every stand, POOH and RIH; mud box on wet trips so all trips are monitored as dry',
+      'Stop the trip and observe if gain/loss exceeds the maximum limit; report to Company Man and Rig Superintendent if it persists',
+    ] },
+    { kind: 'steps', title: 'Lost circulation response (6.2)', items: [
+      'Stop drilling; follow the approved procedure to stop circulation and position the string',
+      'Determine the loss rate and whether losses are dynamic or static',
+      'Check the available drilling fluid volume', 'Identify the possible depth of the loss zone',
+      'Prepare suitable LCM for the expected loss severity', 'Follow the approved contingency for the loss condition',
+    ] },
+    { kind: 'bullets', title: 'Stuck pipe and sidetrack (6.3, 6.4)', items: [
+      'Pack-off and bridging raise ECD and can induce losses; freeing pipe must respect the well control margin',
+      'Sidetrack only when stuck pipe cannot be freed and fishing fails',
+      'Sidetrack requires MOC, a dedicated risk assessment, a verified barrier above the abandoned section and recalculated well control parameters',
+      'Kick drill before kick-off; well barrier schematic updated once the plug above the fish is verified',
+    ] },
+  ],
+};
+
+/* ------------------------------------------------------------------ slide 2 */
+const S2: Topic[] = [
+  {
+    id: 'basis', label: 'Planning basis', title: 'Well planning basis', source: 'Section 1.2, Table 4.1',
+    view: { station: 'full-well' },
+    blocks: [
+      { kind: 'table', title: 'Planning basis', head: ['Item', 'Planning basis'], rows: [
+        ['Well classification', 'Development well, J-type directional'], ['Target', 'Tuban carbonate reservoir'],
+        ['Surface location (UTM WGS 84, Zone 49S)', 'Easting 607,617.87 / Northing 9,215,716.00'],
+        ['TD location (UTM WGS 84, Zone 49S)', 'Easting 606,784.50 / Northing 9,214,794.75'],
+        ['Vertical reference', 'RKB at +30 ft'], ['Planned TD', '9,604 ft MD / 8,561 ft TVD'],
+        ['Final inclination / azimuth', '29.74° / 222.55°'], ['KOP / max DLS', '700 ft MD / about 0.85°/100 ft'],
+        ['Drilling rig', '1,500-hp land rig; 450-hp workover rig for completion'],
+        ['Completion', '3-1/2-in tubing, ESP, brine-filled; initial ESP frequency about 42 Hz; TCP perforation'],
+        ['Production forecast', 'Initial 210 BOPD; P50 1.54 MMSTB; ESP planned in year 3'],
+      ] },
+      { kind: 'table', title: 'Trajectory', head: ['Section', 'Interval', 'Inclination', 'Hole size'], rows: [
+        ['Vertical', 'Surface – 700 ft MD (KOP)', '0°', '26-in'],
+        ['Build', 'From 700 ft MD', '0° to 29.74° at 222.55°', '17-1/2-in onward'],
+        ['Hold', 'About 3000 – 9604 ft MD', 'About 29.74°', '-'],
+        ['Reservoir', '9259 – 9604 ft MD', '29.74°', '8-1/2-in'],
+      ], note: 'Minimum curvature method; steerable BHA with PDC/mill tooth bit, mud motor, MWD, NMDC, stabilizer, crossover, HWDP and jar.' },
+    ],
+  },
+  {
+    id: 'criteria', label: 'Objectives', title: 'Objectives and success criteria', source: 'Sections 1.3, 1.4, Table 12.1',
+    blocks: [
+      { kind: 'bullets', title: 'Objectives', items: [
+        'Drill to planned TD within the design window (PPFG, trajectory, casing seats) with zero harm to people and environment',
+        'Isolate and protect formations with the planned casing/liner architecture and verified cement placement',
+        'Evaluate the Tuban carbonate and complete with an ESP, using reservoir drill-in fluid in the 8-1/2-in section',
+        'Execute with disciplined monitoring (DDR, cost, KPIs) and controlled change (MOC)',
+      ] },
+      { kind: 'table', title: 'Success criteria', head: ['Criterion', 'Target'], rows: [
+        ['HSSE', 'Zero-incident targets'], ['NPT', '< 1.5 % performance threshold (not planned downtime)'],
+        ['Duration', 'Drilling 38 d target; project ≤ 130 d'], ['Cost', 'Base case USD 7,549,500; high case USD 10,785,000'],
+        ['Well integrity', 'Casing seats and cement verified; BOP/FIT/pressure tests accepted'],
+        ['Handover', 'Completion installed, tested and handed over with records'],
+      ] },
+      { kind: 'table', title: 'How the program meets them', head: ['Criterion', 'How it is addressed', 'Where'], rows: [
+        ['HSSE', 'RA and JSA, PTW, emergency response, shallow gas and waste plans set before spud; Stop Work Authority for every crew member', 'Chapter 2; Section 6.1'],
+        ['Duration', 'Timeline built section by section against the 38-day drilling target and tracked', 'Sections 4.1 and 10.1'],
+        ['Cost', 'Base case tracked with the daily cost record and the AFE curve; forecast changes through MOC', 'Sections 10.3 and 11.2'],
+        ['Well integrity', 'Casing seats inside the PPFG window; cement, BOP, FIT and pressure tests verified before each section', 'Sections 3.2, 4.3, 4.5; Chapters 6 and 8'],
+        ['Handover', '7-in liner, completion, test and handover follow a defined sequence with records', 'Sections 5.7 and 10.4'],
+      ] },
+    ],
+  },
+];
+
+/* ------------------------------------------------------------------ slide 3 */
+const S3: Topic[] = [
+  HSE,
+  {
+    id: 'logistics', label: 'Logistics', title: 'Rig move and route', source: 'Sections 9.1, 9.2, Table 9.1',
+    view: { station: 'location-staging' },
+    blocks: [
+      { kind: 'table', title: 'Logistics planning basis', head: ['Item', 'Planning basis'], rows: [
+        ['Rig position', '1,500-hp rig, hot stacked at the rig base; mobilization within 14 days is targeted'],
+        ['Route', 'About 69 km (68.4 km in the route assessment); 99% paved road'],
+        ['Road width', 'Inter-provincial road limited to 6 m (about 19.6 ft)'],
+        ['Bridges', 'Level A: 50-ton capacity; Level B: 30–40-ton capacity; escort by local police during mobilization'],
+        ['Lifting at wellpad and shorebase', 'Two 50-ton crawler cranes and one forklift for loading, unloading and set-up'],
+        ['Crew change', 'Light vehicles; 119 km of road from the airport'],
+        ['Critical parts', 'Air freight; collected at the airport in less than 3 hours'],
+        ['Demobilization', 'Area cleared within 14 days'],
+      ] },
+      { kind: 'bullets', title: 'Three steps', items: [
+        'Pre-mobilization: plan and schedule, equipment inspection, transport units, permits and documents, manpower',
+        'Transport to site: derrick and substructure, drawworks, mud pumps, power, BOP and well control equipment, tools; crew mobilized; progress monitored',
+        'Offloading and staging: unload, inspect on arrival, stage by rig-up sequence',
+        'Journey Management Plan prepared with the trucking company to check route access',
+      ] },
+    ],
+  },
+  {
+    id: 'mobilization', label: 'Mobilization', title: 'Mobilization timeline by package', source: 'Table 9.2, Table 7.3',
+    view: { station: 'location-staging' },
+    blocks: [
+      { kind: 'table', title: 'Rig mobilization', head: ['Activity', 'Duration (days)'], rows: [
+        ['Rig equipment setup (mud tanks, mud pumps, water tank, utilities, generator set, fuel tank, portacamp, rig site)', '13'],
+        ['Install A-frame', '1'], ['Install mast and drilling line', '4'], ['Rig up mast and substructure', '6'], ['Rig up floor', '2'],
+        ['Rig up top drive', '2'], ['Function test', '2'], ['Technical meeting', '1'], ['Third-party inspection and closing of findings', '7'], ['Spud in', '1'],
+      ] },
+      { kind: 'table', title: 'Service packages', head: ['Package', 'Activity', 'Duration (days)'], rows: [
+        ['Cementing', 'Mobilization of cementing equipment (13 loads)', '5'], ['Cementing', 'Rig up cementing unit', '4'],
+        ['Cementing', 'Delivery of materials to location', '5'], ['Cementing', 'Cutting cement', '5'], ['Cementing', 'Function test of cementing equipment', '2'],
+        ['Directional', 'Mobilization (5 loads)', '7'], ['Directional', 'Rig up', '2'], ['Barite', 'Moving equipment and rig up', '3'],
+        ['Mud logging unit', 'Mobilization (1 load)', '4'], ['Mud logging unit', 'Rig up', '3'],
+        ['Drilling fluid', 'Mud materials (24 loads: 13 regional base, 11 Jakarta)', '7'], ['Drilling fluid', 'Centrifuge unit from Jakarta', '4'],
+        ['H2S monitoring', 'Mobilization (1 load)', '1'], ['H2S monitoring', 'Rig up', '4'], ['WWTP', 'Mobilization (2 loads)', '1'], ['WWTP', 'Rig up', '1'],
+        ['Paramedic', 'Standby paramedic', '1'], ['Casing running tools (premium)', 'On call', '-'], ['Liner hanger', 'Mobilization (1 load); rig up on job', '1'],
+      ], note: 'A package is complete only when its equipment is on location, rigged up and function-tested.' },
+    ],
+  },
+  {
+    id: 'materials', label: 'Long lead items', title: 'Long lead items and materials', source: 'Table 9.3, Table 10.3',
+    blocks: [
+      { kind: 'table', title: 'Long lead items', head: ['No', 'Item', 'Lead time (days)', 'Remark'], rows: [
+        ['1', 'Casing 20-in, 133 ppf, K55, R3, BTC', '42', 'Surface casing'], ['2', 'Casing 13-3/8-in, 68 ppf, K55, R3, BTC', '35', 'Intermediate casing'],
+        ['3', 'Casing 9-5/8-in, 47 ppf, L80, R3, BTC', '30', 'Production casing'], ['4', 'Tubing 3-1/2-in, 9.3 ppf, L80, R3, EUE', '20', 'Completion tubing'],
+        ['5', '20-in reamer shoe, double valve, L-80, BTC', '30', '20-in casing accessory'], ['6', '13-3/8-in reamer shoe, double valve, L-80, BTC', '35', '13-3/8-in casing accessory'],
+        ['7', '13-3/8-in x 17-1/2-in OH slider, 3 heavy-duty spiroglider', '35', 'Casing accessory'], ['8', '17-1/2-in PDC bit', '50', 'Longest bit lead time'],
+        ['9', '12-1/4-in PDC bit', '38', '12-1/4-in hole section'], ['10', '26-in rock bit', '20', '26-in hole section'],
+        ['11', '12-1/4-in PDC bit', '22', '12-1/4-in hole section'], ['12', '12-1/4-in mill tooth bit', '25', '12-1/4-in hole section'],
+        ['13', '12-1/4-in insert bit', '27', '12-1/4-in hole section'], ['14', 'Wellhead and X-mas tree', '60', 'Critical item; longest lead time'],
+        ['15', 'Repair and recertification of the 13-5/8-in BOP', '28', '4 weeks'], ['16', '9-5/8-in mud motor and 8-in MWD', '28', '4 weeks; main and spare on location'],
+      ] },
+      { kind: 'table', title: 'Material record (snapshot)', head: ['Material', 'Adopted quantity', 'Use in register'], rows: [
+        ['20-in casing', '28 joints listed; 1,185.15 ft in the preparation table', 'Preparation snapshot, not the entire installed string'],
+        ['13-3/8-in casing', '128 joints listed; 4,017.68 ft', 'Reconcile inspection and final tally'],
+        ['9-5/8-in casing', '74 joints listed; 2,995.20 ft', 'Reconcile other stock/string length'],
+        ['Class G cement', 'Program 7,363 sacks; on-location 7,432 sacks; balance 69 sacks', '-'],
+      ] },
+    ],
+  },
+  {
+    id: 'rig', label: 'Rig', title: 'Rig selection and rig-up', source: 'Chapter 7, Tables 7.1, 7.2, 7.4, 7.5',
+    view: { station: 'rig-overview' },
+    blocks: [
+      { kind: 'table', title: 'Minimum rig requirements', head: ['Item', 'Requirement'], rows: [
+        ['Drilling rig class', '1,500-hp onshore rig'], ['Completion rig', '450-hp workover rig'], ['Hook load capacity', 'Minimum greater than 400 ton'],
+        ['Drawworks power', '1,450 hp required (95% efficiency, maximum trip speed 56 ft/min)'],
+        ['Mast / derrick rating', 'Minimum 1,000,000 lbs, with setback capacity for drill pipe, HWDP, drill collars and BHA'],
+        ['Top drive', '35,000 ft-lbs continuous torque, 500 ton hoisting capacity'], ['Power generation', 'Main generators 4,000 to 5,000 hp (electric diesel system)'],
+        ['Mud pumps', 'Preferred three 1,600-hp triplex pumps (alternative four 1,300-hp triplex), minimum 5,000 psi working pressure'],
+        ['Shale shakers', 'Minimum 3 units, preferred 4 high G-motion units, minimum 300 gpm each (1,200 gpm total, 3 working and 1 standby)'],
+        ['Auxiliary solids control', 'Mud cleaner with desander, desilter and vacuum degasser'],
+        ['Well control equipment', '13-5/8-in, 5,000-psi BOP stack with annular preventer, pipe rams and blind rams'],
+      ] },
+      { kind: 'table', title: 'Rig-up sequence', head: ['Step', 'Activity', 'Approx. duration'], rows: [
+        ['1', 'Rig equipment setup (mud tanks, mud pumps, water tank, utilities, generators, fuel tank, camp)', '13 days'], ['2', 'Install A-frame', '1 day'],
+        ['3', 'Install mast and drilling line', '4 days'], ['4', 'Rig up mast and substructure', '6 days'], ['5', 'Rig up rig floor', '2 days'],
+        ['6', 'Rig up top drive', '2 days'], ['7', 'Function test', '2 days'], ['8', 'Technical meeting, then spud', '1 day after function test'],
+      ] },
+      { kind: 'bullets', title: 'Acceptance checks', items: [
+        'Height of rig sub-base above ground; function test of mud pumps no. 1, 2 and 3',
+        'Cooling tower area; man-riding equipment; air hose line free of blockage',
+        'Additional mud tank, coagulation tank for the waste-water plant, barite silo area and surge tank',
+        'Cementing equipment inspected: cementing unit, surge tank 80 cuft, batch mixer 2 x 75 cuft, cement silos 3 x 1,200 cuft and 2 x 1,300 cuft, water and mixing tanks',
+      ] },
+    ],
+  },
+];
+
+/* ------------------------------------------------------------------ slide 5 */
+const S5: Topic[] = [
+  HSE,
+  {
+    id: 'ptw', label: 'Permit to work', title: 'Permit to work matrix', source: 'Section 2.2.3, Tables 2.4 and 2.5',
+    blocks: [
+      { kind: 'table', title: 'PTW applicability', head: ['Activity', 'Permit / control', 'Minimum prerequisites', 'PIC'], rows: [
+        ['Routine drilling within approved program', 'Daily JSA + TBT + operational controls; PTW only if required', 'Well status, barriers, SIMOPS, drilling limits, crew competency', 'Driller / Company Representative / HSE'],
+        ['Rig move and heavy transport', 'Journey Management Plan; critical lifting permit if critical', 'Route and bridge capacity, load restraint, escort, driver fitness, communications', 'Logistics / Lifting Supervisor'],
+        ['Rig-up / derrick erection / work at height', 'Work-at-height and critical-lift permit where applicable', 'Fall protection, rescue plan, certified lifting gear, exclusion zone', 'Rig Manager / HSE / Lifting Supervisor'],
+        ['Welding, cutting or grinding', 'Hot Work Permit', 'Gas test, fire watch, fire protection, ignition control, SIMOPS check', 'Performing / Area Authority'],
+        ['Confined-space entry (tank, pit, cellar or vessel)', 'Confined Space Entry Permit', 'Isolation, gas test, attendant, rescue plan, entry register', 'Area Authority / Gas Tester / Rescue Team'],
+        ['Electrical work or equipment maintenance', 'Electrical Work Permit and LOTO', 'Identify energy sources, isolate, lock and tag, test for dead', 'Electrical Authorized Person / Area Authority'],
+        ['BOP / pressure testing and pressure-line work', 'Critical Work or Pressure-Test Permit if required', 'Approved procedure, rated equipment, weakest-component limit, exclusion zone, calibrated gauge, test record', 'Drilling Supervisor / Test Supervisor'],
+        ['Breaking containment', 'Breaking Containment Permit', 'Isolation, depressurization, zero energy, drain/vent route, gas test', 'Area / Performing Authority'],
+        ['Wireline logging with radioactive sources', 'Radioactive Source Permit / Radiation Work Authorization', 'Source inventory, shielding, exclusion zone, licensed personnel', 'Logging Supervisor / Radiation Safety Officer'],
+        ['Rig-down and demobilization', 'Work-at-height, critical-lift and electrical-LOTO permits as applicable', 'Isolation, lift plan, SIMOPS, traffic management, safe handback', 'Rig Manager / HSE / Logistics'],
+      ] },
+      { kind: 'table', title: 'PTW roles', head: ['Role', 'Responsibility'], rows: [
+        ['Performing Authority', 'Defines the work and boundaries, links the RA/JSA and procedure, requests the permit, signs the hand back'],
+        ['Area Authority', 'Confirms area conditions, accepts the hand back and signs the closure'],
+        ['Company Man / Permit Issuer', 'Authorizes the permit and assigns the permit number'],
+        ['Gas Tester / Isolation Verifier', 'Records gas test results and verifies isolation and zero energy'],
+      ] },
+      { kind: 'bullets', title: 'Permit suspended and reassessed when', items: [
+        'Scope or conditions change; a gas alarm or abnormal well condition occurs; weather becomes unsafe',
+        'A SIMOPS conflict develops; a critical control fails; an emergency alarm is raised',
+        'The shift expires, or Stop Work Authority is invoked',
+      ] },
+    ],
+  },
+  {
+    id: 'shallowgas', label: 'Shallow gas', title: 'Shallow gas contingency', source: 'Section 2.4',
+    view: { station: 'rig-diverter', scene: { focus: 'cellar' } },
+    blocks: [
+      { kind: 'bullets', title: 'Why it matters', items: [
+        'Limited well-control options and rapid escalation if a shallow blowout reaches surface',
+        'Low fracture gradients, low-density gas and thick gas intervals; extremely high flow rates possible',
+        'Dynamic kill is generally unreliable; prevention is the most effective strategy',
+        'Personnel evacuation starts immediately under the contingency plan set before spud',
+      ] },
+      { kind: 'steps', title: 'Contingency meeting checklist', items: [
+        'Essential personnel nominated and assigned emergency duties', 'Shallow gas instructions posted around the rig',
+        'Toolbox talks before each tour include the shallow gas plan', 'Rig gas detection system checked and fully operational',
+        'Ignition sources risk-assessed; deluge system and fire hoses ready', 'Portable gas detector available', 'Hot work restricted',
+        'Rig deluge / ESD systems checked', 'Black-out services, evacuation options and life support established', 'Rig communication fully operational',
+        'Transport vehicles on standby at a safe distance', 'Wind monitored for diversion and evacuation', 'Sufficient kill mud for the wellbore volume plus 100 % contingency (if practical)',
+        'Water supply fully operational', 'Blind float valve always run in the BHA', 'Limit ROP and circulate at high gpm to avoid cuttings build-up',
+        'Monitor hole fill closely while tripping', 'Facility to fill the annulus in the event of sudden losses',
+      ] },
+    ],
+  },
+  {
+    id: 'regulatory', label: 'Regulatory', title: 'Regulatory basis and environment', source: 'Sections 2.2.1, 2.5',
+    blocks: [
+      { kind: 'table', title: 'Regulatory basis', head: ['No.', 'Regulation', 'Subject'], rows: [
+        ['1', 'Law No. 22 of 2001', 'Oil and Gas'], ['2', 'Government Regulation No. 35 of 2004, as amended', 'Upstream Oil and Gas Business Activities'],
+        ['3', 'Government Regulation No. 22 of 2021', 'Environmental Protection and Management'], ['4', 'Government Regulation No. 28 of 2025', 'Risk-Based Business Licensing'],
+        ['5', 'Minister of Environment and Forestry Regulation No. 4 of 2021', 'Criteria for AMDAL, UKL-UPL and SPPL'],
+      ] },
+      { kind: 'bullets', title: 'Environmental controls', items: [
+        'B3 goods stored in bunded areas; diesel in double-skinned tanks or bunded areas',
+        'Cuttings and drilling fluid contained in tanks or lined areas and managed as B3 waste',
+        'Spill kits on site; spills handled under the Oil Spill Response Plan',
+        'Perimeter drains and sediment traps before earthmoving; topsoil stockpiled for rehabilitation',
+        'Groundwater and soil monitoring, including nearby village wells; all waste removed at completion',
+      ] },
+    ],
+  },
+];
+
+/* ------------------------------------------------------------------ slide 14 */
+const S14: Topic[] = [
+  {
+    id: 'monitoring', label: 'Monitoring', title: 'Performance tracking', source: 'Section 10.1',
+    blocks: [
+      { kind: 'table', title: 'Daily measures', head: ['Measure', 'Daily comparison / trigger', 'Owner'], rows: [
+        ['Activity and depth', 'Actual cumulative day/MD against the baseline; explain milestone variance', 'Company Man / Drilling'],
+        ['Drilling performance', 'On-bottom ROP, trips/connections and planned flat time by section', 'Drilling / contractor'],
+        ['NPT and ILT', 'Actual event, cause, duration and action, outside the planned sequence', 'Company Man / leads'],
+        ['Material/service readiness', 'Next 7/14-day requirement against usable stock and confirmed arrival', 'Logistics'],
+        ['Cost and EAC', 'Daily incurred cost, accrual/commitment reconciliation and forecast against AFE', 'Cost Controller'],
+        ['HSE and barriers', 'Incidents/observations, induction/drills, open findings and test status', 'HSE / Company Man'],
+      ] },
+      { kind: 'bullets', title: 'Performance reviews', items: [
+        'Schedule and depth variance: actual depth and milestones against the baseline',
+        'Cost variance: actual and forecast against the cost profile and approved AFE',
+        'Variance drivers: drilling performance, formation, downtime, extra services, scope changes',
+        'Corrective action: owner, action and target date; schedule and forecast updated',
+      ] },
+    ],
+  },
+  {
+    id: 'reporting', label: 'DDR & communication', title: 'DDR flow and communication', source: 'Section 10.2, Tables 10.1 and 10.2',
+    blocks: [
+      { kind: 'bullets', title: 'DDR flow', items: [
+        'Service representatives and the Toolpusher send activity, survey, fluid, formation, material, HSE and ticket data to the Company Man',
+        'Discipline representatives reconcile their own fields; the Company Man issues the DDR to the Drilling Superintendent / PM',
+        'Proposed reporting cutoff 06:00 WIB, covering the preceding 24 hours',
+        'Emergency escalation is reported at once, not held for the DDR',
+      ] },
+      { kind: 'table', title: 'Communication path', head: ['Path', 'Purpose'], rows: [
+        ['Driller to Toolpusher / Company Man', 'Immediate operating condition, well-control or equipment issue'],
+        ['Company Man to Drilling Superintendent', 'Technical decision, barrier/pressure excursion and next-activity coordination'],
+        ['Drilling Superintendent / discipline leads to PM', 'Integrated time/cost/risk recommendation and decision authority'],
+        ['Site incident controller to operator emergency organization', 'Emergency escalation and external support under ERP'],
+        ['PM / designated function to management, partners or regulator', 'Controlled approvals and required notifications'],
+      ] },
+      { kind: 'table', title: 'Reporting cadence', head: ['Cadence', 'Forum', 'Output'], rows: [
+        ['Daily', 'DDR and morning call', 'Previous 24-hour record; next 24 hours and look-ahead'],
+        ['Weekly', 'Coordination meeting', 'Review of cost, logistics, HSE, service quality and MOC'],
+      ] },
+    ],
+  },
+  {
+    id: 'cost', label: 'Cost control', title: 'AFE tracking and invoices', source: 'Section 10.3',
+    blocks: [
+      { kind: 'bullets', title: 'Cost tracking', items: [
+        'Base about USD 7.55 million and high case about USD 10.79 million are budget references, not approved expenditure',
+        'Daily cost record links date, activity/WBS, contract/PO, service ticket, quantity, rate, incurred amount and owner',
+        'EAC = recognized incurred cost to date plus a non-overlapping forecast to complete',
+        'A forecast overrun is escalated through the delegated approval/MOC route; it is not spending approval',
+        'A lower spend than planned is not automatically a saving; it may reflect delayed activities',
+      ] },
+      { kind: 'steps', title: 'Invoice verification', items: [
+        'Vendor creates and uploads the e-invoice on the operator vendor site; prints the cover sheet with the WAN number',
+        'Hard copy to the routing engineer; engineer and Company Man verify scope, dates and quantities against the DDR',
+        'Engineer and Company Man sign; documents go to the invoice receiving counter',
+        'Internal team retrieves the e-invoice by WAN number, verifies documents and records the receipt date',
+        'Validation (invoice analysis, tax code) and internal approval',
+        'Payment term starts: NET 30 days from final internal approval',
+        'SAP posting and payment processing',
+      ] },
+    ],
+  },
+];
+
+/* ------------------------------------------------------------------ slide 15 */
+const S15: Topic[] = [
+  {
+    id: 'moctriggers', label: 'Triggers & rules', title: 'When MOC is required', source: 'Section 11.1',
+    blocks: [
+      { kind: 'bullets', title: 'Typical triggers', items: [
+        'Casing point, TD or trajectory changes', 'Mud weight / ECD outside the released window', 'Liner, cement or barrier changes', 'Logging / coring scope',
+        'Equipment, material or vendor substitutions', 'Sequence changes', 'Material time / cost exposure',
+      ] },
+      { kind: 'bullets', title: 'Rules for every MOC', items: [
+        'Authority: approval level scales with risk and cost impact',
+        'Urgent MOC: PM verbal approval when the full written process would itself raise risk; documented within 24 hours',
+        'No change before approval: the Company Man does not infer permission from an unsigned request',
+        'Close-out: program, AFE and risk register updated before the MOC is closed',
+        'Variations inside the released window, sequence and scope are recorded in the DDR without MOC; unclear cases go to the Drilling Superintendent',
+      ] },
+    ],
+  },
+  {
+    id: 'mocprocess', label: 'Process', title: 'Six-step MOC process', source: 'Tables 11.1 and 11.2',
+    blocks: [
+      { kind: 'table', title: 'Steps and responsibility', head: ['Step', 'Action', 'Responsible'], rows: [
+        ['1. Request', 'Current basis, proposed change, reason, urgency, activity, affected program revision and hold point', 'Initiator and Company Man'],
+        ['2. Risk assessment', 'Hazards, barrier implications, exposure, alternatives, temporary controls, contractor interfaces', 'Drilling Superintendent (coordinates)'],
+        ['3. Technical review', 'PPFG, trajectory, loads, cement/barriers, data objectives; HSE, Logistics and Cost confirm interfaces', 'Drilling Superintendent with specialists, HSE, Logistics, Cost'],
+        ['4. Approval', 'PM routes to the delegated authority for its risk and expenditure', 'Project Manager; delegated operator authority'],
+        ['5. Implement and communicate', 'Approved instruction and revised section sheet issued; crews briefed; readiness verified', 'Company Man; Rig Manager or Toolpusher'],
+        ['6. Close out', 'Record implementation, reconcile cost/time/material, update data sheet, risk register, DDR, look-ahead', 'Company Man and discipline leads; PM records closure'],
+      ] },
+      { kind: 'table', title: 'Information recorded', head: ['Step', 'Information recorded'], rows: [
+        ['Request', 'Originator and date; activity and hold point; program revision; description; reason and urgency'],
+        ['Risk assessment', 'Hazards; barrier implications; personnel and environmental exposure; alternatives; temporary controls'],
+        ['Technical review', 'Reviewers; PPFG, trajectory, loads, cement and barriers, data objectives; conclusion'],
+        ['Approval', 'Approver and authority level; signature and date; conditions; urgent MOC verbal approval with written record within 24 hours'],
+        ['Implementation', 'Revised instruction issued; crews briefed; materials, equipment and permits confirmed'],
+        ['Close-out', 'Actual implementation; time, cost and material impact; updated program, AFE, risk register, DDR; approval trail'],
+      ] },
+    ],
+  },
+  {
+    id: 'decisions', label: 'Key decisions', title: 'Key decisions during execution', source: 'Table 11.4',
+    blocks: [
+      { kind: 'table', title: 'Trigger, owner and fallback', head: ['Decision', 'Trigger / data', 'Decided by', 'If the trigger is not met'], rows: [
+        ['Spud', 'Permits, documents, rig acceptance', 'PM at the pre-spud meeting', 'Delay the spud and close the gaps'],
+        ['Casing point', 'Formation tops, pore pressure indicators, losses', 'Drilling Superintendent with Subsurface', 'Set casing early or use a contingency string'],
+        ['Well control response', 'Kick, losses, gas readings', 'Company Man on site', 'Kill, cure the losses and escalate'],
+        ['TD call', 'Target reached, shows, mud log', 'Subsurface with PM', 'Drill deeper through MOC or stop short'],
+        ['Logging and coring', 'Shows and hole condition', 'Subsurface', 'Reduced suite or LWD only'],
+        ['Well status', 'Log and test results against the success criteria', 'Management', 'Complete, suspend or abandon'],
+      ] },
+    ],
+  },
+];
+
+/* ------------------------------------------------------------------ slide 16 */
+const S16: Topic[] = [
+  {
+    id: 'readiness', label: 'Pre-spud readiness', title: 'Move-in, rig-up and spud authorization', source: 'Section 5.1, Executive summary',
+    blocks: [
+      { kind: 'steps', title: 'Operational sequence', items: [
+        'Confirm location readiness (cellar, access, foundations, mud pits, drainage, cuttings area)', 'Mobilize the 1,500-hp drilling spread and service-company packages',
+        'Rig up primary systems (derrick, substructure, drawworks, rotary, power and mud systems)', 'Integrate service equipment (directional drilling, cementing, logging, solids control, bulk system)',
+        'Inspect safety-critical equipment (hoisting, lifting, OCTG, pressure vessels, well-control equipment)', 'Prepare drilling fluids (about 9.8-ppg spud mud and 13.0-ppg contingency kill mud)',
+        'Conduct readiness tests (function tests, pressure tests, alarms, communications, emergency drills)', 'Authorize spud after the integrated rig, service and material readiness review',
+      ] },
+      { kind: 'bullets', title: 'Confirmed before spud', items: [
+        '30-in conductor, 20-in surface casing, drilling BHA, wellhead components and diverter equipment available',
+        'Initial drilling fluid, kill mud and cementing materials available',
+        'Readiness demonstrated through function tests, communication checks, H2S and emergency-response drills and a final integrated readiness review',
+        'A section may proceed only when its hold points and critical inputs have been closed',
+      ] },
+    ],
+  },
+];
+
+/* ------------------------------------------------------------------ slide 17 */
+const S17G: Topic[] = [
+  {
+    id: 'authority', label: 'Decision authority', title: 'Who recommends and who authorizes', source: 'Section 11.3, Table 11.3',
+    blocks: [
+      { kind: 'table', title: 'Decision authority', head: ['Decision', 'Recommendation / coordination', 'Authorization record'], rows: [
+        ['Pre-spud Go/No-Go', 'Company Man and all discipline leads', 'PM / delegated operator authority'],
+        ['Casing point or TD change', 'Drilling Superintendent and Subsurface', 'MOC with technical and delegated approval'],
+        ['Logging/coring scope', 'Subsurface with Drilling, vendor and Cost', 'Recorded decision; MOC if baseline changes'],
+        ['Substitution or sequence deviation', 'Responsible discipline plus HSE/Logistics/Cost', 'MOC and accepted readiness'],
+        ['Completion / suspension / sidetrack', 'Integrated PMT recommendation', 'Operator management/delegated authority'],
+        ['AFE or spending change', 'Cost / Contracts with PMT impact review', 'Financial authority under actual delegation'],
+      ], note: 'Monetary and technical approval limits follow the operator delegation of authority; the program does not set them.' },
+      { kind: 'bullets', title: 'Before operational release', items: [
+        'Reconcile the survey/datum and KOP', 'Validate the PPFG-based operating window and kick tolerance', 'Approve cement and liner job details',
+        'Confirm the logging/coring decision and completion design', 'Close rig, emergency, material, permit and commercial verification items',
+        'The DWOP confirms the owner and release gate for each open action',
+      ] },
+    ],
+  },
+];
+
+const BY_SLIDE: Record<number, Topic[]> = {
+  2: S2, 3: S3, 5: S5, 6: S26, 8: S17, 10: [...S12, CONTINGENCY], 12: [...S8, CONTINGENCY], 13: LINER, 14: S14, 15: S15, 16: S16, 17: S17G,
+};
 
 export const topicsFor = (slide: number): Topic[] => BY_SLIDE[slide] ?? [];
 

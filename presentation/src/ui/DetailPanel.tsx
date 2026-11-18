@@ -3,8 +3,6 @@ import { useStore } from '../store.ts';
 import { slideByN } from '../data/content.ts';
 import { topicsFor, type Block, type Topic } from '../data/sections.ts';
 import { HseBody } from './HseDetail.tsx';
-import { Qr } from './Qr.tsx';
-import { slideDetailUrl } from '../config.ts';
 
 export function BlockView({ b }: { b: Block }) {
   switch (b.kind) {
@@ -43,14 +41,10 @@ export function BlockView({ b }: { b: Block }) {
   }
 }
 
-function TopicBody({ slide, topic }: { slide: number; topic: Topic }) {
+function TopicBody({ topic }: { topic: Topic }) {
   return (
     <div className="topic">
       <div className="topic__grid">{topic.blocks.map((b, i) => <BlockView key={i} b={b} />)}</div>
-      <div className="qr-box topic__qr">
-        <Qr text={slideDetailUrl(slide, topic.id)} size="7rem" />
-        <span>Scan for this detail</span>
-      </div>
     </div>
   );
 }
@@ -95,7 +89,7 @@ export function DetailPanel() {
           )}
           <AnimatePresence mode="wait">
             <motion.div key={topic.id} className="detail__content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
-              {topic.id === 'hse' ? <HseBody /> : <TopicBody slide={slideN} topic={topic} />}
+              {topic.id === 'hse' ? <HseBody /> : <TopicBody topic={topic} />}
             </motion.div>
           </AnimatePresence>
           <div className="hud__footer"><span>ALPHA-05 DEVELOPMENT WELL</span><span className="role">{slide.footer}</span><span>Drilling program · {topic.source}</span></div>

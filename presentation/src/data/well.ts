@@ -87,3 +87,17 @@ export const FORMATIONS = [
   { name: 'Fm-G', tvd: 8261, color: '#E8D7A4' },
 ];
 export const EARTH_BOTTOM_TVD = 9900;
+
+/** Mud weight window by depth (PPTX slide 12, Table 3.1); drawn beside the section in view. */
+export const MW_WINDOWS = [
+  { from: 2000, to: 2827, text: '9 - 15.4 ppg' },
+  { from: 2827, to: 5000, text: '11.5 - 15.4 ppg' },
+  { from: 5000, to: 6200, text: '10.7 - 16.6 ppg' },
+  { from: 6200, to: 9259, text: '15.1 - 16.6 ppg' },
+  { from: 9259, to: 9604, text: '9 - 17.7 ppg' },
+];
+
+export type AnimKind = 'cement' | 'bop' | 'liner' | 'esp';
+export interface Anim { kind: AnimKind | null; key: string }
+/** animation durations (s): independent of the 1.7 s camera flight, never block navigation */
+export const ANIM_SECONDS: Record<AnimKind, number> = { cement: 4.5, bop: 1.8, liner: 2.6, esp: 3.4 };

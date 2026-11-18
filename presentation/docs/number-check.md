@@ -2,7 +2,7 @@
 
 Dibuat otomatis oleh `npm run check:numbers` dari teks yang benar-benar tampil di layar (browser), dibandingkan dengan `source/slides_text.md`.
 
-Total angka HUD: 291 · label scene: 16 · **tidak cocok: 0**
+Total angka HUD: 291 · label scene: 26 · **tidak cocok: 0**
 
 ## Kartu HUD / panel per slide
 
@@ -320,3 +320,13 @@ Total angka HUD: 291 · label scene: 16 · **tidak cocok: 0**
 | 8,561 ft TVD | 8,561 | 2 | cocok |
 | 29-1/2-in × 500 psi diverter | 29-1/2 | 5 | cocok |
 | 29-1/2-in × 500 psi diverter | 500 | 5 | cocok |
+| MW window 9 - 15.4 ppg | 9 | 6, 7, 8, 9 | cocok |
+| MW window 9 - 15.4 ppg | 15.4 | 6, 7, 8, 9 | cocok |
+| MW window 11.5 - 15.4 ppg | 11.5 | 8, 9 | cocok |
+| MW window 11.5 - 15.4 ppg | 15.4 | 8, 9 | cocok |
+| MW window 10.7 - 16.6 ppg | 10.7 | 8, 9, 10, 11 | cocok |
+| MW window 10.7 - 16.6 ppg | 16.6 | 8, 9, 10, 11 | cocok |
+| MW window 15.1 - 16.6 ppg | 15.1 | 10, 11 | cocok |
+| MW window 15.1 - 16.6 ppg | 16.6 | 10, 11 | cocok |
+| MW window 9 - 17.7 ppg | 9 | 10, 11, 12 | cocok |
+| MW window 9 - 17.7 ppg | 17.7 | 10, 11, 12 | cocok |

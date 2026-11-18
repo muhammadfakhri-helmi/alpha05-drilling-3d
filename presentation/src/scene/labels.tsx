@@ -7,7 +7,7 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import { Vector3 } from 'three';
-import { CASINGS, COMPLETION, FORMATIONS, HOLES, rad, type SectionId } from '../data/well.ts';
+import { CASINGS, COMPLETION, FORMATIONS, HOLES, MW_WINDOWS, rad, type SectionId } from '../data/well.ts';
 import { HAZARD_MARKS } from '../data/sections.ts';
 import { posAt, normalAt, mdAtTvd, KOP } from '../data/trajectory.ts';
 import type { SceneState, StationId } from '../data/content.ts';
@@ -60,15 +60,25 @@ export function sceneLabels(state: SceneState, station: StationId, panel: boolea
     const txt: Record<string, [string, string]> = {
       c20: ['Lead 12 / 13.5 ppg', 'Tail 15.8 ppg'],
       c13: ['Lead 14 ppg', 'Tail 15.8 ppg'],
-      c9: ['Lead 16 ppg', 'Tail 16.2 ppg'],
+      c9: ['Lead 15.8–16.2 ppg', 'Tail 16.0–16.4 ppg'],
     };
     if (c && c.tailTop && txt[c.key]) {
       const hole = HOLES.find((h) => h.id === c.section)!;
       const at = (md: number, d: number): [number, number, number] => { const [x, y] = posAt(md); const [nx, ny] = normalAt(md); return [x - nx * d, y - ny * d, 0]; };
       const d = rad(c.hole ?? c.od) + 40;
-      L('lead', at(Math.max(hole.top + 150, c.tailTop - 350), d), txt[c.key][0], 'navy', 'right');
+      L('lead', at(Math.max(hole.top + 150, Math.min(c.tailTop - 120, c.shoe - 650)), d), txt[c.key][0], 'navy', 'right');
       L('tail', at(Math.max(hole.top + 300, (c.tailTop + c.shoe) / 2), d), txt[c.key][1], 'orange', 'right');
     }
+  }
+  // mud weight window markers (PPTX Table 3.1) for the section in view
+  if (focusIdx >= 0 && !state.cementDetail && !state.hazards) {
+    const sec = HOLES[focusIdx];
+    MW_WINDOWS.filter((w) => w.to > sec.top && w.from <= sec.bottom).forEach((w, k) => {
+      const md = Math.min(Math.max((w.from + w.to) / 2, sec.top + 100), sec.bottom - 50);
+      const [x, y] = posAt(md); const [nx, ny] = normalAt(md);
+      const d = rad(sec.holeIn) + 60;
+      L(`mw${k}`, [x - nx * d, y - ny * d, 0], `MW window ${w.text}`, 'navy', 'right');
+    });
   }
   // offset-well hazard intervals near the section in view (report Tables 3.3 / 3.4)
   if (state.hazards && focusIdx >= 0) {
