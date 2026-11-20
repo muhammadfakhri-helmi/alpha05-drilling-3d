@@ -127,6 +127,16 @@ export function SlideBody({ slide }: { slide: Slide }): ReactNode {
               <div key={b.id} className={`role-block ${dim(b.id)}`}>
                 <div className="role-block__head"><span className="num">{b.num}</span>{b.title}</div>
                 <Bullets items={b.points} sm />
+                {b.casing && (
+                  <div className="cc">
+                    {b.casing.map((g) => (
+                      <div key={g.title} className="cc__group">
+                        <div className="cc__title">{g.title}</div>
+                        {g.rows.map(([k, v]) => <div key={k} className="cc__row"><span>{k}</span><strong>{v}</strong></div>)}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

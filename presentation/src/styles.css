@@ -365,3 +365,16 @@ body {
 .detail--lg .step-list, .detail--md .step-list { max-height: 9rem; }
 .detail--xl .detail__body { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.6fr); }
 .detail--lg .topic__grid--roomy .dblock--figure img, .detail--md .topic__grid--roomy .dblock--figure img { max-height: 44vh; }
+
+/* topics scroll vertically; multi-column grids grow downward, never sideways */
+.topic { display: block; overflow-y: auto; padding-right: 0.3rem; }
+.topic__grid { overflow: visible; min-height: auto; }
+.topic__group + .topic__group { margin-top: 0.4rem; border-top: 2px solid var(--soft); padding-top: 0.8rem; }
+.topic__group-title { margin: 0 0 0.6rem; font-weight: 800; font-size: 1.25rem; color: var(--orange); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* casing & cement inside the Drilling Engineer block (summary card) */
+.cc { display: grid; grid-template-columns: 1fr; gap: 0.45rem; margin-top: 0.6rem; padding-top: 0.55rem; border-top: 1px solid var(--line); }
+.cc__title { font-weight: 800; font-size: 0.82rem; color: var(--orange); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.2rem; }
+.cc__row { display: grid; grid-template-columns: 9.5rem 1fr; gap: 0.4rem; font-size: 0.86rem; line-height: 1.25; padding: 0.12rem 0; }
+.cc__row span { color: var(--slate); font-weight: 500; }
+.cc__row strong { color: var(--ink); font-weight: 700; }

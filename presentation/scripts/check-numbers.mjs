@@ -46,7 +46,9 @@ for (let n = 1; n <= 18; n++) {
   const seen = new Map();
   for (const x of nums(text)) seen.set(x, (seen.get(x) || 0) + 1);
   for (const [x, count] of seen) {
-    const ok = pptx[n].body.has(x) ? 'cocok' : pptx[n].notes.has(x) ? 'cocok (notes)' : 'TIDAK';
+    // casing & cement on the section card come from the paired backup slide (6-7, 8-9, 10-11)
+    const pair = { 6: 7, 8: 9, 10: 11 }[n];
+    const ok = pptx[n].body.has(x) ? 'cocok' : pptx[n].notes.has(x) ? 'cocok (notes)' : pair && pptx[pair].body.has(x) ? `cocok (slide ${pair})` : 'TIDAK';
     rows.push({ n, x, count, ok });
   }
   // scene labels, every step of the slide

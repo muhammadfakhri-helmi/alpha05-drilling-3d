@@ -78,6 +78,12 @@ Detail 3D baru: semen lead dan tail berbeda warna (tail 500 ft di atas shoe untu
 |---|---|---|
 | 28 | Gambar BOP 13-5/8-in × 5,000 psi | Diganti dengan gambar revisi PM: backup slide 11, tab Well control slide 10, dan tab Well control baru di slide 12 (8-1/2-in, Gambar 8.4) |
 
+## Casing dan cement di kartu depan
+
+| # | Hal | Yang dibuat |
+|---|---|---|
+| 29 | Casing dan cement | Dipindah ke blok Drilling Engineer di kartu summary slide 6, 8, 10 (angka dari backup slide 7, 9, 11 PPTX). Tab Casing dan Cement dihapus dari panel detail; D untuk Drilling membuka tab Sequence |
+
 ## Belum diverifikasi
 
 - 60 fps di laptop presentasi sebenarnya. Uji di sini memakai renderer perangkat lunak (tanpa GPU); scene memakai render on-demand (hanya menggambar saat kamera bergerak), instancing, dan tanpa texture besar. Mohon dicoba di laptop dan proyektor yang akan dipakai.
