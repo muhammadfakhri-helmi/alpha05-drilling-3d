@@ -22,6 +22,8 @@ export interface Topic {
   title: string;
   source: string;
   blocks: Block[];
+  /** optional sub-sections shown one under the other (e.g. Casing, then Cement) */
+  groups?: { title: string; blocks: Block[] }[];
   /** how the 3D view frames this topic */
   view?: { station?: StationId; scene?: Partial<SceneState> };
 }
@@ -965,8 +967,12 @@ const S17G: Topic[] = [
   },
 ];
 
+/** Casing and cement are covered on the summary card (Drilling Engineer block), not in the detail panel. */
+const noCasing = (list: Topic[]): Topic[] => list.filter((t) => t.id !== 'casing' && t.id !== 'cement');
+
 const BY_SLIDE: Record<number, Topic[]> = {
-  2: S2, 3: S3, 5: S5, 6: S26, 8: S17, 10: [...S12, CONTINGENCY], 12: [...S8, CONTINGENCY], 13: LINER, 14: S14, 15: S15, 16: S16, 17: S17G,
+  2: S2, 3: S3, 5: S5, 6: noCasing(S26), 8: noCasing(S17), 10: noCasing([...S12, CONTINGENCY]),
+  12: [...S8, CONTINGENCY], 13: LINER, 14: S14, 15: S15, 16: S16, 17: S17G,
 };
 
 export const topicsFor = (slide: number): Topic[] => BY_SLIDE[slide] ?? [];
@@ -990,9 +996,9 @@ export function defaultTopic(slide: number, step: number, role: string): TopicId
   if (!ids.length) return null;
   const want: Record<number, Record<string, string>> = {
     3: { log: 'logistics' }, 5: { hse: 'hse' },
-    6: { sub: 'hazards', drl: 'casing', hse: 'hse', log: 'mud' },
-    8: { sub: 'hazards', drl: 'casing', hse: 'hse', log: 'mud' },
-    10: { sub: 'hazards', drl: 'casing', hse: 'hse', log: 'mud' },
+    6: { sub: 'hazards', drl: 'sequence', hse: 'hse', log: 'mud' },
+    8: { sub: 'hazards', drl: 'sequence', hse: 'hse', log: 'mud' },
+    10: { sub: 'hazards', drl: 'sequence', hse: 'hse', log: 'mud' },
     12: { sub: 'hazards' }, 14: { eco: 'cost', pm: 'reporting' },
   };
   const bySlide13 = ['liner', 'completion', 'completion', 'completion'];

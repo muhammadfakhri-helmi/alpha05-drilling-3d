@@ -77,7 +77,7 @@ export type Slide =
   | (Base & { layout: 'logistics'; banner: string; flow: string[]; checksTitle: string; checks: string[]; key: { value: string; label: string }; table: Table })
   | (Base & { layout: 'image'; figure: Figure })
   | (Base & { layout: 'hse'; key: { value: string; label: string }; matrixTitle: string; bandsTitle: string; bands: { range: string; count: string; level: string; authority: string; tone: 'green' | 'yellow' | 'orange' | 'red' }[]; circles: { l: number; s: number; count: string }[]; ptwTitle: string; ptw: string[]; gate: { label: string; text: string }; matrixNotes: string[] })
-  | (Base & { layout: 'section'; specs: { label: string; value: string }[]; key: { value: string; label: string }; blocks: { id: RoleId; num: string; title: string; points: string[] }[]; order: string })
+  | (Base & { layout: 'section'; specs: { label: string; value: string }[]; key: { value: string; label: string }; blocks: { id: RoleId; num: string; title: string; points: string[]; casing?: { title: string; rows: [string, string][] }[] }[]; order: string })
   | (Base & { layout: 'sectionData'; casing: Table; cement: Table; figure: Figure })
   | (Base & { layout: 'reservoir'; key: { value: string; label: string }; lead: string; points: string[]; table: Table; tiles: { label: string; value: string }[]; figure: Figure })
   | (Base & { layout: 'completion'; steps5: { num: string; title: string; sub: string; points: string[] }[]; trajectory: { label: string; text: string }; figure: Figure })
@@ -219,7 +219,10 @@ export const SLIDES: Slide[] = [
     key: { value: '2,000 ft MD / 1,956 ft TVD', label: 'Section depth' },
     blocks: [
       { id: 'sub', num: '1', title: 'Subsurface', points: ['Smectite 55 %, total clay 63 % at 250 – 280 ft MD', 'Gumbo and reactive shale are the hazards', 'Window below shoe: 9 – 15.4 ppg', 'Shoe FIT ~14.2 ppg EMW'] },
-      { id: 'drl', num: '2', title: 'Drilling Engineer', points: ['Steerable BHA: mill-tooth bit, motor, MWD', 'Kickoff at 700 ft MD', 'Hi-vis sweeps and controlled rate', 'Circulate clean, confirm static before casing'] },
+      { id: 'drl', num: '2', title: 'Drilling Engineer', points: ['Steerable BHA: mill-tooth bit, motor, MWD', 'Kickoff at 700 ft MD', 'Hi-vis sweeps and controlled rate', 'Circulate clean, confirm static before casing'], casing: [
+        { title: '20-in casing', rows: [['Weight / grade', '133 lb/ft, K-55, BTC'], ['Shoe MD / TVD', '2,000 ft / 1,956 ft'], ['Burst / collapse SF', '3.82 / 2.65'], ['Tension / triaxial SF', '6.79 / 4.67']] },
+        { title: 'Cement', rows: [['Top / excess', 'Surface / 100 % of caliper'], ['Lead', '12 ppg lightweight, then 13.5 ppg neat'], ['Tail', '15.8 ppg, 500 ft above the shoe']] },
+      ] },
       { id: 'hse', num: '3', title: 'HSE', points: ['Diverter N/U and function test', 'Shallow gas: detection and blind float valve', '26-in drilling: residual 4, Company Man', '20-in casing and cement: residual 8, Rig Superintendent'] },
       { id: 'log', num: '4', title: 'Logistic', points: ['20-in casing 42 days; 26-in bit 20 days', 'Spud mud 9.8 ppg, 5 % KCl polymer', 'Reserve: 1,200 bbl spud mud', 'Kill mud 150 bbl at 13.0 ppg; LCM pill 120 bbl'] },
     ],
@@ -269,7 +272,10 @@ export const SLIDES: Slide[] = [
     key: { value: '5,000 ft MD / 4,564 ft TVD', label: 'Section depth' },
     blocks: [
       { id: 'sub', num: '1', title: 'Subsurface', points: ['Tight hole in all four offset wells', 'Window 2,827 – 5,000 ft: 11.5 – 15.4 ppg', 'Casing point from tops, pore pressure and losses', 'Shoe test ~16.0 ppg EMW'] },
-      { id: 'drl', num: '2', title: 'Drilling Engineer', points: ['Steerable BHA on the J-type profile', 'Flow 790 – 910 gpm', 'Standpipe 2,100 – 3,680 psi', 'Sweeps and reaming where hole is tight', 'Run 13-3/8-in, cement, Wellhead Section B'] },
+      { id: 'drl', num: '2', title: 'Drilling Engineer', points: ['Steerable BHA on the J-type profile', 'Flow 790 – 910 gpm', 'Standpipe 2,100 – 3,680 psi', 'Sweeps and reaming where hole is tight', 'Run 13-3/8-in, cement, Wellhead Section B'], casing: [
+        { title: '13-3/8-in casing', rows: [['Weight / grade', '68 lb/ft, K-55, BTC'], ['Shoe MD / TVD', '5,000 ft / 4,564 ft'], ['Burst / collapse SF', '1.87 / 4.63'], ['Tension / triaxial SF', '3.09 / 2.24']] },
+        { title: 'Cement', rows: [['Top / excess', 'Surface / 60 % of open hole'], ['Lead', '14 ppg neat'], ['Tail', '15.8 ppg, 500 ft above the shoe']] },
+      ] },
       { id: 'hse', num: '3', title: 'HSE', points: ['N/D 21-1/4-in BOP, N/U 13-5/8-in × 5,000 psi', 'Function and pressure test', '17-1/2-in drilling: residual 8, Rig Superintendent', 'BOP test and shoe FIT: residual 4, Company Man'] },
       { id: 'log', num: '4', title: 'Logistic', points: ['13-3/8-in casing 35 days; 17-1/2-in bit 50 days', 'BOP recertification: 4 weeks', 'Kill mud 150 bbl at 15.0 ppg', 'Hi-vis pill 150 bbl; sweeps each stand'] },
     ],
@@ -319,7 +325,10 @@ export const SLIDES: Slide[] = [
     key: { value: '9,259 ft MD / 8,261 ft TVD', label: 'Section depth' },
     blocks: [
       { id: 'sub', num: '1', title: 'Subsurface', points: ['Critical interval 6,000 – 8,000 ft TVD', 'Pore pressure 12 – 13.5 ppg, window narrows', 'Safe window 15.1 – 16.6 ppg', 'Kicks 7,400 – 10,000 ft, losses 8,800 – 9,200 ft MD', 'Top of Tuban at 9,259 ft MD'] },
-      { id: 'drl', num: '2', title: 'Drilling Engineer', points: ['Tangent-packed steerable BHA holds 29.74° / 222.55°', 'ECD 14.1 – 15.7 ppg', 'Flow 800 – 1,000 gpm', 'WOB 5 – 20 klbs, 50 – 60 rpm', 'Kick tolerance 51.27 bbl at 13.90 ppg'] },
+      { id: 'drl', num: '2', title: 'Drilling Engineer', points: ['Tangent-packed steerable BHA holds 29.74° / 222.55°', 'ECD 14.1 – 15.7 ppg', 'Flow 800 – 1,000 gpm', 'WOB 5 – 20 klbs, 50 – 60 rpm', 'Kick tolerance 51.27 bbl at 13.90 ppg'], casing: [
+        { title: '9-5/8-in casing', rows: [['Weight / grade', '47 lb/ft, L-80, BTC'], ['Shoe MD / TVD', '9,259 ft / 8,261 ft'], ['Burst / collapse SF', 'Burst load 0 psi (N/A) / 6.96'], ['Tension / triaxial SF', '2.75 / 2.24']] },
+        { title: 'Cement', rows: [['Cement top', 'Surface'], ['Slurry', 'Class G with 35 % silica flour'], ['Note', 'Gas block system; fiber cement with 200 bbl low rheology mud']] },
+      ] },
       { id: 'hse', num: '3', title: 'HSE', points: ['Controlling pressure-window section', 'Residual 10, Drilling Manager', '13-5/8-in × 5,000 psi BOP tested before drilling out', 'Kill mud 130 bbl at 16 ppg'] },
       { id: 'log', num: '4', title: 'Logistic', points: ['Mud motor and 8-in MWD: 4 weeks, main and spare', '9-5/8-in casing 30 days; 12-1/4-in bits 22 – 38 days', 'Hi-vis and tandem sweeps ready', 'Barite recovery centrifuge'] },
     ],

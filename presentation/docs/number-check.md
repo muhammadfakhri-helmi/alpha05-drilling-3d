@@ -2,7 +2,7 @@
 
 Dibuat otomatis oleh `npm run check:numbers` dari teks yang benar-benar tampil di layar (browser), dibandingkan dengan `source/slides_text.md`.
 
-Total angka HUD: 291 · label scene: 26 · **tidak cocok: 0**
+Total angka HUD: 313 · label scene: 26 · **tidak cocok: 0**
 
 ## Kartu HUD / panel per slide
 
@@ -64,15 +64,15 @@ Total angka HUD: 291 · label scene: 26 · **tidak cocok: 0**
 | 5 | 2 | 5x | cocok |
 | 5 | 1 | 7x | cocok |
 | 6 | 26 | 4x | cocok |
-| 6 | 2,000 | 1x | cocok |
-| 6 | 1,956 | 1x | cocok |
+| 6 | 2,000 | 2x | cocok |
+| 6 | 1,956 | 2x | cocok |
 | 6 | 9.8 | 2x | cocok |
 | 6 | 12.0 | 1x | cocok |
-| 6 | 20 | 4x | cocok |
-| 6 | 133 | 1x | cocok |
-| 6 | 55 | 2x | cocok |
+| 6 | 20 | 5x | cocok |
+| 6 | 133 | 2x | cocok |
+| 6 | 55 | 3x | cocok |
 | 6 | 29-1/2 | 1x | cocok |
-| 6 | 500 | 1x | cocok |
+| 6 | 500 | 2x | cocok |
 | 6 | 1 | 1x | cocok |
 | 6 | 63 | 1x | cocok |
 | 6 | 250 | 1x | cocok |
@@ -82,6 +82,14 @@ Total angka HUD: 291 · label scene: 26 · **tidak cocok: 0**
 | 6 | 14.2 | 1x | cocok |
 | 6 | 2 | 1x | cocok |
 | 6 | 700 | 1x | cocok |
+| 6 | 3.82 | 1x | cocok (slide 7) |
+| 6 | 2.65 | 1x | cocok (slide 7) |
+| 6 | 6.79 | 1x | cocok (slide 7) |
+| 6 | 4.67 | 1x | cocok (slide 7) |
+| 6 | 100 | 1x | cocok (slide 7) |
+| 6 | 12 | 1x | cocok (slide 7) |
+| 6 | 13.5 | 1x | cocok (slide 7) |
+| 6 | 15.8 | 1x | cocok (slide 7) |
 | 6 | 3 | 1x | cocok |
 | 6 | 4 | 2x | cocok |
 | 6 | 8 | 1x | cocok |
@@ -114,13 +122,13 @@ Total angka HUD: 291 · label scene: 26 · **tidak cocok: 0**
 | 7 | 29-1/2 | 1x | cocok |
 | 7 | 7 | 1x | cocok |
 | 8 | 17-1/2 | 4x | cocok |
-| 8 | 5,000 | 3x | cocok |
-| 8 | 4,564 | 1x | cocok |
+| 8 | 5,000 | 4x | cocok |
+| 8 | 4,564 | 2x | cocok |
 | 8 | 12.0 | 1x | cocok |
 | 8 | 13.7 | 1x | cocok |
-| 8 | 13-3/8 | 3x | cocok |
-| 8 | 68 | 1x | cocok |
-| 8 | 55 | 1x | cocok |
+| 8 | 13-3/8 | 4x | cocok |
+| 8 | 68 | 2x | cocok |
+| 8 | 55 | 2x | cocok |
 | 8 | 21-1/4 | 2x | cocok |
 | 8 | 2,000 | 1x | cocok |
 | 8 | 1 | 1x | cocok |
@@ -133,6 +141,14 @@ Total angka HUD: 291 · label scene: 26 · **tidak cocok: 0**
 | 8 | 910 | 1x | cocok |
 | 8 | 2,100 | 1x | cocok |
 | 8 | 3,680 | 1x | cocok |
+| 8 | 1.87 | 1x | cocok (slide 9) |
+| 8 | 4.63 | 1x | cocok (slide 9) |
+| 8 | 3.09 | 1x | cocok (slide 9) |
+| 8 | 2.24 | 1x | cocok (slide 9) |
+| 8 | 60 | 1x | cocok (slide 9) |
+| 8 | 14 | 1x | cocok (slide 9) |
+| 8 | 15.8 | 1x | cocok (slide 9) |
+| 8 | 500 | 1x | cocok (slide 9) |
 | 8 | 3 | 1x | cocok |
 | 8 | 13-5/8 | 1x | cocok |
 | 8 | 8 | 2x | cocok |
@@ -165,13 +181,13 @@ Total angka HUD: 291 · label scene: 26 · **tidak cocok: 0**
 | 9 | 2,000 | 1x | cocok |
 | 9 | 9 | 1x | cocok |
 | 10 | 12-1/4 | 3x | cocok |
-| 10 | 9,259 | 2x | cocok |
-| 10 | 8,261 | 1x | cocok |
+| 10 | 9,259 | 3x | cocok |
+| 10 | 8,261 | 2x | cocok |
 | 10 | 13.7 | 1x | cocok |
 | 10 | 15.7 | 2x | cocok |
-| 10 | 9-5/8 | 2x | cocok |
-| 10 | 47 | 1x | cocok |
-| 10 | 80 | 1x | cocok |
+| 10 | 9-5/8 | 3x | cocok |
+| 10 | 47 | 2x | cocok |
+| 10 | 80 | 2x | cocok |
 | 10 | 13-5/8 | 2x | cocok |
 | 10 | 5,000 | 2x | cocok |
 | 10 | 1 | 1x | cocok |
@@ -197,6 +213,12 @@ Total angka HUD: 291 · label scene: 26 · **tidak cocok: 0**
 | 10 | 60 | 1x | cocok |
 | 10 | 51.27 | 1x | cocok |
 | 10 | 13.90 | 1x | cocok |
+| 10 | 0 | 1x | cocok (slide 11) |
+| 10 | 6.96 | 1x | cocok (slide 11) |
+| 10 | 2.75 | 1x | cocok (slide 11) |
+| 10 | 2.24 | 1x | cocok (slide 11) |
+| 10 | 35 | 1x | cocok (slide 11) |
+| 10 | 200 | 1x | cocok (slide 11) |
 | 10 | 3 | 1x | cocok |
 | 10 | 10 | 2x | cocok |
 | 10 | 130 | 1x | cocok |
